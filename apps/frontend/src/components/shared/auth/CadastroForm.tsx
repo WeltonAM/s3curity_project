@@ -2,6 +2,7 @@
 
 import { IconEye, IconEyeOff, IconLock, IconMail, IconSignature } from "@tabler/icons-react";
 import { useState } from "react";
+import CampoEmail from "./CampoEmail";
 
 export default function CadastroForm() {
     const [passwordVisible, setPasswordVisible] = useState(false);
@@ -73,19 +74,7 @@ export default function CadastroForm() {
                     <IconSignature className={`absolute left-3 top-7 ${nomeFocus ? 'text-zinc-400' : 'text-zinc-600'}`} size={20} />
                 </div>
 
-                <div className="flex flex-col gap-1 relative">
-                    <label htmlFor="email" className="text-xs text-zinc-300">Email</label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        className="p-2 pl-10 bg-black rounded-md border border-white/10 text-sm text-white"
-                        onFocus={() => setEmailFocus(true)}
-                        onBlur={() => setEmailFocus(false)}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
-                    <IconMail className={`absolute left-3 top-7 ${emailFocus ? 'text-zinc-400' : 'text-zinc-600'}`} size={20} />
-                </div>
+                <CampoEmail value={email} onChangeText={setEmail} ladoIcone="left" iverterIcone />
 
                 <div className="flex flex-col gap-1 relative">
                     <label htmlFor="password" className="text-xs text-zinc-300">Senha</label>

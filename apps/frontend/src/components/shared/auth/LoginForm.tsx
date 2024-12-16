@@ -3,17 +3,12 @@
 import { IconBrandGoogleFilled, IconEye, IconEyeOff, IconMail } from "@tabler/icons-react";
 import { useState } from "react";
 import Logo from "../Logo";
+import CampoEmail from "./CampoEmail";
+import CampoSenha from "./CampoSenha";
 
 export default function LoginForm() {
-  const [passwordVisible, setPasswordVisible] = useState(false);
-  const [emailFocus, setEmailFocus] = useState(false);
-  const [passwordFocus, setPasswordFocus] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  const togglePasswordVisibility = () => {
-    setPasswordVisible(prevState => !prevState);
-  };
 
   const handleLogin = () => {
     console.log(email, password);
@@ -26,45 +21,9 @@ export default function LoginForm() {
       <span className="font-bold">Entre com sua conta</span>
 
       <div className="flex flex-col w-full gap-2 mt-4">
-        <div className="flex flex-col gap-1 relative">
-          <label htmlFor="email" className="text-xs text-zinc-300">Email</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            className="p-2 bg-black rounded-md border border-white/10 text-sm text-white"
-            onFocus={() => setEmailFocus(true)}
-            onBlur={() => setEmailFocus(false)}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <IconMail className={`absolute right-3 top-7 ${emailFocus ? 'text-zinc-400' : 'text-zinc-600'}`} size={20} />
-        </div>
+        <CampoEmail value={email} onChangeText={setEmail} ladoIcone="right" />
 
-        <div className="flex flex-col gap-1 relative">
-          <label htmlFor="password" className="text-xs text-zinc-300">Senha</label>
-          <input
-            type={passwordVisible ? "text" : "password"}
-            id="password"
-            name="password"
-            className="p-2 bg-black rounded-md border border-white/10 text-sm text-white"
-            onFocus={() => setPasswordFocus(true)}
-            onBlur={() => setPasswordFocus(false)}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          {passwordVisible ? (
-            <IconEyeOff
-              onClick={togglePasswordVisibility}
-              className={`absolute right-3 top-7 ${passwordFocus ? 'text-zinc-400' : 'text-zinc-600'} cursor-pointer`}
-              size={20}
-            />
-          ) : (
-            <IconEye
-              onClick={togglePasswordVisibility}
-              className={`absolute right-3 top-7 ${passwordFocus ? 'text-zinc-400' : 'text-zinc-600'} cursor-pointer`}
-              size={20}
-            />
-          )}
-        </div>
+        <CampoSenha value={password} onChangeText={setPassword} />
 
         <button className="text-xs text-zinc-500 ml-auto">Esqueceu sua senha?</button>
 
