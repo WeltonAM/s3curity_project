@@ -23,7 +23,7 @@ export default function CampoEmail(props: CampoEmailProps) {
                 }}
             />
             
-            <IconMail className={`absolute ${props.ladoIcone}-3 top-7 text-zinc-600`} size={20} />
+            <IconMail className={`absolute ${props.ladoIcone}-3 top-7 text-zinc-400`} size={20} />
         </div>
     );
 }

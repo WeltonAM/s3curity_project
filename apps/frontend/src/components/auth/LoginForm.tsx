@@ -1,10 +1,11 @@
 'use client'
 
-import { IconBrandGoogleFilled, IconEye, IconEyeOff, IconMail } from "@tabler/icons-react";
+import { IconBrandGoogleFilled } from "@tabler/icons-react";
 import { useState } from "react";
-import Logo from "../Logo";
-import CampoEmail from "./CampoEmail";
-import CampoSenha from "./CampoSenha";
+import Logo from "../shared/Logo";
+import CampoEmail from "../shared/CampoEmail";
+import CampoSenha from "../shared/CampoSenha";
+import Link from "next/link";
 
 export default function LoginForm() {
   const [email, setEmail] = useState('');
@@ -23,11 +24,11 @@ export default function LoginForm() {
       <div className="flex flex-col w-full gap-2 mt-4">
         <CampoEmail value={email} onChangeText={setEmail} ladoIcone="right" />
 
-        <CampoSenha value={password} onChangeText={setPassword} />
+        <CampoSenha id="password" texto="Senha" mostrarIconeSenha mostrarIconeCadeado value={password} onChangeText={setPassword} />
 
-        <button className="text-xs text-zinc-500 ml-auto">Esqueceu sua senha?</button>
+        <Link href='novaSenha' className="text-xs text-zinc-500 ml-auto">Esqueceu sua senha?</Link>
 
-        <button className="bg-green-600 rounded-md text-sm py-2 hover:bg-green-500 hover:text-white" onClick={handleLogin}>Login</button>
+        <button className="bg-green-600 rounded-md text-sm py-2 font-bold hover:bg-green-500 hover:text-white" onClick={handleLogin}>Login</button>
 
         <div className="flex items-center justify-center my-2">
           <div className="border-t border-zinc-800 w-full"></div>
@@ -43,7 +44,7 @@ export default function LoginForm() {
           <div className="flex gap-1 text-sm mt-2">
             <span className="text-zinc-300">Ainda não possui uma conta?</span>
 
-            <button className="text-green-500">Cadastre-se <span className="underline">aqui</span></button>
+            <Link href='cadastro' className="text-green-500">Cadastre-se <span className="underline">aqui</span></Link>
           </div>
 
           <span className="text-xs text-zinc-500">
