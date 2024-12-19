@@ -24,7 +24,7 @@ export default function LoginForm() {
       <div className="flex flex-col w-full gap-2 mt-4">
         <CampoEmail value={email} onChangeText={setEmail} ladoIcone="right" />
 
-        <CampoSenha id="password" texto="Senha" mostrarIconeSenha mostrarIconeCadeado value={password} onChangeText={setPassword} />
+        <CampoSenha id="password" texto="Senha" mostrarIconeSenha value={password} onChangeText={setPassword} />
 
         <Link href='novaSenha' className="text-xs text-zinc-500 ml-auto">Esqueceu sua senha?</Link>
 
