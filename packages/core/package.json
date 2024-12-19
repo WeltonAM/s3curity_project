@@ -1,0 +1,25 @@
+{
+    "name": "@s3curity/core",
+    "version": "1.0.0",
+    "description": "",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsup src/index.ts --dts --minify",
+        "dev": "tsup src/index.ts --dts --watch",
+        "test": "jest --watchAll --collectCoverage"
+    },
+    "keywords": [],
+    "author": "Welton Matos",
+    "license": "ISC",
+    "devDependencies": {
+        "@types/jest": "^29.5.14",
+        "@types/uuid": "^10.0.0",
+        "jest": "^29.7.0",
+        "ts-jest": "^29.2.5",
+        "tsup": "^8.2.4"
+    },
+    "dependencies": {
+        "uuid": "^11.0.3"
+    }
+}
