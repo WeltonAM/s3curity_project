@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Permissao {
+  id          String   @id @default(uuid())
+  nome        String
+  descricao   String
+  dataCriacao DateTime @default(now())
+  ativo       Boolean  @default(true)
+
+  perfis      Perfil[] @relation("PerfilPermissoes")
+}
+
+model Perfil {
+  id          String      @id @default(uuid())
+  nome        String
+  descricao   String
+  dataCriacao DateTime    @default(now())
+  ativo       Boolean     @default(true)
+
+  permissoes  Permissao[] @relation("PerfilPermissoes")
+  usuarios    Usuario[]   @relation("UsuarioPerfis")
+}
+
+model Usuario {
+  id                           String      @id @default(uuid())
+  nome                         String
+  email                        String      @unique
+  senha                        String?
+  telefone                     String?
+  ativo                        Boolean     @default(true)
+  dataCriacao                  DateTime    @default(now())
+  tokenRecuperacaoSenha        String?
+  dataExpiracaoToken           DateTime?
+  autenticacaoDoisFatoresAtiva Boolean   @default(false)
+  imagemPerfil                 String?
+
+  perfis                    Perfil[]    @relation("UsuarioPerfis")
+}
