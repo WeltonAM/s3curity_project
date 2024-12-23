@@ -1,27 +1,27 @@
 -- CreateTable
-CREATE TABLE "Permissao" (
+CREATE TABLE "permissoes" (
     "id" TEXT NOT NULL,
     "nome" TEXT NOT NULL,
     "descricao" TEXT NOT NULL,
     "dataCriacao" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "ativo" BOOLEAN NOT NULL DEFAULT true,
 
-    CONSTRAINT "Permissao_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "permissoes_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "Perfil" (
+CREATE TABLE "perfis" (
     "id" TEXT NOT NULL,
     "nome" TEXT NOT NULL,
     "descricao" TEXT NOT NULL,
     "dataCriacao" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "ativo" BOOLEAN NOT NULL DEFAULT true,
 
-    CONSTRAINT "Perfil_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "perfis_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "Usuario" (
+CREATE TABLE "usuarios" (
     "id" TEXT NOT NULL,
     "nome" TEXT NOT NULL,
     "email" TEXT NOT NULL,
@@ -34,7 +34,7 @@ CREATE TABLE "Usuario" (
     "autenticacaoDoisFatoresAtiva" BOOLEAN NOT NULL DEFAULT false,
     "imagemPerfil" TEXT,
 
-    CONSTRAINT "Usuario_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "usuarios_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -54,7 +54,7 @@ CREATE TABLE "_UsuarioPerfis" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Usuario_email_key" ON "Usuario"("email");
+CREATE UNIQUE INDEX "usuarios_email_key" ON "usuarios"("email");
 
 -- CreateIndex
 CREATE INDEX "_PerfilPermissoes_B_index" ON "_PerfilPermissoes"("B");
@@ -63,13 +63,13 @@ CREATE INDEX "_PerfilPermissoes_B_index" ON "_PerfilPermissoes"("B");
 CREATE INDEX "_UsuarioPerfis_B_index" ON "_UsuarioPerfis"("B");
 
 -- AddForeignKey
-ALTER TABLE "_PerfilPermissoes" ADD CONSTRAINT "_PerfilPermissoes_A_fkey" FOREIGN KEY ("A") REFERENCES "Perfil"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "_PerfilPermissoes" ADD CONSTRAINT "_PerfilPermissoes_A_fkey" FOREIGN KEY ("A") REFERENCES "perfis"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_PerfilPermissoes" ADD CONSTRAINT "_PerfilPermissoes_B_fkey" FOREIGN KEY ("B") REFERENCES "Permissao"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "_PerfilPermissoes" ADD CONSTRAINT "_PerfilPermissoes_B_fkey" FOREIGN KEY ("B") REFERENCES "permissoes"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_UsuarioPerfis" ADD CONSTRAINT "_UsuarioPerfis_A_fkey" FOREIGN KEY ("A") REFERENCES "Perfil"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "_UsuarioPerfis" ADD CONSTRAINT "_UsuarioPerfis_A_fkey" FOREIGN KEY ("A") REFERENCES "perfis"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_UsuarioPerfis" ADD CONSTRAINT "_UsuarioPerfis_B_fkey" FOREIGN KEY ("B") REFERENCES "Usuario"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "_UsuarioPerfis" ADD CONSTRAINT "_UsuarioPerfis_B_fkey" FOREIGN KEY ("B") REFERENCES "usuarios"("id") ON DELETE CASCADE ON UPDATE CASCADE;
