@@ -26,6 +26,8 @@ model Usuario {
   urlImagemPerfil       String?
 
   usuarioPerfis         UsuarioPerfil[]
+
+  @@map("usuarios")
 }
 
 model Perfil {
@@ -37,6 +39,8 @@ model Perfil {
 
   usuarioPerfis    UsuarioPerfil[]
   perfilPermissoes PerfilPermissao[]
+
+  @@map("perfis")
 }
 
 model Permissao {
@@ -47,6 +51,8 @@ model Permissao {
   ativo       Boolean    @default(true)
 
   perfilPermissoes PerfilPermissao[]
+
+  @@map("permissoes")
 }
 
 model UsuarioPerfil {
@@ -57,6 +63,8 @@ model UsuarioPerfil {
   perfil    Perfil   @relation(fields: [perfilId], references: [id])
 
   @@unique([usuarioId, perfilId])
+
+  @@map("perfis_usuarios")
 }
 
 model PerfilPermissao {
@@ -67,4 +75,6 @@ model PerfilPermissao {
   permissao   Permissao @relation(fields: [permissaoId], references: [id])
 
   @@unique([perfilId, permissaoId])
+
+  @@map("perfis_permissoes")
 }
