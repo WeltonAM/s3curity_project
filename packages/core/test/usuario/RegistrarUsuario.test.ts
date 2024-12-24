@@ -56,7 +56,7 @@ describe("RegistrarUsuario", () => {
             dataExpiracaoToken: undefined,
         });
 
-        await expect(registrarUsuario.executar(nomeCompleto, email, senha)).rejects.toThrowError("E-mail já está em uso.");
+        await expect(registrarUsuario.executar(nomeCompleto, email, senha)).rejects.toThrow("E-mail já está em uso.");
     };
 
     const verificarSenhaCriptografada = async () => {

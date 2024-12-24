@@ -7,7 +7,7 @@ export default class LoginUsuario {
     constructor(
         private repositorioUsuario: RepositorioUsuario,
         private provedorCriptografia: ProvedorCriptografia,
-        private provedorAutenticacao: ProvedorAutenticacao
+        private provedorAutenticacao?: ProvedorAutenticacao
     ) {}
 
     async comEmailSenha(email: string, senha: string): Promise<Partial<Usuario>> {
@@ -27,7 +27,7 @@ export default class LoginUsuario {
     }
 
     async comProvedor(provedor: string, token: string): Promise<Partial<Usuario>> {
-        const email = await this.provedorAutenticacao.autenticarComProvedor(provedor, token);
+        const email = await this.provedorAutenticacao!.autenticarComProvedor(provedor, token);
 
         const usuario = await this.repositorioUsuario.buscarPorEmail(email);
 

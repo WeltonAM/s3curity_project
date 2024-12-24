@@ -9,18 +9,18 @@ export default class RegistrarUsuario {
         private provedorCriptografia: ProvedorCriptografia
     ) {}
 
-    async executar(nomeCompleto: string, email: string, senha: string): Promise<void> {
-        const usuarioExistente = await this.repositorioUsuario.buscarPorEmail(email);
+    async executar(usuario: Usuario): Promise<void> {
+        const usuarioExistente = await this.repositorioUsuario.buscarPorEmail(usuario.email);
         if (usuarioExistente) {
             throw new Error("E-mail já está em uso.");
         }
 
-        const senhaCriptografada = await this.provedorCriptografia.criptografar(senha);
+        const senhaCriptografada = await this.provedorCriptografia.criptografar(usuario.senha!);
 
         const novoUsuario: Partial<Usuario> = {
             id: Id.novo.valor,
-            nomeCompleto,
-            email,
+            nomeCompleto: usuario.nomeCompleto,
+            email: usuario.email,
             senha: senhaCriptografada,
             ativo: true,
             criadoEm: new Date(),

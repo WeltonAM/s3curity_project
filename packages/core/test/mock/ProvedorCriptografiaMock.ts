@@ -1,11 +1,11 @@
 import { ProvedorCriptografia } from "../../src"
 
 export class ProvedorCriptografiaMock implements ProvedorCriptografia {
-    criptografar(_: string): string {
+    async criptografar(_: string): Promise<string> {
         return "$2a$12$2Wn08lE/gzq9VihLoMSVbe7fdAoCOMg6uVE3RQaJnEJc5Wa7eXuly"
     }
 
-    comparar(senha: string, _: string): boolean {
+    async comparar(senha: string, _: string): Promise<boolean> {
         return senha === "!Senha123"
     }
 }

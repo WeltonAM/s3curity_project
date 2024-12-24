@@ -26,7 +26,8 @@ model Usuario {
   urlImagemPerfil       String?
 
   usuarioPerfis         UsuarioPerfil[]
-
+  logins                Login[]
+  
   @@map("usuarios")
 }
 
@@ -77,4 +78,17 @@ model PerfilPermissao {
   @@unique([perfilId, permissaoId])
 
   @@map("perfis_permissoes")
+}
+
+model Login {
+  id          String   @id @default(uuid())
+  usuarioId   String
+  sucesso     Boolean
+  ip          String? 
+  dataHora    DateTime @default(now())
+  provedor    String?  
+  token       String? 
+  usuario     Usuario  @relation(fields: [usuarioId], references: [id])
+
+  @@map("logins")
 }
