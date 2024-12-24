@@ -12,19 +12,18 @@ export default class LoginUsuario {
 
     async comEmailSenha(email: string, senha: string): Promise<Partial<Usuario>> {
         const usuario = await this.repositorioUsuario.buscarPorEmail(email);
-        if (!usuario) {
+        if (!usuario || !usuario.ativo) {
             throw new Error("Credenciais inválidas.");
         }
 
         const senhaValida = await this.provedorCriptografia.comparar(senha, usuario.senha || "");
-        
         if (!senhaValida) {
             throw new Error("Credenciais inválidas.");
         }
 
-        const { id, nome, email: emailUsuario } = usuario;
-        
-        return { id, nome, email: emailUsuario };
+        const { id, nomeCompleto, email: emailUsuario } = usuario;
+
+        return { id, nomeCompleto, email: emailUsuario };
     }
 
     async comProvedor(provedor: string, token: string): Promise<Partial<Usuario>> {
@@ -32,12 +31,12 @@ export default class LoginUsuario {
 
         const usuario = await this.repositorioUsuario.buscarPorEmail(email);
 
-        if (!usuario) {
-            throw new Error("Usuário não encontrado para o provedor especificado.");
+        if (!usuario || !usuario.ativo) {
+            throw new Error("Usuário não encontrado ou inativo para o provedor especificado.");
         }
 
-        const { id, nome, email: emailUsuario } = usuario;
-        
-        return { id, nome, email: emailUsuario };
+        const { id, nomeCompleto, email: emailUsuario } = usuario;
+
+        return { id, nomeCompleto, email: emailUsuario };
     }
 }

@@ -3,8 +3,8 @@ import { Permissao } from "../../permissao";
 export default interface Perfil {
     id: string;
     nome: string;
-    descricao: string;
-    dataCriacao: Date;
+    descricao: string | null;
+    criadoEm: Date;
     ativo: boolean;
-    permissoes: Permissao[];
+    permissoes: Permissao[]; 
 }

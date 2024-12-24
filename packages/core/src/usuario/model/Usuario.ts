@@ -2,15 +2,15 @@ import { Perfil } from "../../perfil";
 
 export default interface Usuario {
     id: string;
-    nome: string;
+    nomeCompleto: string;
     email: string;
     senha?: string;
     telefone?: string;
     ativo: boolean;
-    dataCriacao: Date;
-    tokenRecuperacaoSenha?: string;
+    criadoEm: Date;
+    tokenRecuperacao?: string;
     dataExpiracaoToken?: Date;
-    autenticacaoDoisFatoresAtiva: boolean;
-    imagemPerfil?: string;
+    doisFatoresAtivado: boolean;
+    urlImagemPerfil?: string;
     perfis: Perfil[];
 }

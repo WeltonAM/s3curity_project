@@ -26,45 +26,45 @@ describe("RegistrarUsuario", () => {
     });
 
     const registrarUsuarioComSucesso = async () => {
-        const nome = "João Silva";
+        const nomeCompleto = "João Silva";
         const email = "joao@teste.com";
         const senha = "!Senha123";
 
-        await registrarUsuario.executar(nome, email, senha);
+        await registrarUsuario.executar(nomeCompleto, email, senha);
 
         const usuarioRegistrado = await repositorioUsuarioMock.buscarPorEmail(email);
         expect(usuarioRegistrado).not.toBeNull();
-        expect(usuarioRegistrado?.nome).toBe(nome);
+        expect(usuarioRegistrado?.nomeCompleto).toBe(nomeCompleto);
         expect(usuarioRegistrado?.email).toBe(email);
         expect(usuarioRegistrado?.senha).toBe("$2a$12$2Wn08lE/gzq9VihLoMSVbe7fdAoCOMg6uVE3RQaJnEJc5Wa7eXuly");
     };
 
     const registrarUsuarioComEmailJaEmUso = async () => {
-        const nome = "Maria Oliveira";
+        const nomeCompleto = "Maria Oliveira";
         const email = "joao@teste.com";
         const senha = "!Senha123";
 
         await repositorioUsuarioMock.salvar({
             id: "1",
-            nome: "João Silva",
+            nomeCompleto: "João Silva",
             email: "joao@teste.com",
             senha: "$2a$12$2Wn08lE/gzq9VihLoMSVbe7fdAoCOMg6uVE3RQaJnEJc5Wa7eXuly",
             ativo: true,
-            dataCriacao: new Date(),
-            autenticacaoDoisFatoresAtiva: false,
+            criadoEm: new Date(),
+            doisFatoresAtivado: false,
             perfis: [],
             dataExpiracaoToken: undefined,
         });
 
-        await expect(registrarUsuario.executar(nome, email, senha)).rejects.toThrowError("E-mail já está em uso.");
+        await expect(registrarUsuario.executar(nomeCompleto, email, senha)).rejects.toThrowError("E-mail já está em uso.");
     };
 
     const verificarSenhaCriptografada = async () => {
-        const nome = "Carlos Souza";
+        const nomeCompleto = "Carlos Souza";
         const email = "carlos@teste.com";
         const senha = "!Senha123";
 
-        await registrarUsuario.executar(nome, email, senha);
+        await registrarUsuario.executar(nomeCompleto, email, senha);
 
         const usuarioRegistrado = await repositorioUsuarioMock.buscarPorEmail(email);
         expect(usuarioRegistrado).not.toBeNull();

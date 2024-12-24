@@ -46,12 +46,12 @@ describe("LoginUsuario", () => {
 
         await repositorioUsuarioMock.salvar({
             id: "1",
-            nome: "João Silva",
+            nomeCompleto: "João Silva",
             email,
             senha: "$2a$12$2Wn08lE/gzq9VihLoMSVbe7fdAoCOMg6uVE3RQaJnEJc5Wa7eXuly",
             ativo: true,
-            dataCriacao: new Date(),
-            autenticacaoDoisFatoresAtiva: false,
+            criadoEm: new Date(),
+            doisFatoresAtivado: false,
             perfis: [],
             dataExpiracaoToken: undefined,
         });
@@ -60,7 +60,7 @@ describe("LoginUsuario", () => {
 
         expect(usuario).toEqual({
             id: "1",
-            nome: "João Silva",
+            nomeCompleto: "João Silva",
             email: "joao@teste.com"
         });
     };
@@ -85,22 +85,20 @@ describe("LoginUsuario", () => {
 
         await repositorioUsuarioMock.salvar({
             id: "1",
-            nome: "João Silva",
+            nomeCompleto: "João Silva",
             email: email,
             ativo: true,
-            dataCriacao: new Date(),
-            autenticacaoDoisFatoresAtiva: false,
+            criadoEm: new Date(),
+            doisFatoresAtivado: false,
             perfis: [],
             dataExpiracaoToken: undefined,
         });
 
         const usuario = await loginUsuario.comProvedor("google", token);
        
-        console.log(usuario)
-
         expect(usuario).toEqual({
             id: "1",
-            nome: "João Silva",
+            nomeCompleto: "João Silva",
             email: "google@teste.com"
         });
     };
@@ -115,6 +113,6 @@ describe("LoginUsuario", () => {
     const autenticarComProvedorSemUsuario = async () => {
         const token = "valid-token-google";
 
-        await expect(loginUsuario.comProvedor("google", token)).rejects.toThrow("Usuário não encontrado para o provedor especificado.");
+        await expect(loginUsuario.comProvedor("google", token)).rejects.toThrow("Usuário não encontrado ou inativo para o provedor especificado.");
     };
 });

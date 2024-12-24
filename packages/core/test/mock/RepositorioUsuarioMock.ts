@@ -7,6 +7,8 @@ export default class RepositorioUsuarioMock implements RepositorioUsuario {
         const usuarioComId = {
             ...usuario,
             id: usuario.id ?? Id.novo.valor,
+            criadoEm: usuario.criadoEm ?? new Date(),
+            ativo: usuario.ativo ?? true,
         };
 
         const index = this.usuarios.findIndex((u) => u.id === usuarioComId.id);
