@@ -1,0 +1,18 @@
+### Registrar usuário
+POST http://localhost:4000/usuario/registrar
+Content-Type: application/json
+
+{
+    "nomeCompleto": "João da Silva",
+    "email": "joao@email.com",
+    "senha": "123456"
+}
+
+### Login
+POST http://localhost:4000/usuario/login
+Content-Type: application/json
+
+{
+    "email": "admin@sistema.com",
+    "senha": "#Senha123"
+}

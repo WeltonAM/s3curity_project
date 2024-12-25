@@ -1,8 +1,13 @@
 import { PrismaClient } from '@prisma/client';
+import { BcryptProvider } from '../src/usuario/bcrypt.provider';
 
 const prisma = new PrismaClient();
 
 async function main() {
+  const bcryptProvider = new BcryptProvider();
+
+  const senhaHashed = await bcryptProvider.criptografar('#Senha123');
+
   await prisma.permissao.createMany({
     data: [
       {
@@ -88,19 +93,19 @@ async function main() {
     data: [
       {
         email: 'admin@sistema.com',
-        senha: 'hashed-password-admin',
+        senha: senhaHashed,
         doisFatoresAtivado: true,
         telefone: '+5511999999999',
         nomeCompleto: 'Administrador Sistema',
       },
       {
         email: 'usuario@sistema.com',
-        senha: 'hashed-password-user',
+        senha: senhaHashed,
         nomeCompleto: 'Usuário Padrão',
       },
       {
         email: 'editor@sistema.com',
-        senha: 'hashed-password-editor',
+        senha: senhaHashed,
         nomeCompleto: 'Editor Sistema',
       },
     ],
