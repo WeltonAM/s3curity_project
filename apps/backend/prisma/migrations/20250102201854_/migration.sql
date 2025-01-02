@@ -40,8 +40,8 @@ CREATE TABLE "permissoes" (
 -- CreateTable
 CREATE TABLE "perfis_usuarios" (
     "id" TEXT NOT NULL,
-    "usuarioId" TEXT NOT NULL,
-    "perfilId" TEXT NOT NULL,
+    "usuario_id" TEXT NOT NULL,
+    "perfil_id" TEXT NOT NULL,
 
     CONSTRAINT "perfis_usuarios_pkey" PRIMARY KEY ("id")
 );
@@ -49,8 +49,8 @@ CREATE TABLE "perfis_usuarios" (
 -- CreateTable
 CREATE TABLE "perfis_permissoes" (
     "id" TEXT NOT NULL,
-    "perfilId" TEXT NOT NULL,
-    "permissaoId" TEXT NOT NULL,
+    "perfil_id" TEXT NOT NULL,
+    "permissao_id" TEXT NOT NULL,
 
     CONSTRAINT "perfis_permissoes_pkey" PRIMARY KEY ("id")
 );
@@ -58,10 +58,10 @@ CREATE TABLE "perfis_permissoes" (
 -- CreateTable
 CREATE TABLE "logins" (
     "id" TEXT NOT NULL,
-    "usuarioId" TEXT NOT NULL,
+    "usuario_id" TEXT NOT NULL,
     "sucesso" BOOLEAN NOT NULL,
     "ip" TEXT,
-    "dataHora" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "data_hora" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "provedor" TEXT,
     "token" TEXT,
 
@@ -78,22 +78,22 @@ CREATE UNIQUE INDEX "perfis_nome_key" ON "perfis"("nome");
 CREATE UNIQUE INDEX "permissoes_nome_key" ON "permissoes"("nome");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "perfis_usuarios_usuarioId_perfilId_key" ON "perfis_usuarios"("usuarioId", "perfilId");
+CREATE UNIQUE INDEX "perfis_usuarios_usuario_id_perfil_id_key" ON "perfis_usuarios"("usuario_id", "perfil_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "perfis_permissoes_perfilId_permissaoId_key" ON "perfis_permissoes"("perfilId", "permissaoId");
+CREATE UNIQUE INDEX "perfis_permissoes_perfil_id_permissao_id_key" ON "perfis_permissoes"("perfil_id", "permissao_id");
 
 -- AddForeignKey
-ALTER TABLE "perfis_usuarios" ADD CONSTRAINT "perfis_usuarios_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "usuarios"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "perfis_usuarios" ADD CONSTRAINT "perfis_usuarios_usuario_id_fkey" FOREIGN KEY ("usuario_id") REFERENCES "usuarios"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "perfis_usuarios" ADD CONSTRAINT "perfis_usuarios_perfilId_fkey" FOREIGN KEY ("perfilId") REFERENCES "perfis"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "perfis_usuarios" ADD CONSTRAINT "perfis_usuarios_perfil_id_fkey" FOREIGN KEY ("perfil_id") REFERENCES "perfis"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "perfis_permissoes" ADD CONSTRAINT "perfis_permissoes_perfilId_fkey" FOREIGN KEY ("perfilId") REFERENCES "perfis"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "perfis_permissoes" ADD CONSTRAINT "perfis_permissoes_perfil_id_fkey" FOREIGN KEY ("perfil_id") REFERENCES "perfis"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "perfis_permissoes" ADD CONSTRAINT "perfis_permissoes_permissaoId_fkey" FOREIGN KEY ("permissaoId") REFERENCES "permissoes"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "perfis_permissoes" ADD CONSTRAINT "perfis_permissoes_permissao_id_fkey" FOREIGN KEY ("permissao_id") REFERENCES "permissoes"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "logins" ADD CONSTRAINT "logins_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "usuarios"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "logins" ADD CONSTRAINT "logins_usuario_id_fkey" FOREIGN KEY ("usuario_id") REFERENCES "usuarios"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

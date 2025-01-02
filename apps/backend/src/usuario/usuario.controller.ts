@@ -14,16 +14,20 @@ export class UsuarioController {
   @Post('login')
   async login(
     @Body() dados: { email: string; senha: string },
-  ): Promise<string> {
+  ): Promise<{ token: string }> {
     const casoDeUso = new LoginUsuario(this.repo, this.cripto);
     const usuario = await casoDeUso.comEmailSenha(dados.email, dados.senha);
     const segredo = process.env.JWT_SECRET!;
-    return jwt.sign(usuario, segredo, { expiresIn: '15d' });
+
+    const token = jwt.sign(usuario, segredo, { expiresIn: '15d' }) as string;
+
+    return { token };
   }
 
   @Post('registrar')
   async registrar(@Body() usuario: Usuario): Promise<void> {
     const casoDeUso = new RegistrarUsuario(this.repo, this.cripto);
+
     await casoDeUso.executar(usuario);
   }
 }

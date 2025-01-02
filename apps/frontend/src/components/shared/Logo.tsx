@@ -11,7 +11,7 @@ export default function Logo(props: LogoProps) {
             <Image 
                 src="/logo.png" 
                 alt="Logo" 
-                width={props.width} height={props.height} 
+                width={props.width || 100} height={props.height || 100}  
             />
         </div>
     );

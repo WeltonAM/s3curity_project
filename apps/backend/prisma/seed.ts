@@ -73,18 +73,18 @@ async function main() {
 
   await prisma.perfilPermissao.createMany({
     data: [
-      { perfilId: adminPerfil.id, permissaoId: visualizarRelatorios.id },
-      { perfilId: adminPerfil.id, permissaoId: criarUsuarios.id },
-      { perfilId: adminPerfil.id, permissaoId: editarUsuarios.id },
-      { perfilId: adminPerfil.id, permissaoId: excluirComentarios.id },
+      { perfil_id: adminPerfil.id, permissao_id: visualizarRelatorios.id },
+      { perfil_id: adminPerfil.id, permissao_id: criarUsuarios.id },
+      { perfil_id: adminPerfil.id, permissao_id: editarUsuarios.id },
+      { perfil_id: adminPerfil.id, permissao_id: excluirComentarios.id },
 
       {
-        perfilId: usuarioPadraoPerfil.id,
-        permissaoId: visualizarRelatorios.id,
+        perfil_id: usuarioPadraoPerfil.id,
+        permissao_id: visualizarRelatorios.id,
       },
 
-      { perfilId: editorPerfil.id, permissaoId: visualizarRelatorios.id },
-      { perfilId: editorPerfil.id, permissaoId: editarUsuarios.id },
+      { perfil_id: editorPerfil.id, permissao_id: visualizarRelatorios.id },
+      { perfil_id: editorPerfil.id, permissao_id: editarUsuarios.id },
     ],
     skipDuplicates: true,
   });
@@ -127,9 +127,9 @@ async function main() {
 
   await prisma.usuarioPerfil.createMany({
     data: [
-      { usuarioId: adminUsuario.id, perfilId: adminPerfil.id },
-      { usuarioId: usuarioPadrao.id, perfilId: usuarioPadraoPerfil.id },
-      { usuarioId: editorUsuario.id, perfilId: editorPerfil.id },
+      { usuario_id: adminUsuario.id, perfil_id: adminPerfil.id },
+      { usuario_id: usuarioPadrao.id, perfil_id: usuarioPadraoPerfil.id },
+      { usuario_id: editorUsuario.id, perfil_id: editorPerfil.id },
     ],
     skipDuplicates: true,
   });
