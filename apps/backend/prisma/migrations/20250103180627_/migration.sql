@@ -1,16 +1,16 @@
 -- CreateTable
 CREATE TABLE "usuarios" (
     "id" TEXT NOT NULL,
-    "nomeCompleto" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
-    "senha" TEXT NOT NULL,
-    "criadoEm" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "ativo" BOOLEAN NOT NULL DEFAULT true,
-    "tokenRecuperacao" TEXT,
-    "dataExpiracaoToken" TIMESTAMP(3),
-    "doisFatoresAtivado" BOOLEAN NOT NULL DEFAULT false,
+    "nome_completo" TEXT,
+    "email" TEXT,
+    "senha" TEXT,
+    "criado_em" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "ativo" BOOLEAN DEFAULT true,
+    "token_recuperacao" TEXT,
+    "data_expiracao_token" TIMESTAMP(3),
+    "dois_fatores_ativado" BOOLEAN DEFAULT false,
     "telefone" TEXT,
-    "urlImagemPerfil" TEXT,
+    "url_imagem_perfil" TEXT,
 
     CONSTRAINT "usuarios_pkey" PRIMARY KEY ("id")
 );
@@ -20,7 +20,7 @@ CREATE TABLE "perfis" (
     "id" TEXT NOT NULL,
     "nome" TEXT NOT NULL,
     "descricao" TEXT,
-    "criadoEm" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "criado_em" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "ativo" BOOLEAN NOT NULL DEFAULT true,
 
     CONSTRAINT "perfis_pkey" PRIMARY KEY ("id")
@@ -31,7 +31,7 @@ CREATE TABLE "permissoes" (
     "id" TEXT NOT NULL,
     "nome" TEXT NOT NULL,
     "descricao" TEXT,
-    "criadoEm" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "criado_em" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "ativo" BOOLEAN NOT NULL DEFAULT true,
 
     CONSTRAINT "permissoes_pkey" PRIMARY KEY ("id")

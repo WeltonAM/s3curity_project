@@ -2,6 +2,6 @@ export default interface Permissao {
     id: string;
     nome: string;
     descricao: string | null;
-    criadoEm: Date;
+    criado_em: Date;
     ativo: boolean;
 }

@@ -72,7 +72,7 @@ export function ProvedorSessao(props: { children: React.ReactNode }) {
                 token,
                 usuario: {
                     id: payload.sub,
-                    nomeCompleto: payload.name,
+                    nome_completo: payload.name,
                     email: payload.email
                 },
             }

@@ -4,7 +4,7 @@ export default interface Perfil {
     id: string;
     nome: string;
     descricao: string | null;
-    criadoEm: Date;
+    criado_em: Date;
     ativo: boolean;
     permissoes: Permissao[]; 
 }

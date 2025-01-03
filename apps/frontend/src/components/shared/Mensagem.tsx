@@ -11,7 +11,7 @@ export default function Mensagens() {
         return (
             <div
                 key={msg.texto}
-                className={`flex items-center gap-2 p-4 rounded-md shadow-md mb-2 transition-transform transform ${
+                className={`flex items-center gap-2 p-4 rounded-md shadow-md mb-2 transition-transform transform max-w-80 ${
                     msg.tipo === "sucesso" ? "bg-green-400" : "bg-red-400"
                 }`}
             >
@@ -37,7 +37,7 @@ export default function Mensagens() {
 
     return (
         <div className="fixed top-4 right-4 flex flex-col gap-2 z-50">
-            {mensagens.map(renderizarMensagem)}
+            {mensagens.length > 0 && renderizarMensagem(mensagens[0])}
         </div>
     );
 }

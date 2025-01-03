@@ -21,9 +21,9 @@ export default class LoginUsuario {
             throw new Error("Credenciais inválidas.");
         }
 
-        const { id, nomeCompleto, email: emailUsuario } = usuario;
+        const { id, nome_completo, email: emailUsuario } = usuario;
 
-        return { id, nomeCompleto, email: emailUsuario };
+        return { id, nome_completo, email: emailUsuario };
     }
 
     async comProvedor(provedor: string, token: string): Promise<Partial<Usuario>> {
@@ -35,8 +35,8 @@ export default class LoginUsuario {
             throw new Error("Usuário não encontrado ou inativo para o provedor especificado.");
         }
 
-        const { id, nomeCompleto, email: emailUsuario } = usuario;
+        const { id, nome_completo, email: emailUsuario } = usuario;
 
-        return { id, nomeCompleto, email: emailUsuario };
+        return { id, nome_completo, email: emailUsuario };
     }
 }

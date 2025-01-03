@@ -94,19 +94,19 @@ async function main() {
       {
         email: 'admin@sistema.com',
         senha: senhaHashed,
-        doisFatoresAtivado: true,
+        dois_fatores_ativado: true,
         telefone: '+5511999999999',
-        nomeCompleto: 'Administrador Sistema',
+        nome_completo: 'Administrador Sistema',
       },
       {
         email: 'usuario@sistema.com',
         senha: senhaHashed,
-        nomeCompleto: 'Usuário Padrão',
+        nome_completo: 'Usuário Padrão',
       },
       {
         email: 'editor@sistema.com',
         senha: senhaHashed,
-        nomeCompleto: 'Editor Sistema',
+        nome_completo: 'Editor Sistema',
       },
     ],
     skipDuplicates: true,

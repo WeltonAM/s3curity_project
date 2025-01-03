@@ -9,8 +9,8 @@ export default class RegistrarUsuario {
         private provedorCriptografia: ProvedorCriptografia
     ) {}
 
-    async executar(usuario: Usuario): Promise<void> {
-        const usuarioExistente = await this.repositorioUsuario.buscarPorEmail(usuario.email);
+    async executar(usuario: Partial<Usuario>): Promise<Partial<Usuario>> {
+        const usuarioExistente = await this.repositorioUsuario.buscarPorEmail(usuario.email!);
         if (usuarioExistente) {
             throw new Error("E-mail já está em uso.");
         }
@@ -19,14 +19,14 @@ export default class RegistrarUsuario {
 
         const novoUsuario: Partial<Usuario> = {
             id: Id.novo.valor,
-            nomeCompleto: usuario.nomeCompleto,
+            nome_completo: usuario.nome_completo,
             email: usuario.email,
             senha: senhaCriptografada,
             ativo: true,
-            criadoEm: new Date(),
-            doisFatoresAtivado: false,
+            criado_em: new Date(),
+            dois_fatores_ativado: false,
         };
 
-        await this.repositorioUsuario.salvar(novoUsuario);
+        return await this.repositorioUsuario.salvar(novoUsuario);
     }
 }

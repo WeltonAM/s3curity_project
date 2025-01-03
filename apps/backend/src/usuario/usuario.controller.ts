@@ -14,20 +14,40 @@ export class UsuarioController {
   @Post('login')
   async login(
     @Body() dados: { email: string; senha: string },
-  ): Promise<{ token: string }> {
+  ): Promise<{ token: string; status: number; message: string }> {
     const casoDeUso = new LoginUsuario(this.repo, this.cripto);
     const usuario = await casoDeUso.comEmailSenha(dados.email, dados.senha);
     const segredo = process.env.JWT_SECRET!;
 
     const token = jwt.sign(usuario, segredo, { expiresIn: '15d' }) as string;
 
-    return { token };
+    const expiracao = new Date();
+    expiracao.setDate(expiracao.getDate() + 15);
+
+    await this.repo.salvar({
+      id: usuario.id!,
+      data_expiracao_token: expiracao,
+    });
+
+    return {
+      token,
+      status: 200,
+      message: 'Login efetuado com sucesso!',
+    };
   }
 
   @Post('registrar')
-  async registrar(@Body() usuario: Usuario): Promise<void> {
+  async registrar(
+    @Body() usuario: Usuario,
+  ): Promise<{ status: number; message: string; usuario?: Usuario }> {
     const casoDeUso = new RegistrarUsuario(this.repo, this.cripto);
 
-    await casoDeUso.executar(usuario);
+    const usuarioCadastrado = await casoDeUso.executar(usuario);
+
+    return {
+      status: 201,
+      message: 'Usuário cadastrado com sucesso!',
+      usuario: usuarioCadastrado,
+    };
   }
 }

@@ -46,21 +46,21 @@ describe("LoginUsuario", () => {
 
         await repositorioUsuarioMock.salvar({
             id: "1",
-            nomeCompleto: "João Silva",
+            nome_completo: "João Silva",
             email,
             senha: "$2a$12$2Wn08lE/gzq9VihLoMSVbe7fdAoCOMg6uVE3RQaJnEJc5Wa7eXuly",
             ativo: true,
-            criadoEm: new Date(),
-            doisFatoresAtivado: false,
+            criado_em: new Date(),
+            dois_fatores_ativado: false,
             perfis: [],
-            dataExpiracaoToken: undefined,
+            data_expiracao_token: undefined,
         });
 
         const usuario = await loginUsuario.comEmailSenha(email, senha);
 
         expect(usuario).toEqual({
             id: "1",
-            nomeCompleto: "João Silva",
+            nome_completo: "João Silva",
             email: "joao@teste.com"
         });
     };
@@ -85,20 +85,20 @@ describe("LoginUsuario", () => {
 
         await repositorioUsuarioMock.salvar({
             id: "1",
-            nomeCompleto: "João Silva",
+            nome_completo: "João Silva",
             email: email,
             ativo: true,
-            criadoEm: new Date(),
-            doisFatoresAtivado: false,
+            criado_em: new Date(),
+            dois_fatores_ativado: false,
             perfis: [],
-            dataExpiracaoToken: undefined,
+            data_expiracao_token: undefined,
         });
 
         const usuario = await loginUsuario.comProvedor("google", token);
        
         expect(usuario).toEqual({
             id: "1",
-            nomeCompleto: "João Silva",
+            nome_completo: "João Silva",
             email: "google@teste.com"
         });
     };

@@ -12,31 +12,32 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-model Usuario {
-  id                    String   @id @default(uuid())
-  nomeCompleto          String
-  email                 String   @unique
-  senha                 String
-  criadoEm              DateTime @default(now())
-  ativo                 Boolean  @default(true)
-  tokenRecuperacao      String?  
-  dataExpiracaoToken    DateTime?
-  doisFatoresAtivado    Boolean  @default(false)
-  telefone              String?
-  urlImagemPerfil       String?
 
-  usuarioPerfis         UsuarioPerfil[]
-  logins                Login[]
-  
+model Usuario {
+  id                   String    @id @default(uuid())
+  nome_completo        String?
+  email                String?   @unique
+  senha                String?
+  criado_em            DateTime? @default(now())
+  ativo                Boolean?  @default(true)
+  token_recuperacao    String?
+  data_expiracao_token DateTime?
+  dois_fatores_ativado Boolean?  @default(false)
+  telefone             String?
+  url_imagem_perfil    String?
+
+  usuarioPerfis UsuarioPerfil[]
+  logins        Login[]
+
   @@map("usuarios")
 }
 
 model Perfil {
-  id          String     @id @default(uuid())
-  nome        String     @unique
-  descricao   String?
-  criadoEm    DateTime   @default(now())
-  ativo       Boolean    @default(true)
+  id        String   @id @default(uuid())
+  nome      String   @unique
+  descricao String?
+  criado_em DateTime @default(now())
+  ativo     Boolean  @default(true)
 
   usuarioPerfis    UsuarioPerfil[]
   perfilPermissoes PerfilPermissao[]
@@ -45,11 +46,11 @@ model Perfil {
 }
 
 model Permissao {
-  id          String     @id @default(uuid())
-  nome        String     @unique
-  descricao   String?
-  criadoEm    DateTime   @default(now())
-  ativo       Boolean    @default(true)
+  id        String   @id @default(uuid())
+  nome      String   @unique
+  descricao String?
+  criado_em DateTime @default(now())
+  ativo     Boolean  @default(true)
 
   perfilPermissoes PerfilPermissao[]
 
@@ -57,38 +58,36 @@ model Permissao {
 }
 
 model UsuarioPerfil {
-  id        String   @id @default(uuid())
+  id         String  @id @default(uuid())
   usuario_id String
   perfil_id  String
-  usuario   Usuario  @relation(fields: [usuario_id], references: [id])
-  perfil    Perfil   @relation(fields: [perfil_id], references: [id])
+  usuario    Usuario @relation(fields: [usuario_id], references: [id])
+  perfil     Perfil  @relation(fields: [perfil_id], references: [id])
 
   @@unique([usuario_id, perfil_id])
-
   @@map("perfis_usuarios")
 }
 
 model PerfilPermissao {
-  id          String    @id @default(uuid())
+  id           String    @id @default(uuid())
   perfil_id    String
   permissao_id String
-  perfil      Perfil    @relation(fields: [perfil_id], references: [id])
-  permissao   Permissao @relation(fields: [permissao_id], references: [id])
+  perfil       Perfil    @relation(fields: [perfil_id], references: [id])
+  permissao    Permissao @relation(fields: [permissao_id], references: [id])
 
   @@unique([perfil_id, permissao_id])
-
   @@map("perfis_permissoes")
 }
 
 model Login {
-  id          String   @id @default(uuid())
-  usuario_id   String
-  sucesso     Boolean
-  ip          String? 
-  data_hora   DateTime @default(now())
-  provedor    String?  
-  token       String? 
-  usuario     Usuario  @relation(fields: [usuario_id], references: [id])
+  id         String   @id @default(uuid())
+  usuario_id String
+  sucesso    Boolean
+  ip         String?
+  data_hora  DateTime @default(now())
+  provedor   String?
+  token      String?
+  usuario    Usuario  @relation(fields: [usuario_id], references: [id])
 
   @@map("logins")
 }

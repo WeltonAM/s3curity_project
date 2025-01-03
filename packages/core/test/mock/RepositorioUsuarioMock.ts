@@ -3,11 +3,11 @@ import { Usuario, RepositorioUsuario, Id } from "../../src";
 export default class RepositorioUsuarioMock implements RepositorioUsuario {
     private usuarios: Usuario[] = [];
 
-    async salvar(usuario: Partial<Usuario>): Promise<void> {
+    async salvar(usuario: Partial<Usuario>): Promise<Partial<Usuario>> {
         const usuarioComId = {
             ...usuario,
             id: usuario.id ?? Id.novo.valor,
-            criadoEm: usuario.criadoEm ?? new Date(),
+            criado_em: usuario.criado_em ?? new Date(),
             ativo: usuario.ativo ?? true,
         };
 
@@ -19,7 +19,7 @@ export default class RepositorioUsuarioMock implements RepositorioUsuario {
             this.usuarios.push(usuarioComId as Usuario);
         }
 
-        return Promise.resolve();
+        return usuarioComId;
     }
 
     async buscarPorEmail(email: string): Promise<Usuario | null> {
