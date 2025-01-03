@@ -12,7 +12,7 @@ import Link from 'next/link';
 import useAuth from '@/data/hooks/useAuth';
 
 export default function LoginForm() {
-  const { login, isLoading, error } = useAuth();
+  const { login, isLoading } = useAuth();
   const { usuario } = useSessao();
   const router = useRouter();
 
@@ -26,20 +26,13 @@ export default function LoginForm() {
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
-    try {
-      await login(email, password);
-    } catch (error) {
-      console.error('Erro ao fazer login:', error);
-      alert(error);
-    }
+    await login(email, password);
   };
 
   return (
     <div className="flex flex-col items-center justify-center px-10 py-5 rounded-md bg-zinc-900 select-none">
       <Logo width={150} height={150} />
       <span className="font-bold">Entre com sua conta</span>
-
-      {error && <span className="text-red-500 text-sm mt-2">{error}</span>}
 
       <div className="flex flex-col w-full gap-2 mt-4">
         <CampoEmail value={email} onChangeText={setEmail} ladoIcone="right" />

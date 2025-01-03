@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback } from "react";
 import useSessao from "./useSessao";
@@ -50,8 +51,6 @@ export default function useAPI() {
 
       return JSON.parse(conteudo);
     } catch (e: any) {
-      console.error(e);
-
       return conteudo;
     }
   }

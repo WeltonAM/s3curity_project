@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 import { createContext, useCallback, useEffect, useState } from 'react'
@@ -76,7 +77,6 @@ export function ProvedorSessao(props: { children: React.ReactNode }) {
                 },
             }
         } catch (e: any) {
-            console.error(e)
             return { token: null, usuario: null }
         }
     }

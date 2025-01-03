@@ -1,48 +1,46 @@
-import { useState, useContext } from "react";
+import { useContext, useTransition } from "react";
 import useAPI from "./useApi";
 import ContextoSessao from "@/data/contexts/ContextoSessao";
 import { useRouter } from "next/navigation";
+import useMensagem from "./useMensagem";
 
 interface UseAuthResponse {
   isLoading: boolean;
-  error: string | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => void;
 }
 
 export default function useAuth(): UseAuthResponse {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
   const { httpPost } = useAPI();
   const { iniciarSessao } = useContext(ContextoSessao);
   const router = useRouter();
+  const { adicionarErro, adicionarSucesso } = useMensagem();
 
-  const login = async (email: string, password: string) => {
-    setIsLoading(true);
-    setError(null);
+  const login = (email: string, password: string) => {
+    startTransition(() => {
+      httpPost("/usuario/login", { email, senha: password })
+        .then((response) => {
+          const { token, message } = response;
 
-    try {
-      const response = await httpPost("/usuario/login", {
-        email,
-        senha: password,
-      });
+          if (!token) {
+            console.log(response)
+            return adicionarErro(message);
+          }
 
-      const { token } = response;
+          iniciarSessao(token);
 
-      iniciarSessao(token);
+          adicionarSucesso("Login realizado com sucesso!");
 
-      router.push("/"); 
-
-      setIsLoading(false);
-    } catch (err) {
-      console.error("Erro ao fazer login:", err);
-      setError("Erro ao realizar login. Verifique suas credenciais.");
-      setIsLoading(false);
-    }
+          router.push("/");
+        })
+        .catch((err) => {
+          adicionarErro(err.message);
+        });
+    });
   };
 
   return {
-    isLoading,
-    error,
+    isLoading: isPending,
     login,
   };
 }
