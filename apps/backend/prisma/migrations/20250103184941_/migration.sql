@@ -1,14 +1,14 @@
 -- CreateTable
 CREATE TABLE "usuarios" (
     "id" TEXT NOT NULL,
-    "nome_completo" TEXT,
-    "email" TEXT,
+    "nome_completo" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
     "senha" TEXT,
-    "criado_em" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
-    "ativo" BOOLEAN DEFAULT true,
+    "criado_em" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "ativo" BOOLEAN NOT NULL DEFAULT true,
     "token_recuperacao" TEXT,
     "data_expiracao_token" TIMESTAMP(3),
-    "dois_fatores_ativado" BOOLEAN DEFAULT false,
+    "dois_fatores_ativado" BOOLEAN NOT NULL DEFAULT false,
     "telefone" TEXT,
     "url_imagem_perfil" TEXT,
 

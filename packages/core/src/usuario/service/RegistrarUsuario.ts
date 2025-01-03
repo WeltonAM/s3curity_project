@@ -9,7 +9,7 @@ export default class RegistrarUsuario {
         private provedorCriptografia: ProvedorCriptografia
     ) {}
 
-    async executar(usuario: Partial<Usuario>): Promise<Partial<Usuario>> {
+    async executar(usuario: Partial<Usuario>): Promise<void> {
         const usuarioExistente = await this.repositorioUsuario.buscarPorEmail(usuario.email!);
         if (usuarioExistente) {
             throw new Error("E-mail já está em uso.");
@@ -27,6 +27,6 @@ export default class RegistrarUsuario {
             dois_fatores_ativado: false,
         };
 
-        return await this.repositorioUsuario.salvar(novoUsuario);
+        await this.repositorioUsuario.salvar(novoUsuario);
     }
 }

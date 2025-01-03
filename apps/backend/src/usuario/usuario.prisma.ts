@@ -6,8 +6,8 @@ import { PrismaProvider } from 'src/db/prisma.provider';
 export class UsuarioPrisma implements RepositorioUsuario {
   constructor(private readonly prisma: PrismaProvider) {}
 
-  async salvar(usuario: Partial<Usuario>): Promise<Partial<Usuario>> {
-    return await this.prisma.usuario.upsert({
+  async salvar(usuario: Partial<Usuario>): Promise<void> {
+    await this.prisma.usuario.upsert({
       where: { id: usuario.id ?? '' },
       update: usuario,
       create: usuario as any,

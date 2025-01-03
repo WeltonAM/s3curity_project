@@ -24,10 +24,7 @@ export class UsuarioController {
     const expiracao = new Date();
     expiracao.setDate(expiracao.getDate() + 15);
 
-    await this.repo.salvar({
-      id: usuario.id!,
-      data_expiracao_token: expiracao,
-    });
+    await this.repo.salvar({ ...usuario, data_expiracao_token: expiracao });
 
     return {
       token,
@@ -42,12 +39,12 @@ export class UsuarioController {
   ): Promise<{ status: number; message: string; usuario?: Usuario }> {
     const casoDeUso = new RegistrarUsuario(this.repo, this.cripto);
 
-    const usuarioCadastrado = await casoDeUso.executar(usuario);
+    await casoDeUso.executar(usuario);
 
     return {
       status: 201,
       message: 'Usuário cadastrado com sucesso!',
-      usuario: usuarioCadastrado,
+      usuario: usuario,
     };
   }
 }

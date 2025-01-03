@@ -2,8 +2,8 @@ import { Perfil } from "../../perfil";
 
 export default interface Usuario {
     id?: string;
-    nome_completo?: string;
-    email?: string;
+    nome_completo: string;
+    email: string;
     senha?: string;
     telefone?: string;
     ativo?: boolean;
