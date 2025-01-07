@@ -10,20 +10,20 @@ export default class RegistrarLogin {
   ) {}
 
   async executar(
-    usuarioId: string,
+    usuarioEmail: string,
     sucesso: boolean,
     ip: string,
     token?: string,
     provedor?: string,
   ): Promise<void> {
-    const usuarioExistente = await this.repositorioUsuario.buscarPorEmail(usuario);
+    const usuarioExistente = await this.repositorioUsuario.buscarPorEmail(usuarioEmail);
     if (!usuarioExistente) {
       throw new Error("Usuário não encontrado.");
     }
 
     const novoLogin: Login = {
       id: Id.novo.valor, 
-      usuario_id: usuarioId,
+      usuario_email: usuarioEmail,
       sucesso: sucesso,
       ip: ip,
       data_hora: new Date(),

@@ -14,41 +14,21 @@ describe("RegistrarUsuario", () => {
     });
 
     it("deve registrar um novo usuário com sucesso", async () => {
-        await registrarUsuarioComSucesso();
+        const usuario = usuarioPadrao("João Silva", "joao@teste.com", "!Senha123");
+        await registrarUsuario.executar(usuario);
+
+        const usuarioRegistrado = await repositorioUsuarioMock.buscarPorEmail(usuario.email);
+        expect(usuarioRegistrado).not.toBeNull();
+        expect(usuarioRegistrado?.nome_completo).toBe(usuario.nome_completo);
+        expect(usuarioRegistrado?.email).toBe(usuario.email);
+        expect(usuarioRegistrado?.senha).toBe("$2a$12$2Wn08lE/gzq9VihLoMSVbe7fdAoCOMg6uVE3RQaJnEJc5Wa7eXuly");
     });
 
     it("não deve registrar um usuário com e-mail já em uso", async () => {
-        await registrarUsuarioComEmailJaEmUso();
-    });
-
-    it("deve criptografar a senha antes de salvar", async () => {
-        await verificarSenhaCriptografada();
-    });
-
-    const registrarUsuarioComSucesso = async () => {
-        const nome_completo = "João Silva";
-        const email = "joao@teste.com";
-        const senha = "!Senha123";
-
-        await registrarUsuario.executar({nome_completo, email, senha});
-
-        const usuarioRegistrado = await repositorioUsuarioMock.buscarPorEmail(email);
-        expect(usuarioRegistrado).not.toBeNull();
-        expect(usuarioRegistrado?.nome_completo).toBe(nome_completo);
-        expect(usuarioRegistrado?.email).toBe(email);
-        expect(usuarioRegistrado?.senha).toBe("$2a$12$2Wn08lE/gzq9VihLoMSVbe7fdAoCOMg6uVE3RQaJnEJc5Wa7eXuly");
-    };
-
-    const registrarUsuarioComEmailJaEmUso = async () => {
-        const nome_completo = "Maria Oliveira";
-        const email = "joao@teste.com";
-        const senha = "!Senha123";
-
+        const usuarioExistente = usuarioPadrao("João Silva", "joao@teste.com", "!Senha123");
         await repositorioUsuarioMock.salvar({
             id: "1",
-            nome_completo: "João Silva",
-            email: "joao@teste.com",
-            senha: "$2a$12$2Wn08lE/gzq9VihLoMSVbe7fdAoCOMg6uVE3RQaJnEJc5Wa7eXuly",
+            ...usuarioExistente,
             ativo: true,
             criado_em: new Date(),
             dois_fatores_ativado: false,
@@ -56,18 +36,22 @@ describe("RegistrarUsuario", () => {
             data_expiracao_token: undefined,
         });
 
-        await expect(registrarUsuario.executar({nome_completo, email, senha})).rejects.toThrow("E-mail já está em uso.");
-    };
+        const novoUsuario = usuarioPadrao("Maria Oliveira", "joao@teste.com", "!Senha123");
+        await expect(registrarUsuario.executar(novoUsuario)).rejects.toThrow("E-mail já está em uso.");
+    });
 
-    const verificarSenhaCriptografada = async () => {
-        const nome_completo = "Carlos Souza";
-        const email = "carlos@teste.com";
-        const senha = "!Senha123";
+    it("deve criptografar a senha antes de salvar", async () => {
+        const usuario = usuarioPadrao("Carlos Souza", "carlos@teste.com", "!Senha123");
+        await registrarUsuario.executar(usuario);
 
-        await registrarUsuario.executar({nome_completo, email, senha});
-
-        const usuarioRegistrado = await repositorioUsuarioMock.buscarPorEmail(email);
+        const usuarioRegistrado = await repositorioUsuarioMock.buscarPorEmail(usuario.email);
         expect(usuarioRegistrado).not.toBeNull();
         expect(usuarioRegistrado?.senha).toBe("$2a$12$2Wn08lE/gzq9VihLoMSVbe7fdAoCOMg6uVE3RQaJnEJc5Wa7eXuly");
-    };
+    });
+
+    const usuarioPadrao = (nome_completo: string, email: string, senha: string) => ({
+        nome_completo,
+        email,
+        senha,
+    });
 });

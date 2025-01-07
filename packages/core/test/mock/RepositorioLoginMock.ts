@@ -14,7 +14,7 @@ export default class RepositorioLoginMock implements RepositorioLogin {
     this.logins.push(loginComId);
   }
 
-  async buscarPorUsuarioId(usuarioId: string): Promise<Login[]> {
-    return this.logins.filter(login => login.usuario_id === usuarioId);
+  async buscarUsuarioPorEmail(email: string): Promise<Login | undefined> {
+    return this.logins.find((login) => login.usuario_email === email);
   }
 }
