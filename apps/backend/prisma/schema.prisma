@@ -80,14 +80,14 @@ model PerfilPermissao {
 }
 
 model Login {
-  id         String   @id @default(uuid())
-  usuario_id String
-  sucesso    Boolean
-  ip         String?
-  data_hora  DateTime @default(now())
-  provedor   String?
-  token      String?
-  usuario    Usuario  @relation(fields: [usuario_id], references: [id])
+  id            String   @id @default(uuid())
+  usuario_email String
+  sucesso       Boolean
+  ip            String?
+  data_hora     DateTime @default(now())
+  provedor      String?
+  token         String?
+  usuario       Usuario  @relation(fields: [usuario_email], references: [email])
 
-  @@map("logins")
+  @@map("login")
 }

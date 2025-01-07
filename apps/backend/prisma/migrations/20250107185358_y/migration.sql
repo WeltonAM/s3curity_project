@@ -56,16 +56,16 @@ CREATE TABLE "perfis_permissoes" (
 );
 
 -- CreateTable
-CREATE TABLE "logins" (
+CREATE TABLE "login" (
     "id" TEXT NOT NULL,
-    "usuario_id" TEXT NOT NULL,
+    "usuario_email" TEXT NOT NULL,
     "sucesso" BOOLEAN NOT NULL,
     "ip" TEXT,
     "data_hora" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "provedor" TEXT,
     "token" TEXT,
 
-    CONSTRAINT "logins_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "login_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -96,4 +96,4 @@ ALTER TABLE "perfis_permissoes" ADD CONSTRAINT "perfis_permissoes_perfil_id_fkey
 ALTER TABLE "perfis_permissoes" ADD CONSTRAINT "perfis_permissoes_permissao_id_fkey" FOREIGN KEY ("permissao_id") REFERENCES "permissoes"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "logins" ADD CONSTRAINT "logins_usuario_id_fkey" FOREIGN KEY ("usuario_id") REFERENCES "usuarios"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "login" ADD CONSTRAINT "login_usuario_email_fkey" FOREIGN KEY ("usuario_email") REFERENCES "usuarios"("email") ON DELETE RESTRICT ON UPDATE CASCADE;
