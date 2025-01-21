@@ -5,8 +5,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import MenuUsuario from "./MenuUsuario";
+import useSessao from "@/data/hooks/useSessao";
 
 export default function Header() {
+    const { usuario } = useSessao();
+
+    console.log(usuario)
+
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
     const menuRef = useRef<HTMLDivElement>(null);
@@ -42,7 +47,7 @@ export default function Header() {
                     <Image src="/image.png" alt="Logo" width={100} height={100} />
                 </Link>
 
-                <span>User Role</span>
+                <span>{usuario?.perfis[0] ?? "Perfil Usuário"}</span>
             </div>
 
             <div className="flex items-center gap-4">
@@ -57,12 +62,12 @@ export default function Header() {
                     onClick={toggleMenu}
                 >
                     <div className="border border-zinc-600 rounded-full w-10 h-10 flex items-center justify-center overflow-hidden">
-                        Photo
+                        <Image src={usuario?.url_imagem_perfil ?? "/image.png"} alt="Perfil" width={100} height={100} />
                     </div>
 
                     <div className="flex flex-col">
-                        <span className="text-sm font-black">User Name</span>
-                        <span className="text-xs text-zinc-400">useremail@email.com</span>
+                        <span className="text-sm font-black">{usuario?.nome_completo ?? "Nome Usuário"}</span>
+                        <span className="text-xs text-zinc-400">{usuario?.email ?? "Email Usuário"}</span>
                     </div>
                 </div>
             </div>

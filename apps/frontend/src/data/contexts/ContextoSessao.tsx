@@ -71,9 +71,11 @@ export function ProvedorSessao(props: { children: React.ReactNode }) {
             return {
                 token,
                 usuario: {
-                    id: payload.sub,
-                    nome_completo: payload.name,
-                    email: payload.email
+                    id: payload.id,
+                    nome_completo: payload.nome_completo,
+                    email: payload.email,
+                    url_imagem_perfil: payload.url_imagem_perfil,
+                    perfis: payload.perfis,
                 },
             }
         } catch (e: any) {
