@@ -4,6 +4,7 @@ import * as jwt from 'jsonwebtoken';
 import { UsuarioPrisma } from './usuario.prisma';
 import { LoginUsuario, RegistrarUsuario, Usuario } from '@s3curity/core';
 import { LoginPrisma } from 'src/login/login.prisma';
+import { PerfilPrisma } from 'src/perfil/perfil.prisma';
 
 @Controller('usuario')
 export class UsuarioController {
@@ -11,6 +12,7 @@ export class UsuarioController {
     private readonly repo: UsuarioPrisma,
     private readonly loginRepo: LoginPrisma,
     private readonly cripto: BcryptProvider,
+    private readonly perfilRepo: PerfilPrisma,
   ) {}
 
   @Post('login')
@@ -20,9 +22,21 @@ export class UsuarioController {
   ): Promise<{ token: string; status: number; message: string }> {
     const casoDeUso = new LoginUsuario(this.repo, this.cripto);
     const usuario = await casoDeUso.comEmailSenha(dados.email, dados.senha);
+
+    const perfis = await this.perfilRepo.buscarPerfisPorUsuarioEmail(
+      usuario.email,
+    );
+
+    const usuarioComPerfis = {
+      ...usuario,
+      perfis: perfis.map((perfil) => perfil.nome),
+    };
+
     const segredo = process.env.JWT_SECRET!;
 
-    const token = jwt.sign(usuario, segredo, { expiresIn: '15d' }) as string;
+    const token = jwt.sign(usuarioComPerfis, segredo, {
+      expiresIn: '15d',
+    }) as string;
 
     const expiracao = new Date();
     expiracao.setDate(expiracao.getDate() + 15);

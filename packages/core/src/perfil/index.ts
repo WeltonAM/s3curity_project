@@ -1,3 +1,4 @@
 import Perfil from "./model/Perfil";
+import RepositorioPerfil from "./provider/RepositorioPerfil";
 
-export type { Perfil };
+export type { Perfil, RepositorioPerfil };

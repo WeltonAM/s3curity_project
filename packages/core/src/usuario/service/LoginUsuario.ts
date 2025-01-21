@@ -17,13 +17,14 @@ export default class LoginUsuario {
         }
 
         const senhaValida = await this.provedorCriptografia.comparar(senha, usuario.senha || "");
+
         if (!senhaValida) {
             throw new Error("Credenciais inválidas.");
         }
 
-        const { id, nome_completo, email: emailUsuario } = usuario;
+        const { id, nome_completo, email: emailUsuario, url_imagem_perfil } = usuario;
 
-        return { id, nome_completo, email: emailUsuario };
+        return { id, nome_completo, email: emailUsuario, url_imagem_perfil };
     }
 
     async comProvedor(provedor: string, token: string): Promise<Partial<Usuario>> {
