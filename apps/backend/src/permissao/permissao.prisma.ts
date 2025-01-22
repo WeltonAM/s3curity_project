@@ -14,6 +14,23 @@ export class PermissaoPrisma implements RepositorioPermissao {
     });
   }
 
+  async buscarPermissaoPorId(id: string): Promise<Partial<Permissao> | null> {
+    const permissao = await this.prisma.permissao.findUnique({
+      where: { id: id },
+    });
+
+    if (!permissao) {
+      return null;
+    }
+
+    return {
+      id: permissao.id,
+      nome: permissao.nome,
+      descricao: permissao.descricao,
+      ativo: permissao.ativo,
+    };
+  }
+
   async buscarTodasPermissoes(): Promise<Partial<Permissao>[]> {
     const permissoes = await this.prisma.permissao.findMany();
 

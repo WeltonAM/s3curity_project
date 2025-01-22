@@ -3,6 +3,8 @@
 
 @perfilId = ab856b86-8bfa-4a53-a6fd-87872d36e903
 
+@id = adicionar-comentarios
+
 ### Buscar todas permissões
 GET http://localhost:4000/permissao/todas
 Authorization: Bearer {{token}}
@@ -20,3 +22,7 @@ Content-Type: application/json
     "nome": "Adicionar Comentários",
     "descricao": "Permite adicionar comentários no sistema."
 }
+
+### Buscar permissão por id
+GET http://localhost:4000/permissao/{{id}}
+Authorization: Bearer {{token}}

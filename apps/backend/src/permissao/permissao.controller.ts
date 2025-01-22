@@ -14,6 +14,12 @@ export class PermissaoController {
     return { status: 200, permissoes };
   }
 
+  @Get(':id')
+  async buscarPermissaoPorId(@Param('id') id: string) {
+    const permissao = await this.permissaoRepo.buscarPermissaoPorId(id);
+    return { status: 200, permissao };
+  }
+
   @Get(':perfilId')
   async buscarPermissoesPorPerfilId(
     @UsuarioLogado() usuario: Usuario,

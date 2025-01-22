@@ -1,0 +1,155 @@
+'use client';
+
+import usePermissao from "@/data/hooks/usePermissao";
+import { Permissao } from "@s3curity/core";
+import { useState, useEffect, useRef } from "react";
+
+interface ModalPermissaoProps {
+    isEditing: boolean;
+    permissao: Partial<Permissao> | null;
+    onClose: () => void;
+}
+
+export default function UpsertPermissao({ isEditing, permissao, onClose }: ModalPermissaoProps) {
+    const [nome, setNome] = useState<string>(permissao?.nome || "");
+    const [descricao, setDescricao] = useState<string>(permissao?.descricao || "");
+    const [ativo, setAtivo] = useState<boolean>(permissao?.ativo || false);
+    const [idEmUso, setIdEmUso] = useState<boolean>(false);
+
+    const { buscarPermissaoPorId, salvarPermissao } = usePermissao();
+
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    useEffect(() => {
+        const checkIdEmUso = async () => {
+            if (!isEditing && permissao?.id) {
+                const res = await buscarPermissaoPorId(permissao.id);
+                if (res!) {
+                    setIdEmUso(true);
+                } else {
+                    setIdEmUso(false);
+                }
+            }
+        };
+
+        checkIdEmUso();
+    }, [isEditing, permissao?.id, buscarPermissaoPorId]);
+
+    const gerarSlug = (nome: string): string => {
+        return nome
+            .toLowerCase()
+            .trim()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/\s+/g, "-")
+            .replace(/[^a-z0-9\-]/g, "")
+            .replace(/^-+|-+$/g, "");
+    };
+
+    const verificarIdEmUso = async (nome: string) => {
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+        }
+
+        timeoutRef.current = setTimeout(async () => {
+            if (!isEditing && nome) {
+                const id = gerarSlug(nome);
+                const res = await buscarPermissaoPorId(id);
+
+                if (res!) {
+                    setIdEmUso(true);
+                } else {
+                    setIdEmUso(false);
+                }
+            }
+        }, 500);
+    };
+
+    const handleSubmit = async () => {
+        const permissaoData = {
+            nome,
+            descricao,
+            ativo
+        };
+
+        await salvarPermissao(permissaoData);
+        
+        onClose();
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm flex items-center justify-center select-none">
+            <div className="flex flex-col gap-4 bg-zinc-800 p-6 rounded-md shadow-md w-96">
+                <h2 className="text-lg font-bold">
+                    {isEditing ? "Editar Permissão" : "Incluir Permissão"}
+                </h2>
+
+                <form className="flex flex-col gap-4">
+                    <input
+                        type="text"
+                        name="nome"
+                        value={nome}
+                        onChange={(e) => {
+                            setNome(e.target.value);
+                            verificarIdEmUso(e.target.value);
+                        }}
+                        onBlur={() => verificarIdEmUso(nome)}
+                        placeholder="Nome"
+                        className="border border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-700 px-2 py-1 rounded-md bg-zinc-950"
+                        autoComplete="off"
+                    />
+
+                    {idEmUso && !isEditing && (
+                        <div className="text-red-500 text-sm">
+                            Este Nome já está em uso.
+                        </div>
+                    )}
+
+                    <textarea
+                        name="descricao"
+                        value={descricao}
+                        onChange={(e) => setDescricao(e.target.value)}
+                        placeholder="Descrição"
+                        className="
+                            border border-zinc-900 
+                            focus:outline-none focus:ring-1 focus:ring-zinc-700 
+                            px-2 py-1 rounded-md bg-zinc-950 
+                            resize-y max-h-40 min-h-28
+                        "
+                        autoComplete="off"
+                    />
+
+                    <div className="flex gap-2 items-center">
+                        <label>Ativo:</label>
+                        <input
+                            type="checkbox"
+                            name="ativo"
+                            className="cursor-pointer"
+                            checked={ativo}
+                            onChange={(e) => setAtivo(e.target.checked)}
+                        />
+                    </div>
+                </form>
+
+                <div className="flex justify-end gap-2 mt-4">
+                    <button
+                        onClick={onClose}
+                        className="bg-zinc-700 hover:bg-gray-300 px-3 py-1 rounded-md"
+                    >
+                        Cancelar
+                    </button>
+                    <button
+                        disabled={idEmUso}
+                        onClick={handleSubmit}
+                        className={`
+                            bg-blue-600 hover:bg-blue-500 px-3 py-1 rounded-md text-white
+                            ${idEmUso ? "cursor-not-allowed" : ""}
+                        `}
+                    >
+                        Salvar
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}

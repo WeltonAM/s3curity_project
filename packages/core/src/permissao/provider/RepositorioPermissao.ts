@@ -5,5 +5,7 @@ export default interface RepositorioPermissao {
 
   buscarTodasPermissoes(): Promise<Partial<Permissao>[]>;
 
+  buscarPermissaoPorId(id: string): Promise<Partial<Permissao> | null>;
+
   buscarPermissoesPorPerfilId(perfilId: string): Promise<Partial<Permissao>[]>;
 }
