@@ -11,18 +11,22 @@ async function main() {
   await prisma.permissao.createMany({
     data: [
       {
+        id: 'visualizar-relatorios',
         nome: 'Visualizar Relatórios',
         descricao: 'Permite visualizar relatórios no sistema.',
       },
       {
+        id: 'criar-usuarios',
         nome: 'Criar Usuários',
         descricao: 'Permite criar novos usuários no sistema.',
       },
       {
+        id: 'editar-usuarios',
         nome: 'Editar Usuários',
         descricao: 'Permite editar informações de usuários existentes.',
       },
       {
+        id: 'excluir-comentarios',
         nome: 'Excluir Comentários',
         descricao: 'Permite excluir comentários no sistema.',
       },

@@ -10,3 +10,13 @@ Authorization: Bearer {{token}}
 ### Buscar permissões por perfil
 GET http://localhost:4000/permissao/{{perfilId}}
 Authorization: Bearer {{token}}
+
+### Salvar permissão
+POST http://localhost:4000/permissao/salvar
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "nome": "Adicionar Comentários",
+    "descricao": "Permite adicionar comentários no sistema."
+}

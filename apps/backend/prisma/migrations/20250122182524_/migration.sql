@@ -75,7 +75,7 @@ CREATE UNIQUE INDEX "usuarios_email_key" ON "usuarios"("email");
 CREATE UNIQUE INDEX "perfis_nome_key" ON "perfis"("nome");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "permissoes_nome_key" ON "permissoes"("nome");
+CREATE UNIQUE INDEX "permissoes_id_key" ON "permissoes"("id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "perfis_usuarios_usuario_id_perfil_id_key" ON "perfis_usuarios"("usuario_id", "perfil_id");
