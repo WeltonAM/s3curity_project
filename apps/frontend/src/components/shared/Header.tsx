@@ -16,8 +16,12 @@ export default function Header() {
 
     const toggleMenu = (e: React.MouseEvent) => {
         const { clientX, clientY } = e;
-        setMenuPosition({ top: clientY, left: clientX });
-        setIsMenuOpen((prev) => !prev);
+
+        setIsMenuOpen(false); 
+        setTimeout(() => {
+            setMenuPosition({ top: clientY, left: clientX });
+            setIsMenuOpen(true); 
+        }, 0);
     };
 
     const closeMenu = (e: MouseEvent) => {
@@ -39,7 +43,7 @@ export default function Header() {
     }, [isMenuOpen]);
 
     return (
-        <div className="relative flex w-full items-center justify-between pt-4 px-10">
+        <div className="relative flex w-full items-center justify-between pt-4 px-10 select-none">
             <div className="flex items-center gap-4">
                 <Link href="/">
                     <Image src="/image.png" alt="Logo" width={100} height={100} />
@@ -54,7 +58,7 @@ export default function Header() {
                 </span>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 cursor-pointer">
                 <span className="bg-zinc-800 rounded-full p-2">
                     <IconSearch size={16} />
                 </span>

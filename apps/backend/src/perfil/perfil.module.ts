@@ -1,10 +1,18 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, forwardRef } from '@nestjs/common';
 import { PerfilPrisma } from './perfil.prisma';
 import { DbModule } from 'src/db/db.module';
+import { PerfilController } from './perfil.controller';
+import { UsuarioMiddleware } from 'src/usuario/usuario.middleware';
+import { UsuarioModule } from 'src/usuario/usuario.module';
 
 @Module({
-  imports: [DbModule],
+  imports: [DbModule, forwardRef(() => UsuarioModule)],
+  controllers: [PerfilController],
   providers: [PerfilPrisma],
   exports: [PerfilPrisma],
 })
-export class PerfilModule {}
+export class PerfilModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(UsuarioMiddleware).forRoutes(PerfilController);
+  }
+}

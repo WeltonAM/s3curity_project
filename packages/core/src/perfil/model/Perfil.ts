@@ -6,5 +6,5 @@ export default interface Perfil {
     descricao: string | null;
     criado_em: Date;
     ativo: boolean;
-    permissoes: Permissao[]; 
+    permissoes?: Permissao[]; 
 }
