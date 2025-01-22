@@ -14,7 +14,7 @@ export class PerfilPrisma {
     });
   }
 
-  async buscarPerfisPorUsuarioEmail(email: string): Promise<Perfil[]> {
+  async buscarPerfisPorUsuarioEmail(email: string): Promise<Partial<Perfil>[]> {
     const perfis = await this.prisma.usuarioPerfil.findMany({
       where: { usuario: { email } },
       include: {
@@ -34,7 +34,6 @@ export class PerfilPrisma {
       id: usuarioPerfil.perfil.id,
       nome: usuarioPerfil.perfil.nome,
       descricao: usuarioPerfil.perfil.descricao,
-      criado_em: usuarioPerfil.perfil.criado_em,
       ativo: usuarioPerfil.perfil.ativo,
       permissoes: usuarioPerfil.perfil.perfilPermissoes.map(
         (pp) => pp.permissao,
@@ -54,6 +53,7 @@ export class PerfilPrisma {
     });
 
     return perfis.map((perfil) => ({
+      id: perfil.id,
       nome: perfil.nome,
       descricao: perfil.descricao,
       ativo: perfil.ativo,

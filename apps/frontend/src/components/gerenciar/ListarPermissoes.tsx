@@ -1,15 +1,15 @@
-import usePerfil from "@/data/hooks/usePerfil";
+import usePermissao from "@/data/hooks/usePermissao";
 import Carregando from "../shared/Carregando";
 import { IconPlus } from "@tabler/icons-react";
 
-export default function ListarPerfis() {
-    const { perfis, isLoading } = usePerfil();
+export default function ListarPermissoes() {
+    const { permissoes, isLoading } = usePermissao();
 
     if (isLoading) {
         return <Carregando />;
     }
 
-    if (!perfis || perfis.length === 0) {
+    if (!permissoes || permissoes.length === 0) {
         return <div>Nenhum perfil encontrado.</div>;
     }
 
@@ -18,7 +18,7 @@ export default function ListarPerfis() {
             <div className="flex justify-end w-full">
                 <button className="flex items-center gap-1 bg-green-600 px-2 py-1 rounded-md hover:bg-green-500">
                     <IconPlus size={16} stroke={3} />
-                    <span>Novo</span>
+                    <span>Nova</span>
                 </button>
             </div>
 
@@ -32,16 +32,16 @@ export default function ListarPerfis() {
                     </tr>
                 </thead>
                 <tbody>
-                    {perfis.map((perfil) => (
-                        <tr key={perfil.nome} className="hover:bg-zinc-500">
-                            <td className="px-4 py-2 border border-zinc-600">{perfil.nome}</td>
-
-                            <td className="px-4 py-2 border border-zinc-600">{perfil.descricao}</td>
-
+                    {permissoes.map((permissoes) => (
+                        <tr key={permissoes.id} className="hover:bg-zinc-500">
+                            <td className="px-4 py-2 border border-zinc-600">{permissoes.nome}</td>
+                            
+                            <td className="px-4 py-2 border border-zinc-600">{permissoes.descricao}</td>
+                            
                             <td className="px-4 py-2 text-center border border-zinc-600">
-                                {perfil.ativo ? "Sim" : "Não"}
+                                {permissoes.ativo ? "Sim" : "Não"}
                             </td>
-
+                            
                             <td className="px-4 py-2 text-center border border-zinc-600">
                                 <button className="bg-blue-500 hover:bg-blue-400 border border-blue-600 text-white px-2 py-1 rounded-md">
                                     Editar

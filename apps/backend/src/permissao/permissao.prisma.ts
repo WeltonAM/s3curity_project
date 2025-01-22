@@ -14,21 +14,20 @@ export class PermissaoPrisma implements RepositorioPermissao {
     });
   }
 
-  async buscarPermissoesAtivas(): Promise<Permissao[]> {
-    const permissoes = await this.prisma.permissao.findMany({
-      where: { ativo: true },
-    });
+  async buscarTodasPermissoes(): Promise<Partial<Permissao>[]> {
+    const permissoes = await this.prisma.permissao.findMany();
 
     return permissoes.map((permissao) => ({
       id: permissao.id,
       nome: permissao.nome,
       descricao: permissao.descricao,
-      criado_em: permissao.criado_em,
       ativo: permissao.ativo,
     }));
   }
 
-  async buscarPermissoesPorPerfilId(perfilId: string): Promise<Permissao[]> {
+  async buscarPermissoesPorPerfilId(
+    perfilId: string,
+  ): Promise<Partial<Permissao>[]> {
     const permissoes = await this.prisma.perfilPermissao.findMany({
       where: { perfil_id: perfilId },
       include: { permissao: true },
@@ -38,7 +37,6 @@ export class PermissaoPrisma implements RepositorioPermissao {
       id: perfilPermissao.permissao.id,
       nome: perfilPermissao.permissao.nome,
       descricao: perfilPermissao.permissao.descricao,
-      criado_em: perfilPermissao.permissao.criado_em,
       ativo: perfilPermissao.permissao.ativo,
     }));
   }

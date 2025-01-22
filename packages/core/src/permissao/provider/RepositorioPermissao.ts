@@ -3,7 +3,7 @@ import { Permissao } from '@s3curity/core';
 export default interface RepositorioPermissao {
   salvar(permissao: Partial<Permissao>): Promise<void>;
 
-  buscarPermissoesAtivas(): Promise<Permissao[]>;
+  buscarTodasPermissoes(): Promise<Partial<Permissao>[]>;
 
-  buscarPermissoesPorPerfilId(perfilId: string): Promise<Permissao[]>;
+  buscarPermissoesPorPerfilId(perfilId: string): Promise<Partial<Permissao>[]>;
 }
