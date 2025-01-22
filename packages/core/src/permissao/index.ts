@@ -1,3 +1,4 @@
 import Permissao from "./model/Permissao";
+import RepositorioPermissao from "./provider/RepositorioPermissao";
 
-export type { Permissao };
+export type { Permissao, RepositorioPermissao };

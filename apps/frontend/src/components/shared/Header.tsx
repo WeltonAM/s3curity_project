@@ -10,8 +10,6 @@ import useSessao from "@/data/hooks/useSessao";
 export default function Header() {
     const { usuario } = useSessao();
 
-    console.log(usuario)
-
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
     const menuRef = useRef<HTMLDivElement>(null);
@@ -41,13 +39,19 @@ export default function Header() {
     }, [isMenuOpen]);
 
     return (
-        <div className="relative flex w-full items-center justify-between pt-6 px-10">
+        <div className="relative flex w-full items-center justify-between pt-4 px-10">
             <div className="flex items-center gap-4">
                 <Link href="/">
                     <Image src="/image.png" alt="Logo" width={100} height={100} />
                 </Link>
 
-                <span>{usuario?.perfis[0] ?? "Perfil Usuário"}</span>
+                <span>
+                    {usuario?.perfis && usuario.perfis.length > 0
+                        ? typeof usuario.perfis[0] === "string"
+                            ? usuario.perfis[0]
+                            : usuario.perfis[0]?.nome
+                        : "Perfil Usuário"}
+                </span>
             </div>
 
             <div className="flex items-center gap-4">
@@ -62,7 +66,7 @@ export default function Header() {
                     onClick={toggleMenu}
                 >
                     <div className="border border-zinc-600 rounded-full w-10 h-10 flex items-center justify-center overflow-hidden">
-                        <Image src={usuario?.url_imagem_perfil ?? "/image.png"} alt="Perfil" width={100} height={100} />
+                        <Image src={usuario?.url_imagem_perfil ?? "/user-icon.png"} alt="Perfil" width={100} height={100} />
                     </div>
 
                     <div className="flex flex-col">

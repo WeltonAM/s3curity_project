@@ -76,6 +76,7 @@ export function ProvedorSessao(props: { children: React.ReactNode }) {
                     email: payload.email,
                     url_imagem_perfil: payload.url_imagem_perfil,
                     perfis: payload.perfis,
+                    permissoes: payload.permissoes,
                 },
             }
         } catch (e: any) {

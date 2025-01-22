@@ -1,4 +1,5 @@
 import { Perfil } from "../../perfil";
+import { Permissao } from "../../permissao";
 
 export default interface Usuario {
     id?: string;
@@ -13,4 +14,5 @@ export default interface Usuario {
     dois_fatores_ativado?: boolean;
     url_imagem_perfil?: string;
     perfis?: Perfil[];
+    permissoes?: Permissao[];
 }

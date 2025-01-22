@@ -6,9 +6,10 @@ import { BcryptProvider } from './bcrypt.provider';
 import { UsuarioPrisma } from './usuario.prisma';
 import { LoginModule } from 'src/login/login.module';
 import { PerfilModule } from 'src/perfil/perfil.module';
+import { PermissaoModule } from 'src/permissao/permissao.module';
 
 @Module({
-  imports: [DbModule, LoginModule, PerfilModule],
+  imports: [DbModule, LoginModule, PerfilModule, PermissaoModule],
   exports: [UsuarioMiddleware, UsuarioPrisma],
   controllers: [UsuarioController],
   providers: [UsuarioMiddleware, UsuarioPrisma, BcryptProvider],

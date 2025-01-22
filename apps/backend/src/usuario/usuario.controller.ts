@@ -5,6 +5,7 @@ import { UsuarioPrisma } from './usuario.prisma';
 import { LoginUsuario, RegistrarUsuario, Usuario } from '@s3curity/core';
 import { LoginPrisma } from 'src/login/login.prisma';
 import { PerfilPrisma } from 'src/perfil/perfil.prisma';
+import { PermissaoPrisma } from 'src/permissao/permissao.prisma';
 
 @Controller('usuario')
 export class UsuarioController {
@@ -13,6 +14,7 @@ export class UsuarioController {
     private readonly loginRepo: LoginPrisma,
     private readonly cripto: BcryptProvider,
     private readonly perfilRepo: PerfilPrisma,
+    private readonly permissaoRepo: PermissaoPrisma,
   ) {}
 
   @Post('login')
@@ -27,14 +29,26 @@ export class UsuarioController {
       usuario.email,
     );
 
-    const usuarioComPerfis = {
+    const perfisComPermissoes = await Promise.all(
+      perfis.map(async (perfil) => {
+        const permissoes = await this.permissaoRepo.buscarPermissoesPorPerfilId(
+          perfil.id,
+        );
+        return {
+          nome: perfil.nome,
+          permissoes: permissoes.map((p) => p.nome),
+        };
+      }),
+    );
+
+    const usuarioComPerfisEPermissoes = {
       ...usuario,
-      perfis: perfis.map((perfil) => perfil.nome),
+      perfis: perfisComPermissoes,
     };
 
     const segredo = process.env.JWT_SECRET!;
 
-    const token = jwt.sign(usuarioComPerfis, segredo, {
+    const token = jwt.sign(usuarioComPerfisEPermissoes, segredo, {
       expiresIn: '15d',
     }) as string;
 
