@@ -1,7 +1,42 @@
 ### Variáveis
 @token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImZkNWVkYTU1LTUwMTUtNDM4MS1hZjQ3LWY5MGIwYWI3YjgxYyIsIm5vbWVfY29tcGxldG8iOiJBZG1pbmlzdHJhZG9yIFNpc3RlbWEiLCJlbWFpbCI6ImFkbWluQHNpc3RlbWEuY29tIiwidXJsX2ltYWdlbV9wZXJmaWwiOm51bGwsInBlcmZpcyI6W3sibm9tZSI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNzb2VzIjpbIlZpc3VhbGl6YXIgUmVsYXTDs3Jpb3MiLCJDcmlhciBVc3XDoXJpb3MiLCJFZGl0YXIgVXN1w6FyaW9zIiwiRXhjbHVpciBDb21lbnTDoXJpb3MiXX1dLCJpYXQiOjE3Mzc1NTU5NDQsImV4cCI6MTczODg1MTk0NH0.4AlIdhNmxO2EQ2SIC9e2ThmhQvvljAPxe0enPnyaZqM
 
+@perfilId = 8dc36088-e640-442f-9cec-73664ff99369
+
+@permissaoId = 0c4878e4-e2ab-4613-ba7c-0b59482328ea
+
+@perfilNome = Cliente
+
+@emailUsuario = admin@sistema.com
+
 ### Buscar todos perfis
 GET http://localhost:4000/perfil/todos
 Authorization: Bearer {{token}}
 
+### Salvar perfil
+POST http://localhost:4000/perfil/salvar
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "nome": "Cliente",
+    "descricao": "Perfil de cliente do sistema"
+}
+
+### Relacionar perfil com permissões
+POST http://localhost:4000/perfil/relacionar
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "perfilId": "{{perfilId}}",
+    "permissoesIds": ["{{permissaoId}}"]
+}
+
+### Buscar perfil por nome do perfil
+GET http://localhost:4000/perfil/buscar/perfil/{{perfilNome}}
+Authorization: Bearer {{token}}
+
+### Buscar perfil por email do usuário
+GET http://localhost:4000/perfil/buscar/usuario/{{emailUsuario}}
+Authorization: Bearer {{token}}

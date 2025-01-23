@@ -1,5 +1,4 @@
-import { Permissao } from "@s3curity/core";
-import { RepositorioPermissao } from "../../src";
+import { Permissao, RepositorioPermissao } from "../../src";
 
 export class RepositorioPermissaoMock implements RepositorioPermissao {
   private permissoes: Permissao[] = [];

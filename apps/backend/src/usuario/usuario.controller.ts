@@ -25,7 +25,7 @@ export class UsuarioController {
     const casoDeUso = new LoginUsuario(this.repo, this.cripto);
     const usuario = await casoDeUso.comEmailSenha(dados.email, dados.senha);
 
-    const perfis = await this.perfilRepo.buscarPerfisPorUsuarioEmail(
+    const perfis = await this.perfilRepo.buscarPerfilPorUsuarioEmail(
       usuario.email,
     );
 
