@@ -2,6 +2,7 @@
 
 import usePermissao from "@/data/hooks/usePermissao";
 import { Permissao } from "@s3curity/core";
+import { IconRotate } from "@tabler/icons-react";
 import { useState, useRef } from "react";
 
 interface ModalPermissaoProps {
@@ -17,7 +18,7 @@ export default function UpsertPermissao({ isEditing, permissao, onClose, onSave 
     const [ativo, setAtivo] = useState<boolean>(permissao?.ativo || false);
     const [slugEmUso, setSlugEmUso] = useState<boolean>(false);
 
-    const { buscarPermissaoPorSlug } = usePermissao();
+    const { buscarPermissaoPorSlug, isLoading } = usePermissao();
 
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -119,7 +120,7 @@ export default function UpsertPermissao({ isEditing, permissao, onClose, onSave 
                 <div className="flex justify-end gap-2 mt-4">
                     <button
                         onClick={onClose}
-                        className="bg-zinc-700 hover:bg-gray-300 px-3 py-1 rounded-md"
+                        className="bg-zinc-700 hover:bg-zinc-600 px-3 py-1 rounded-md"
                     >
                         Cancelar
                     </button>
@@ -127,11 +128,17 @@ export default function UpsertPermissao({ isEditing, permissao, onClose, onSave 
                         disabled={slugEmUso}
                         onClick={handleSubmit}
                         className={`
-                            bg-blue-600 hover:bg-blue-500 px-3 py-1 rounded-md text-white
+                            flex items-center gap-2 justify-center
+                            bg-blue-600 hover:bg-blue-500 px-3 py-1 rounded-md text-white min-w-24
                             ${slugEmUso ? "cursor-not-allowed" : ""}
+                            ${isLoading ? "cursor-not-allowed" : ""}
                         `}
                     >
-                        Salvar
+                        {isLoading ? (
+                            <IconRotate className="animate-spin h-5 w-5 mr-2" />
+                        ) : (
+                            <span>Salvar</span>
+                        )}
                     </button>
                 </div>
             </div>

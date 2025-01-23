@@ -33,7 +33,7 @@ export default function ListarPerfis() {
 
     const handleSavePerfil = async (perfil: Partial<Perfil>, permissoesIds: string[]) => {
         if (perfil.id) {
-            await salvarPerfil(perfil); 
+            await salvarPerfil(perfil);
             await relacionarPerfilComPermissao(perfil.id, permissoesIds);
         }
 
@@ -103,7 +103,7 @@ export default function ListarPerfis() {
                                     Editar
                                 </button>
 
-                                <button 
+                                <button
                                     onClick={() => hadleOpenModalDelete(perfil)}
                                     className="bg-red-500 hover:bg-red-400 border border-red-600 text-white px-2 py-1 rounded-md ml-2"
                                 >

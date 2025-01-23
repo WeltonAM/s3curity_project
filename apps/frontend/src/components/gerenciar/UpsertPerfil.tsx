@@ -3,6 +3,7 @@
 import usePerfil from "@/data/hooks/usePerfil";
 import usePermissao from "@/data/hooks/usePermissao";
 import { Perfil } from "@s3curity/core";
+import { IconRotate } from "@tabler/icons-react";
 import { useState, useEffect, useRef } from "react";
 
 interface ModalPerfilProps {
@@ -19,7 +20,7 @@ export default function UpsertPerfil({ isEditing, perfil, onClose, onSave }: Mod
     const [nomeEmUso, setNomeEmUso] = useState<boolean>(false);
     const [permissoesSelecionadas, setPermissoesSelecionadas] = useState<string[]>(perfil?.permissoes?.map((p) => p.id) || []);
 
-    const { buscarPerfilPorNome } = usePerfil();
+    const { buscarPerfilPorNome, isLoading } = usePerfil();
     const { permissoes, isLoading: permissoesCarregando } = usePermissao();
 
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -118,7 +119,9 @@ export default function UpsertPerfil({ isEditing, perfil, onClose, onSave }: Mod
                     <div className="flex flex-col gap-2">
                         <h3 className="font-semibold">Permissões:</h3>
                         {permissoesCarregando ? (
-                            <p className="texzin">Carregando permissões...</p>
+                            <p className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-red-500 to-red-600">
+                                Carregando permissões...
+                            </p>
                         ) : (
                             permissoes.filter((permissao) => permissao.ativo)
                                 .map((permissao) => (
@@ -139,19 +142,25 @@ export default function UpsertPerfil({ isEditing, perfil, onClose, onSave }: Mod
                 <div className="flex justify-end gap-2 mt-4">
                     <button
                         onClick={onClose}
-                        className="bg-zinc-700 hover:bg-gray-300 px-3 py-1 rounded-md"
+                        className="bg-zinc-700 hover:bg-zinc-600 px-3 py-1 rounded-md"
                     >
                         Cancelar
                     </button>
                     <button
-                        disabled={nomeEmUso}
+                        disabled={nomeEmUso || isLoading}
                         onClick={handleSubmit}
                         className={`
-                            bg-blue-600 hover:bg-blue-500 px-3 py-1 rounded-md text-white
+                            flex items-center gap-2 justify-center
+                            bg-blue-600 hover:bg-blue-500 px-3 py-1 rounded-md text-white min-w-24
                             ${nomeEmUso ? "cursor-not-allowed" : ""}
+                            ${isLoading ? "cursor-not-allowed" : ""}
                         `}
                     >
-                        Salvar
+                        {isLoading ? (
+                            <IconRotate className="animate-spin h-5 w-5 mr-2" />
+                        ) : (
+                            <span>Salvar</span>
+                        )}
                     </button>
                 </div>
             </div>
