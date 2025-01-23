@@ -25,6 +25,7 @@ export class PermissaoPrisma implements RepositorioPermissao {
 
     return {
       id: permissao.id,
+      slug: permissao.slug,
       nome: permissao.nome,
       descricao: permissao.descricao,
       ativo: permissao.ativo,
@@ -36,6 +37,7 @@ export class PermissaoPrisma implements RepositorioPermissao {
 
     return permissoes.map((permissao) => ({
       id: permissao.id,
+      slug: permissao.slug,
       nome: permissao.nome,
       descricao: permissao.descricao,
       ativo: permissao.ativo,
@@ -52,9 +54,40 @@ export class PermissaoPrisma implements RepositorioPermissao {
 
     return permissoes.map((perfilPermissao) => ({
       id: perfilPermissao.permissao.id,
+      slug: perfilPermissao.permissao.slug,
       nome: perfilPermissao.permissao.nome,
       descricao: perfilPermissao.permissao.descricao,
       ativo: perfilPermissao.permissao.ativo,
     }));
+  }
+
+  async buscarPermissaoPorSlug(
+    slug: string,
+  ): Promise<Partial<Permissao> | null> {
+    const permissao = await this.prisma.permissao.findUnique({
+      where: { slug: slug },
+    });
+
+    if (!permissao) {
+      return null;
+    }
+
+    return {
+      id: permissao.id,
+      slug: permissao.slug,
+      nome: permissao.nome,
+      descricao: permissao.descricao,
+      ativo: permissao.ativo,
+    };
+  }
+
+  async deletar(permissao: Partial<Permissao>): Promise<void> {
+    await this.prisma.perfilPermissao.deleteMany({
+      where: { permissao_id: permissao.id },
+    });
+
+    await this.prisma.permissao.delete({
+      where: { id: permissao.id },
+    });
   }
 }

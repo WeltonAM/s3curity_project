@@ -29,6 +29,7 @@ CREATE TABLE "perfis" (
 -- CreateTable
 CREATE TABLE "permissoes" (
     "id" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
     "nome" TEXT NOT NULL,
     "descricao" TEXT,
     "criado_em" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -75,7 +76,7 @@ CREATE UNIQUE INDEX "usuarios_email_key" ON "usuarios"("email");
 CREATE UNIQUE INDEX "perfis_nome_key" ON "perfis"("nome");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "permissoes_id_key" ON "permissoes"("id");
+CREATE UNIQUE INDEX "permissoes_slug_key" ON "permissoes"("slug");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "perfis_usuarios_usuario_id_perfil_id_key" ON "perfis_usuarios"("usuario_id", "perfil_id");

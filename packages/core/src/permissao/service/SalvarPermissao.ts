@@ -1,3 +1,4 @@
+import { Id } from "../../shared";
 import Permissao from "../model/Permissao";
 import RepositorioPermissao from "../provider/RepositorioPermissao";
 
@@ -9,10 +10,11 @@ export default class SalvarPermissao {
       throw new Error("O campo 'nome' é obrigatório.");
     }
 
-    const slug = permissao.id || this.gerarSlug(permissao.nome);
+    const slug = permissao.slug || this.gerarSlug(permissao.nome);
 
     const novaPermissao: Partial<Permissao> = {
-      id: slug,
+      id: permissao.id || Id.novo.valor,
+      slug: slug,
       nome: permissao.nome,
       descricao: permissao.descricao || null,
       ativo: permissao.ativo !== undefined ? permissao.ativo : true,
@@ -24,12 +26,12 @@ export default class SalvarPermissao {
 
   private gerarSlug(nome: string): string {
     return nome
-      .toLowerCase() 
-      .trim() 
+      .toLowerCase()
+      .trim()
       .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "") 
-      .replace(/\s+/g, "-") 
-      .replace(/[^a-z0-9\-]/g, "") 
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9\-]/g, "")
       .replace(/^-+|-+$/g, "");
   }
 }

@@ -1,31 +1,52 @@
 import { useState } from "react";
 import usePermissao from "@/data/hooks/usePermissao";
 import Carregando from "../shared/Carregando";
-import { IconPlus } from "@tabler/icons-react";
+import { IconInfoTriangle, IconPlus } from "@tabler/icons-react";
 import { Permissao } from "@s3curity/core";
 import UpsertPermissao from "./UpsertPermissao";
 
 export default function ListarPermissoes() {
-    const { permissoes, isLoading } = usePermissao();
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const { permissoes, isLoading, salvarPermissao, deletarPermissao } = usePermissao();
+    const [isModalUpsertOpen, setIsModalUpsertOpen] = useState(false);
+    const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [currentPermissao, setCurrentPermissao] = useState<Partial<Permissao> | null>(null);
 
     const handleNewPermissao = () => {
         setCurrentPermissao(null);
         setIsEditing(false);
-        setIsModalOpen(true);
+        setIsModalUpsertOpen(true);
     };
 
     const handleEditPermissao = (permissao: Partial<Permissao>) => {
         setCurrentPermissao(permissao);
         setIsEditing(true);
-        setIsModalOpen(true);
+        setIsModalUpsertOpen(true);
     };
 
     const handleCloseModal = () => {
-        setIsModalOpen(false);
+        setIsModalUpsertOpen(false);
         setCurrentPermissao(null);
+    };
+
+    const handleSavePermissao = async (permissao: Partial<Permissao>) => {
+        await salvarPermissao(permissao);
+        handleCloseModal();
+    };
+
+    const hadleOpenModalDelete = async (permissao: Partial<Permissao>) => {
+        setIsModalDeleteOpen(true);
+        setCurrentPermissao(permissao);
+    };
+
+    const handleCloseModalDelete = () => {
+        setIsModalDeleteOpen(false);
+        setCurrentPermissao(null);
+    };
+
+    const handleDeletePermissaoConfirm = async (id: string) => {
+        await deletarPermissao(id);
+        handleCloseModalDelete();
     };
 
     if (isLoading) {
@@ -72,7 +93,14 @@ export default function ListarPermissoes() {
                                 >
                                     Editar
                                 </button>
-                                <button className="bg-red-500 hover:bg-red-400 border border-red-600 text-white px-2 py-1 rounded-md ml-2">
+
+                                <button
+                                    onClick={() => hadleOpenModalDelete(permissao)}
+                                    className="
+                                        bg-red-500 hover:bg-red-400 border border-red-600 
+                                        text-white px-2 py-1 rounded-md ml-2
+                                    "
+                                >
                                     Excluir
                                 </button>
                             </td>
@@ -81,12 +109,51 @@ export default function ListarPermissoes() {
                 </tbody>
             </table>
 
-            {isModalOpen && (
+            {isModalUpsertOpen && (
                 <UpsertPermissao
                     isEditing={isEditing}
                     permissao={currentPermissao}
                     onClose={handleCloseModal}
+                    onSave={handleSavePermissao}
                 />
+            )}
+
+            {isModalDeleteOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm flex items-center justify-center select-none">
+                    <div className="flex flex-col gap-4 bg-zinc-800 p-6 rounded-md shadow-md w-96">
+                        <h2 className="flex gap-4 justify-center items-center text-lg font-bold text-center bg-yellow-500 py-1 px-4 rounded-md">
+                            <IconInfoTriangle className="text-red-600" stroke={3} />
+                            <span className="text-red-600">Excluir Permissão</span>
+                        </h2>
+
+                        <p className="text-center font-normal">
+                            Tem certeza que deseja excluir a permissão [<span className="underline font-extrabold">{currentPermissao?.nome}</span>]
+                        </p>
+
+                        <button
+                            onClick={() => handleDeletePermissaoConfirm(currentPermissao!.id as string)}
+                            className="
+                                bg-red-600 hover:bg-red-500 text-white
+                                font-bold py-2 px-4 rounded
+                                focus:outline-none focus:ring-2 focus:ring-offset-2
+                                focus:ring-offset-gray-800 focus:ring-white"
+                        >
+                            Deletar
+                        </button>
+
+                        <button
+                            onClick={handleCloseModalDelete}
+                            className="
+                                bg-zinc-700 hover:bg-zinc-600 text-zinc-200
+                                font-bold py-2 px-4 rounded
+                                focus:outline-none focus:ring-2 focus:ring-offset-2
+                                focus:ring-offset-gray-800focus:ring-white"
+                        >
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+
             )}
         </div>
     );

@@ -46,7 +46,8 @@ model Perfil {
 }
 
 model Permissao {
-  id        String   @id @unique
+  id        String   @id @default(uuid())
+  slug      String   @unique
   nome      String   
   descricao String?
   criado_em DateTime @default(now())

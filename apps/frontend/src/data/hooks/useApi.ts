@@ -43,6 +43,25 @@ export default function useAPI() {
     [token]
   );
 
+  const httpDelete = useCallback(
+    async function (caminho: string) {
+      const uri = caminho.startsWith("/") ? caminho : `/${caminho}`;
+      const urlCompleta = `${URL_BASE}${uri}`;
+
+      const resposta = await fetch(urlCompleta, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return extrairDados(resposta);
+    },
+    [token]
+  );
+
+  return { httpGet, httpPost, httpDelete };
+
   async function extrairDados(resposta: Response) {
     let conteudo = "";
 
@@ -55,5 +74,5 @@ export default function useAPI() {
     }
   }
 
-  return { httpGet, httpPost };
+  return { httpGet, httpPost, httpDelete };
 }

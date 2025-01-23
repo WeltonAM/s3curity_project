@@ -2,38 +2,24 @@
 
 import usePermissao from "@/data/hooks/usePermissao";
 import { Permissao } from "@s3curity/core";
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 
 interface ModalPermissaoProps {
     isEditing: boolean;
     permissao: Partial<Permissao> | null;
     onClose: () => void;
+    onSave: (permissao: Partial<Permissao>) => Promise<void>;
 }
 
-export default function UpsertPermissao({ isEditing, permissao, onClose }: ModalPermissaoProps) {
+export default function UpsertPermissao({ isEditing, permissao, onClose, onSave }: ModalPermissaoProps) {
     const [nome, setNome] = useState<string>(permissao?.nome || "");
     const [descricao, setDescricao] = useState<string>(permissao?.descricao || "");
     const [ativo, setAtivo] = useState<boolean>(permissao?.ativo || false);
     const [idEmUso, setIdEmUso] = useState<boolean>(false);
 
-    const { buscarPermissaoPorId, salvarPermissao } = usePermissao();
+    const { buscarPermissaoPorSlug } = usePermissao();
 
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-    useEffect(() => {
-        const checkIdEmUso = async () => {
-            if (!isEditing && permissao?.id) {
-                const res = await buscarPermissaoPorId(permissao.id);
-                if (res!) {
-                    setIdEmUso(true);
-                } else {
-                    setIdEmUso(false);
-                }
-            }
-        };
-
-        checkIdEmUso();
-    }, [isEditing, permissao?.id, buscarPermissaoPorId]);
 
     const gerarSlug = (nome: string): string => {
         return nome
@@ -46,15 +32,15 @@ export default function UpsertPermissao({ isEditing, permissao, onClose }: Modal
             .replace(/^-+|-+$/g, "");
     };
 
-    const verificarIdEmUso = async (nome: string) => {
+    const verificarSlugEmUso = async (nome: string) => {
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
         }
 
         timeoutRef.current = setTimeout(async () => {
             if (!isEditing && nome) {
-                const id = gerarSlug(nome);
-                const res = await buscarPermissaoPorId(id);
+                const slug = gerarSlug(nome);
+                const res = await buscarPermissaoPorSlug(slug);
 
                 if (res!) {
                     setIdEmUso(true);
@@ -67,14 +53,13 @@ export default function UpsertPermissao({ isEditing, permissao, onClose }: Modal
 
     const handleSubmit = async () => {
         const permissaoData = {
+            ...permissao,
             nome,
             descricao,
             ativo
         };
 
-        await salvarPermissao(permissaoData);
-        
-        onClose();
+        await onSave(permissaoData);
     };
 
     return (
@@ -91,9 +76,9 @@ export default function UpsertPermissao({ isEditing, permissao, onClose }: Modal
                         value={nome}
                         onChange={(e) => {
                             setNome(e.target.value);
-                            verificarIdEmUso(e.target.value);
+                            verificarSlugEmUso(e.target.value);
                         }}
-                        onBlur={() => verificarIdEmUso(nome)}
+                        onBlur={() => verificarSlugEmUso(nome)}
                         placeholder="Nome"
                         className="border border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-700 px-2 py-1 rounded-md bg-zinc-950"
                         autoComplete="off"

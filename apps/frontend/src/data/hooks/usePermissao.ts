@@ -10,13 +10,15 @@ interface UsePermissaoResponse {
   possuiPermissao: (permissao: string) => boolean;
   buscarPermissaoPorId: (id: string) => Promise<Partial<Permissao> | null>;
   salvarPermissao: (permissao: Partial<Permissao>) => Promise<void>;
+  buscarPermissaoPorSlug: (slug: string) => Promise<Partial<Permissao> | null>;
+  deletarPermissao: (id: string) => Promise<void>;
 }
 
 export default function usePermissao(): UsePermissaoResponse {
   const [isLoading, startTransition] = useTransition();
   const [permissoes, setPermissoes] = useState<Partial<Permissao>[]>([]);
   const { usuario } = useSessao();
-  const { httpGet, httpPost } = useAPI();
+  const { httpGet, httpPost, httpDelete } = useAPI();
   const { adicionarErro, adicionarSucesso } = useMensagem();
 
   const possuiPermissao = (permissao: string): boolean => {
@@ -45,12 +47,31 @@ export default function usePermissao(): UsePermissaoResponse {
         const { status, permissao } = response;
 
         if (status === 200) {
-          return permissao; 
+          return permissao;
         } else {
-          return null; 
+          return null;
         }
       } catch (error) {
         console.error("Erro ao buscar permissão por ID:", error);
+        return null;
+      }
+    },
+    [httpGet]
+  );
+
+  const buscarPermissaoPorSlug = useCallback(
+    async (slug: string) => {
+      try {
+        const response = await httpGet(`/permissao/slug/${slug}`);
+        const { status, permissao } = response;
+
+        if (status !== 200) {
+          return null;
+        }
+
+        return permissao;
+      } catch (error) {
+        console.error("Erro ao buscar permissão por slug:", error);
         return null;
       }
     },
@@ -61,19 +82,36 @@ export default function usePermissao(): UsePermissaoResponse {
     startTransition(async () => {
       try {
         const response = await httpPost("/permissao/salvar", permissao);
-        const { status, message, permissao: permissaoSalva } = response;
+        const { status, message } = response;
 
         if (status !== 201) {
-          return adicionarErro(message); 
+          return adicionarErro(message);
         }
 
         adicionarSucesso("Permissão salva com sucesso!");
-        setPermissoes((prev) => [...prev, permissaoSalva]);
-        
-        await buscarTodasPermissoes();
+        buscarTodasPermissoes();
       } catch (error) {
         console.error("Erro ao salvar permissão:", error);
         adicionarErro("Falha ao salvar permissão.");
+      }
+    });
+  };
+
+  const deletarPermissao = async (id: string) => {
+    startTransition(async () => {
+      try {
+        const response = await httpDelete(`/permissao/${id}`);
+        const { status, message } = response;
+
+        if (status !== 200) {
+          return adicionarErro(message); 
+        }
+
+        adicionarSucesso("Permissão deletada com sucesso!");
+        buscarTodasPermissoes();
+      } catch (error) {
+        console.error("Erro ao deletar permissão:", error);
+        adicionarErro("Falha ao deletar permissão.");
       }
     });
   };
@@ -88,5 +126,7 @@ export default function usePermissao(): UsePermissaoResponse {
     possuiPermissao,
     buscarPermissaoPorId,
     salvarPermissao,
+    buscarPermissaoPorSlug,
+    deletarPermissao,
   };
 }

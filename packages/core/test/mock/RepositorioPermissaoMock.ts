@@ -21,7 +21,23 @@ export class RepositorioPermissaoMock implements RepositorioPermissao {
     );
   }
 
+  async buscarPermissaoPorId(id: string): Promise<Partial<Permissao> | null> {
+    return this.permissoes.find((permissao) => permissao.id === id) || null;
+  }
+
+  async buscarPermissaoPorSlug(
+    slug: string
+  ): Promise<Partial<Permissao> | null> {
+    return this.permissoes.find((permissao) => permissao.slug === slug) || null;
+  }
+
   async salvar(permissao: Partial<Permissao>): Promise<void> {
     this.permissoes.push(permissao as Permissao);
+  }
+
+  async deletar(permissao: Partial<Permissao>): Promise<void> {
+    this.permissoes = this.permissoes.filter(
+      (permissaoExistente) => permissaoExistente.id !== permissao.id
+    );
   }
 }

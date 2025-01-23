@@ -23,7 +23,7 @@ describe("SalvarPermissao", () => {
 
     expect(permissoesSalvas).toHaveLength(1);
     const permissaoSalva = permissoesSalvas[0];
-    expect(permissaoSalva!.id).toBe("criar-usuarios");
+    expect(permissaoSalva!.slug).toBe("criar-usuarios");
     expect(permissaoSalva!.nome).toBe("Criar Usuários");
     expect(permissaoSalva!.descricao).toBe(
       "Permite criar novos usuários no sistema."
@@ -42,7 +42,7 @@ describe("SalvarPermissao", () => {
       await repositorioPermissaoMock.buscarTodasPermissoes();
 
     const permissaoSalva = permissoesSalvas[0];
-    expect(permissaoSalva!.id).toBe("criar-usuarios");
+    expect(permissaoSalva!.slug).toBe("criar-usuarios");
     expect(permissaoSalva!.nome).toBe("Criar Usuários");
     expect(permissaoSalva!.descricao).toBe(null);
   });
@@ -60,9 +60,9 @@ describe("SalvarPermissao", () => {
       await repositorioPermissaoMock.buscarTodasPermissoes();
 
     const permissaoSalva = permissoesSalvas[0];
-    expect(permissaoSalva!.id).toBe("criar-usuarios");
+    expect(permissaoSalva!.slug).toBe("criar-usuarios");
     expect(permissaoSalva!.nome).toBe("Criar Usuários");
-    expect(permissaoSalva!.descricao).toBe("Permissão sem ativo");
+    expect(permissaoSalva!.descricao).toBe("Permissão com ativo");
     expect(permissaoSalva!.ativo).toBe(false);
   });
 
@@ -89,6 +89,6 @@ describe("SalvarPermissao", () => {
       await repositorioPermissaoMock.buscarTodasPermissoes();
 
     const permissaoSalva = permissoesSalvas[0];
-    expect(permissaoSalva!.id).toBe("criar-usuarios-com-caracteres-especiais");
+    expect(permissaoSalva!.slug).toBe("criar-usuarios-com-caracteres-especiais");
   });
 });

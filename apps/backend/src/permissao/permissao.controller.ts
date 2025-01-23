@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { PermissaoPrisma } from './permissao.prisma';
 import { Permissao, SalvarPermissao, Usuario } from '@s3curity/core';
 import { UsuarioLogado } from 'src/shared/usuario.decorator';
@@ -30,6 +30,12 @@ export class PermissaoController {
     return { status: 200, permissoes };
   }
 
+  @Get('slug/:slug')
+  async buscarPermissaoPorSlug(@Param('slug') slug: string) {
+    const permissao = await this.permissaoRepo.buscarPermissaoPorSlug(slug);
+    return { status: 200, permissao };
+  }
+
   @Post('salvar')
   async salvarPermissao(
     @Body() permissao: Partial<Permissao>,
@@ -44,6 +50,25 @@ export class PermissaoController {
       return {
         status: 500,
         message: 'Erro ao salvar permissão.',
+      };
+    }
+  }
+
+  @Delete(':id')
+  async deletarPermissao(@Param('id') id: string) {
+    try {
+      const permissao = await this.permissaoRepo.buscarPermissaoPorId(id);
+      if (!permissao) {
+        return { status: 404, message: 'Permissão não encontrada.' };
+      }
+
+      await this.permissaoRepo.deletar(permissao);
+
+      return { status: 200, message: 'Permissão deletada com sucesso.' };
+    } catch (error) {
+      return {
+        status: 500,
+        message: 'Erro ao deletar permissão.',
       };
     }
   }
