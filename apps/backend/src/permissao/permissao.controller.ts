@@ -62,7 +62,7 @@ export class PermissaoController {
         return { status: 404, message: 'Permissão não encontrada.' };
       }
 
-      await this.permissaoRepo.deletar(permissao);
+      await this.permissaoRepo.deletar(permissao.id);
 
       return { status: 200, message: 'Permissão deletada com sucesso.' };
     } catch (error) {

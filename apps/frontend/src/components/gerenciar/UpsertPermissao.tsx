@@ -15,7 +15,7 @@ export default function UpsertPermissao({ isEditing, permissao, onClose, onSave 
     const [nome, setNome] = useState<string>(permissao?.nome || "");
     const [descricao, setDescricao] = useState<string>(permissao?.descricao || "");
     const [ativo, setAtivo] = useState<boolean>(permissao?.ativo || false);
-    const [idEmUso, setIdEmUso] = useState<boolean>(false);
+    const [slugEmUso, setSlugEmUso] = useState<boolean>(false);
 
     const { buscarPermissaoPorSlug } = usePermissao();
 
@@ -43,9 +43,9 @@ export default function UpsertPermissao({ isEditing, permissao, onClose, onSave 
                 const res = await buscarPermissaoPorSlug(slug);
 
                 if (res!) {
-                    setIdEmUso(true);
+                    setSlugEmUso(true);
                 } else {
-                    setIdEmUso(false);
+                    setSlugEmUso(false);
                 }
             }
         }, 500);
@@ -84,7 +84,7 @@ export default function UpsertPermissao({ isEditing, permissao, onClose, onSave 
                         autoComplete="off"
                     />
 
-                    {idEmUso && !isEditing && (
+                    {slugEmUso && !isEditing && (
                         <div className="text-red-500 text-sm">
                             Este Nome já está em uso.
                         </div>
@@ -124,11 +124,11 @@ export default function UpsertPermissao({ isEditing, permissao, onClose, onSave 
                         Cancelar
                     </button>
                     <button
-                        disabled={idEmUso}
+                        disabled={slugEmUso}
                         onClick={handleSubmit}
                         className={`
                             bg-blue-600 hover:bg-blue-500 px-3 py-1 rounded-md text-white
-                            ${idEmUso ? "cursor-not-allowed" : ""}
+                            ${slugEmUso ? "cursor-not-allowed" : ""}
                         `}
                     >
                         Salvar

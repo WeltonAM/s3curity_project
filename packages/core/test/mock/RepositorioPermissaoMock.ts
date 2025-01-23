@@ -34,9 +34,9 @@ export class RepositorioPermissaoMock implements RepositorioPermissao {
     this.permissoes.push(permissao as Permissao);
   }
 
-  async deletar(permissao: Partial<Permissao>): Promise<void> {
+  async deletar(id: string): Promise<void> {
     this.permissoes = this.permissoes.filter(
-      (permissaoExistente) => permissaoExistente.id !== permissao.id
+      (permissaoExistente) => permissaoExistente.id !== id
     );
   }
 }

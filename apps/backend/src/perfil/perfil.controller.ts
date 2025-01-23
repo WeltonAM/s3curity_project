@@ -1,12 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { PerfilPrisma } from './perfil.prisma';
 import { Perfil, SalvarPerfil, Usuario } from '@s3curity/core';
 import { UsuarioLogado } from 'src/shared/usuario.decorator';
+import { PermissaoPrisma } from 'src/permissao/permissao.prisma';
 
 @Controller('perfil')
 export class PerfilController {
-  constructor(private readonly perfilRepo: PerfilPrisma) {}
+  constructor(
+    private readonly perfilRepo: PerfilPrisma,
+    private readonly permissaoRepo: PermissaoPrisma,
+  ) {}
 
   @Get('todos')
   async buscarTodosPerfis(@UsuarioLogado() usuario: Usuario) {
@@ -26,22 +30,36 @@ export class PerfilController {
     return { status: 201, message: 'Perfil salvo com sucesso.', perfil };
   }
 
-  @Get('buscar/perfil/:nome')
+  @Get('nome/:nome')
   async buscarPerfilPorNome(
     @UsuarioLogado() usuario: Usuario,
     @Param('nome') nome: string,
   ) {
-    const perfis = await this.perfilRepo.buscarPerfilPorNome(nome);
-    return { status: 200, message: 'Perfil encontrado com sucesso.', perfis };
+    const perfil = await this.perfilRepo.buscarPerfilPorNome(nome);
+    return { status: 200, perfil };
   }
 
-  @Get('buscar/usuario/:email')
+  @Get('usuario/:email')
   async buscarPerfilPorEmail(
     @UsuarioLogado() usuario: Usuario,
     @Param('email') email: string,
   ) {
     const perfis = await this.perfilRepo.buscarPerfilPorUsuarioEmail(email);
     return { status: 200, message: 'Perfil encontrado com sucesso.', perfis };
+  }
+
+  @Delete(':id')
+  async deletarPerfil(@Param('id') id: string) {
+    try {
+      await this.perfilRepo.deletar(id);
+
+      return { status: 200, message: 'Perfil deletado com sucesso.' };
+    } catch (error) {
+      return {
+        status: 500,
+        message: 'Erro ao deletar perfil.',
+      };
+    }
   }
 
   @Post('relacionar')
@@ -52,18 +70,31 @@ export class PerfilController {
     const { perfilId, permissoesIds } = body;
 
     if (!perfilId) {
-      throw new Error("O campo 'perfilId' é obrigatório.");
+      throw new Error('Perfil não encontrado.');
     }
     if (!permissoesIds || permissoesIds.length === 0) {
-      throw new Error(
-        "O campo 'permissoesIds' é obrigatório e deve conter ao menos uma permissão.",
-      );
+      throw new Error('Permissão não encontrada.');
     }
 
-    for (const permissaoId of permissoesIds) {
+    const permissoesAtuais =
+      await this.permissaoRepo.buscarPermissoesPorPerfilId(perfilId);
+
+    const permissoesAtuaisIds = permissoesAtuais.map((p) => p.id);
+    const permissoesParaAdicionar = permissoesIds.filter(
+      (id) => !permissoesAtuaisIds.includes(id),
+    );
+    const permissoesParaRemover = permissoesAtuaisIds.filter(
+      (id) => !permissoesIds.includes(id),
+    );
+
+    for (const permissaoId of permissoesParaAdicionar) {
       await this.perfilRepo.relacionarPerfilComPermissao(perfilId, permissaoId);
     }
 
-    return { status: 200, message: 'Permissões relacionadas com sucesso.' };
+    for (const permissaoId of permissoesParaRemover) {
+      await this.perfilRepo.removerPerfilPermissao(perfilId, permissaoId);
+    }
+
+    return { status: 200, message: 'Permissões atualizadas com sucesso.' };
   }
 }

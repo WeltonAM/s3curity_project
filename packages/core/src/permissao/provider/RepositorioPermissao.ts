@@ -1,4 +1,4 @@
-import { Permissao } from '@s3curity/core';
+import { Permissao } from "@s3curity/core";
 
 export default interface RepositorioPermissao {
   salvar(permissao: Partial<Permissao>): Promise<void>;
@@ -11,5 +11,5 @@ export default interface RepositorioPermissao {
 
   buscarPermissoesPorPerfilId(perfilId: string): Promise<Partial<Permissao>[]>;
 
-  deletar(permissao: Partial<Permissao>): Promise<void>;
+  deletar(id: string): Promise<void>;
 }

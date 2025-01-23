@@ -81,13 +81,13 @@ export class PermissaoPrisma implements RepositorioPermissao {
     };
   }
 
-  async deletar(permissao: Partial<Permissao>): Promise<void> {
+  async deletar(id: string): Promise<void> {
     await this.prisma.perfilPermissao.deleteMany({
-      where: { permissao_id: permissao.id },
+      where: { permissao_id: id },
     });
 
     await this.prisma.permissao.delete({
-      where: { id: permissao.id },
+      where: { id },
     });
   }
 }

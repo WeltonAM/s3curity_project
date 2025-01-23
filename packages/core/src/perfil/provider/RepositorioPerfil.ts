@@ -5,11 +5,11 @@ export default interface RepositorioPerfil {
 
     buscarPerfilPorUsuarioEmail(email: string): Promise<Partial<Perfil>[]>;
 
-    buscarPerfilPorNome(nome: string): Promise<Partial<Perfil>[]>;
+    buscarPerfilPorNome(nome: string): Promise<Partial<Perfil> | null>;
 
     relacionarPerfilComPermissao(perfilId: string, permissaoId: string): Promise<void>;
 
     buscarTodosPerfis(): Promise<Partial<Perfil>[]>;
 
-    deletar(perfil: Partial<Perfil>): Promise<void>;
+    deletar(id: string): Promise<void>;
 }

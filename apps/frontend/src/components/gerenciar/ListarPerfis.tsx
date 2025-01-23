@@ -1,9 +1,59 @@
+'use client';
+
 import usePerfil from "@/data/hooks/usePerfil";
 import Carregando from "../shared/Carregando";
-import { IconPlus } from "@tabler/icons-react";
+import { IconInfoTriangle, IconPlus } from "@tabler/icons-react";
+import { useState } from "react";
+import { Perfil } from "@s3curity/core";
+import UpsertPerfil from "./UpsertPerfil";
 
 export default function ListarPerfis() {
-    const { perfis, isLoading } = usePerfil();
+    const { perfis, isLoading, salvarPerfil, deletarPerfil, relacionarPerfilComPermissao } = usePerfil();
+    const [isModalUpsertOpen, setIsModalUpsertOpen] = useState(false);
+    const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [currentPerfil, setCurrentPerfil] = useState<Partial<Perfil> | null>(null);
+
+    const handleNewPerfil = () => {
+        setCurrentPerfil(null);
+        setIsEditing(false);
+        setIsModalUpsertOpen(true);
+    };
+
+    const handleEditPerfil = (perfil: Partial<Perfil>) => {
+        setCurrentPerfil(perfil);
+        setIsEditing(true);
+        setIsModalUpsertOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalUpsertOpen(false);
+        setCurrentPerfil(null);
+    };
+
+    const handleSavePerfil = async (perfil: Partial<Perfil>, permissoesIds: string[]) => {
+        if (perfil.id) {
+            await salvarPerfil(perfil); 
+            await relacionarPerfilComPermissao(perfil.id, permissoesIds);
+        }
+
+        handleCloseModal();
+    };
+
+    const hadleOpenModalDelete = async (perfil: Partial<Perfil>) => {
+        setIsModalDeleteOpen(true);
+        setCurrentPerfil(perfil);
+    };
+
+    const handleCloseModalDelete = () => {
+        setIsModalDeleteOpen(false);
+        setCurrentPerfil(null);
+    };
+
+    const handleDeletePerfilConfirm = async (id: string) => {
+        await deletarPerfil(id);
+        handleCloseModalDelete();
+    };
 
     if (isLoading) {
         return <Carregando />;
@@ -16,7 +66,10 @@ export default function ListarPerfis() {
     return (
         <div className="flex flex-col justify-between items-center gap-4 w-full">
             <div className="flex justify-end w-full">
-                <button className="flex items-center gap-1 bg-green-600 px-2 py-1 rounded-md hover:bg-green-500">
+                <button
+                    onClick={handleNewPerfil}
+                    className="flex items-center gap-1 bg-green-600 px-2 py-1 rounded-md hover:bg-green-500"
+                >
                     <IconPlus size={16} stroke={3} />
                     <span>Novo</span>
                 </button>
@@ -43,10 +96,17 @@ export default function ListarPerfis() {
                             </td>
 
                             <td className="px-4 py-2 text-center border border-zinc-600">
-                                <button className="bg-blue-500 hover:bg-blue-400 border border-blue-600 text-white px-2 py-1 rounded-md">
+                                <button
+                                    onClick={() => handleEditPerfil(perfil)}
+                                    className="bg-blue-500 hover:bg-blue-400 border border-blue-600 text-white px-2 py-1 rounded-md"
+                                >
                                     Editar
                                 </button>
-                                <button className="bg-red-500 hover:bg-red-400 border border-red-600 text-white px-2 py-1 rounded-md ml-2">
+
+                                <button 
+                                    onClick={() => hadleOpenModalDelete(perfil)}
+                                    className="bg-red-500 hover:bg-red-400 border border-red-600 text-white px-2 py-1 rounded-md ml-2"
+                                >
                                     Excluir
                                 </button>
                             </td>
@@ -54,6 +114,53 @@ export default function ListarPerfis() {
                     ))}
                 </tbody>
             </table>
+
+            {isModalUpsertOpen && (
+                <UpsertPerfil
+                    isEditing={isEditing}
+                    perfil={currentPerfil}
+                    onClose={handleCloseModal}
+                    onSave={handleSavePerfil}
+                />
+            )}
+
+            {isModalDeleteOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm flex items-center justify-center select-none">
+                    <div className="flex flex-col gap-4 bg-zinc-800 p-6 rounded-md shadow-md w-96">
+                        <h2 className="flex gap-4 justify-center items-center text-lg font-bold text-center bg-yellow-500 py-1 px-4 rounded-md">
+                            <IconInfoTriangle className="text-red-600" stroke={3} />
+                            <span className="text-red-600">Excluir Perfil</span>
+                        </h2>
+
+                        <p className="text-center font-normal">
+                            Tem certeza que deseja excluir o perfil [<span className="underline font-extrabold">{currentPerfil?.nome}</span>]
+                        </p>
+
+                        <button
+                            onClick={() => handleDeletePerfilConfirm(currentPerfil!.id as string)}
+                            className="
+                                bg-red-600 hover:bg-red-500 text-white
+                                font-bold py-2 px-4 rounded
+                                focus:outline-none focus:ring-2 focus:ring-offset-2
+                                focus:ring-offset-gray-800 focus:ring-white"
+                        >
+                            Deletar
+                        </button>
+
+                        <button
+                            onClick={handleCloseModalDelete}
+                            className="
+                                bg-zinc-700 hover:bg-zinc-600 text-zinc-200
+                                font-bold py-2 px-4 rounded
+                                focus:outline-none focus:ring-2 focus:ring-offset-2
+                                focus:ring-offset-gray-800focus:ring-white"
+                        >
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+
+            )}
         </div>
     );
 }

@@ -25,8 +25,8 @@ export class PerfilPrisma implements RepositorioPerfil {
     });
   }
 
-  async buscarPerfilPorNome(nome: string): Promise<Partial<Perfil>[]> {
-    const perfis = await this.prisma.perfil.findMany({
+  async buscarPerfilPorNome(nome: string): Promise<Partial<Perfil> | null> {
+    const perfil = await this.prisma.perfil.findUnique({
       where: { nome },
       include: {
         perfilPermissoes: {
@@ -36,7 +36,8 @@ export class PerfilPrisma implements RepositorioPerfil {
         },
       },
     });
-    return perfis;
+
+    return perfil ?? null;
   }
 
   async buscarPerfilPorUsuarioEmail(email: string): Promise<Partial<Perfil>[]> {
@@ -90,30 +91,51 @@ export class PerfilPrisma implements RepositorioPerfil {
     perfilId: string,
     permissaoId: string,
   ): Promise<void> {
-    await this.prisma.perfilPermissao.create({
-      data: {
+    await this.prisma.perfilPermissao.upsert({
+      where: {
+        perfil_id_permissao_id: {
+          perfil_id: perfilId,
+          permissao_id: permissaoId,
+        },
+      },
+      update: {},
+      create: {
         perfil_id: perfilId,
         permissao_id: permissaoId,
       },
     });
   }
 
-  async deletar(perfil: Partial<Perfil>): Promise<void> {
-    if (!perfil.id) {
+  async removerPerfilPermissao(
+    perfilId: string,
+    permissaoId: string,
+  ): Promise<void> {
+    await this.prisma.perfilPermissao.delete({
+      where: {
+        perfil_id_permissao_id: {
+          perfil_id: perfilId,
+          permissao_id: permissaoId,
+        },
+      },
+    });
+  }
+
+  async deletar(id: string): Promise<void> {
+    if (!id) {
       throw new Error("O campo 'id' é obrigatório para deletar o perfil.");
     }
 
     await this.prisma.$transaction(async (prisma) => {
       await prisma.perfilPermissao.deleteMany({
-        where: { perfil_id: perfil.id },
+        where: { perfil_id: id },
       });
 
       await prisma.usuarioPerfil.deleteMany({
-        where: { perfil_id: perfil.id },
+        where: { perfil_id: id },
       });
 
       await prisma.perfil.delete({
-        where: { id: perfil.id },
+        where: { id },
       });
     });
   }

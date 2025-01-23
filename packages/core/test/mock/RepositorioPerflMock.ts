@@ -12,6 +12,10 @@ export class RepositorioPerfilMock implements RepositorioPerfil {
     }
   }
 
+  async buscarPerfilPorNome(nome: string): Promise<Partial<Perfil> | null> {
+    return this.perfis.find((perfil) => perfil.nome === nome) || null;
+  }
+
   async buscarPerfilPorUsuarioEmail(email: string): Promise<Perfil[]> {
     return [];
   }
@@ -31,7 +35,7 @@ export class RepositorioPerfilMock implements RepositorioPerfil {
     return this.perfis;
   }
 
-  async deletar(perfil: Partial<Perfil>): Promise<void> {
-      this.perfis = this.perfis.filter((p) => p.id !== perfil.id);
+  async deletar(id: string): Promise<void> {
+    this.perfis = this.perfis.filter((p) => p.id !== id);
   }
 }

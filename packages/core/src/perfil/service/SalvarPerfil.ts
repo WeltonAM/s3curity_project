@@ -10,8 +10,10 @@ export default class SalvarPerfil {
       throw new Error("O campo 'nome' é obrigatório.");
     }
 
-    const perfilExistente = await this.repositorioPerfil.buscarPerfilPorNome(perfil.nome);
-    if (perfilExistente) {
+    const perfilExistente = await this.repositorioPerfil.buscarPerfilPorNome(
+      perfil.nome
+    );
+    if (perfilExistente && perfilExistente.id !== perfil.id) {
       throw new Error("Já existe um perfil com este nome.");
     }
 

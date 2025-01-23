@@ -32,7 +32,7 @@ export default function Gerenciar() {
                 {tabs.map((tab) => (
                     <div
                         key={tab.id}
-                        className={`flex cursor-pointer py-1 w-full justify-center items-center rounded-md ${
+                        className={`flex cursor-pointer py-1 w-full justify-center items-center rounded-md hover:bg-zinc-800 hover:text-zinc-200 ${
                             activeTab === tab.id
                                 ? "bg-zinc-800 text-white"
                                 : "text-zinc-400"
