@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Body, Controller, Get, Ip, Post } from '@nestjs/common';
+import { Body, Controller, Get, Ip, Param, Post } from '@nestjs/common';
 import { BcryptProvider } from './bcrypt.provider';
 import * as jwt from 'jsonwebtoken';
 import { UsuarioPrisma } from './usuario.prisma';
@@ -121,6 +121,28 @@ export class UsuarioController {
       status: 200,
       message: 'Usuários recuperados com sucesso!',
       usuarios: usuariosComPerfis,
+    };
+  }
+
+  @Get('usuario/:email')
+  async buscarPorEmail(
+    @UsuarioLogado() usuario: Usuario,
+    @Param('email') email: string,
+  ): Promise<{ status: number; usuario?: Usuario }> {
+    const usuarioEncontrado = await this.repo.buscarPorEmail(email);
+
+    return {
+      status: 200,
+      usuario: {
+        id: usuarioEncontrado.id,
+        nome_completo: usuarioEncontrado.nome_completo,
+        email: usuarioEncontrado.email,
+        telefone: usuarioEncontrado.telefone,
+        ativo: usuarioEncontrado.ativo,
+        url_imagem_perfil: usuarioEncontrado.url_imagem_perfil,
+        dias_trabalho: usuarioEncontrado.dias_trabalho,
+        horas_trabalho: usuarioEncontrado.horas_trabalho,
+      },
     };
   }
 }

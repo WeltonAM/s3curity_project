@@ -25,8 +25,8 @@ model Usuario {
   dois_fatores_ativado Boolean   @default(false)
   telefone             String?
   url_imagem_perfil    String?
-  horas_trabalho       String?
-  dias_trabalho        String?
+  horas_trabalho       String? // Exemplo: "09:00 - 18:00"
+  dias_trabalho        String? // Exemplo: "Seg,Ter,Qua,Qui,Sex"
 
   usuarioPerfis UsuarioPerfil[]
   logins        Login[]

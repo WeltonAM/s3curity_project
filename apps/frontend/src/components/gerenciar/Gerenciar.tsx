@@ -3,6 +3,7 @@
 import { useState } from "react";
 import ListarPerfis from "./ListarPerfis";
 import ListarPermissoes from "./ListarPermissoes";
+import ListarUsuarios from "./ListarUsuarios";
 
 export default function Gerenciar() {
     const [activeTab, setActiveTab] = useState("usuarios");
@@ -16,7 +17,7 @@ export default function Gerenciar() {
     const renderContent = () => {
         switch (activeTab) {
             case "usuarios":
-                return <div>Conteúdo de Usuáris</div>;
+                return <ListarUsuarios />;
             case "perfis":
                 return <ListarPerfis />;
             case "permissoes":

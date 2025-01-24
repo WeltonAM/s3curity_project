@@ -3,7 +3,7 @@
 import usePerfil from "@/data/hooks/usePerfil";
 import usePermissao from "@/data/hooks/usePermissao";
 import { Perfil } from "@s3curity/core";
-import { IconRotate } from "@tabler/icons-react";
+import { IconRotateClockwise } from "@tabler/icons-react";
 import { useState, useEffect, useRef } from "react";
 
 interface ModalPerfilProps {
@@ -106,7 +106,7 @@ export default function UpsertPerfil({ isEditing, perfil, onClose, onSave }: Mod
                     />
 
                     <div className="flex gap-2 items-center">
-                        <label>Ativo:</label>
+                        <label className="text-sm text-zinc-400">Ativo:</label>
                         <input
                             type="checkbox"
                             name="ativo"
@@ -117,7 +117,7 @@ export default function UpsertPerfil({ isEditing, perfil, onClose, onSave }: Mod
                     </div>
 
                     <div className="flex flex-col gap-2">
-                        <h3 className="font-semibold">Permissões:</h3>
+                        <p className="text-sm text-zinc-400">Permissões:</p>
                         {permissoesCarregando ? (
                             <p className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-red-500 to-red-600">
                                 Carregando permissões...
@@ -157,7 +157,7 @@ export default function UpsertPerfil({ isEditing, perfil, onClose, onSave }: Mod
                         `}
                     >
                         {isLoading ? (
-                            <IconRotate className="animate-spin h-5 w-5 mr-2" />
+                            <IconRotateClockwise className="animate-spin h-5 w-5 mr-2" />
                         ) : (
                             <span>Salvar</span>
                         )}

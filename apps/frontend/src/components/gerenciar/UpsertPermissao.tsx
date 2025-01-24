@@ -2,7 +2,7 @@
 
 import usePermissao from "@/data/hooks/usePermissao";
 import { Permissao } from "@s3curity/core";
-import { IconRotate } from "@tabler/icons-react";
+import { IconRotateClockwise } from "@tabler/icons-react";
 import { useState, useRef } from "react";
 
 interface ModalPermissaoProps {
@@ -106,7 +106,7 @@ export default function UpsertPermissao({ isEditing, permissao, onClose, onSave 
                     />
 
                     <div className="flex gap-2 items-center">
-                        <label>Ativo:</label>
+                        <label className="text-sm text-zinc-400">Ativo:</label>
                         <input
                             type="checkbox"
                             name="ativo"
@@ -135,7 +135,7 @@ export default function UpsertPermissao({ isEditing, permissao, onClose, onSave 
                         `}
                     >
                         {isLoading ? (
-                            <IconRotate className="animate-spin h-5 w-5 mr-2" />
+                            <IconRotateClockwise className="animate-spin h-5 w-5 mr-2" />
                         ) : (
                             <span>Salvar</span>
                         )}

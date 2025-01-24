@@ -23,3 +23,7 @@ Content-Type: application/json
 ### Listar todos os usuários
 GET http://localhost:4000/usuario/todos
 Authorization: Bearer {{token}}
+
+### Buscar usuário por email
+GET http://localhost:4000/usuario/usuario/admin@sistema.com
+Authorization: Bearer {{token}}
