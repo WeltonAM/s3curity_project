@@ -11,6 +11,8 @@ CREATE TABLE "usuarios" (
     "dois_fatores_ativado" BOOLEAN NOT NULL DEFAULT false,
     "telefone" TEXT,
     "url_imagem_perfil" TEXT,
+    "horas_trabalho" TEXT,
+    "dias_trabalho" TEXT,
 
     CONSTRAINT "usuarios_pkey" PRIMARY KEY ("id")
 );

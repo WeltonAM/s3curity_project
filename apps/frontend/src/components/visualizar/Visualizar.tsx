@@ -1,33 +1,25 @@
 'use client'
 
+import useUsuario from "@/data/hooks/useUsuario";
+import { Usuario } from "@s3curity/core";
 import { IconSearch, IconX } from "@tabler/icons-react";
 import { useState } from "react";
 
 export default function Visualizar() {
     const [searchValue, setSearchValue] = useState("");
+    const { usuarios } = useUsuario();
 
     const handleClearInput = () => {
         setSearchValue("");
     };
 
-    interface User {
-        id: number;
-        name: string;
-        profile: string;
-        active: boolean;
-        workHours: string;
-        workDays: string[];
-    }
+    const filterUsuarios = (usuarios: Partial<Usuario>[]) => {
+        return usuarios.filter((u) =>
+            u.nome_completo!.toLowerCase().includes(searchValue.toLowerCase())
+        );
+    };
 
-    const users: User[] = [
-        { id: 1, name: "João Silva", profile: "Administrador", active: true, workHours: "09:00 - 18:00", workDays: ["Seg", "Ter", "Qua", "Qui", "Sex"] },
-        { id: 2, name: "Maria Oliveira", profile: "Usuário", active: false, workHours: "10:00 - 19:00", workDays: ["Ter", "Qua", "Sex"] },
-        { id: 3, name: "Pedro Santos", profile: "Gerente", active: true, workHours: "08:00 - 17:00", workDays: ["Seg", "Qua", "Sex"] },
-    ];
-
-    const filteredUsers = users.filter((user) =>
-        user.name.toLowerCase().includes(searchValue.toLowerCase())
-    );
+    const filteredUsuarios = filterUsuarios(usuarios);
 
     return (
         <div className="flex flex-col gap-8 justify-center items-center w-full">
@@ -65,7 +57,7 @@ export default function Visualizar() {
 
             <div className="w-full max-w-4xl flex-1">
                 <table className="w-full border border-zinc-300 rounded-md overflow-hidden">
-                    <thead className="bg-zinc-700 text-zinc-200"> 
+                    <thead className="bg-zinc-700 text-zinc-200">
                         <tr>
                             <th className="py-2 text-center font-medium text-sm border border-zinc-800">Nome</th>
                             <th className="py-2 text-center font-medium text-sm border border-zinc-800">Perfil</th>
@@ -76,22 +68,22 @@ export default function Visualizar() {
                     </thead>
 
                     <tbody>
-                        {filteredUsers.map((user) => (
-                            <tr
-                                key={user.id}
-                                className="bg-zinc-900 text-zinc-400 hover:bg-zinc-600"
-                            >
-                                <td className="py-4 text-center font-light text-sm border border-zinc-800">{user.name}</td>
-                                <td className="py-4 text-center font-light text-sm border border-zinc-800">{user.profile}</td>
-                                <td className="py-4 text-center font-light text-sm border border-zinc-800">
-                                    {user.active ? "Sim" : "Não"}
-                                </td>
-                                <td className="py-4 text-center font-light text-sm border border-zinc-800">{user.workHours}</td>
-                                <td className="py-4 text-center font-light text-sm border border-zinc-800">{user.workDays.join(", ")}</td>
-                            </tr>
-                        ))}
-
-                        {filteredUsers.length === 0 && (
+                        {filteredUsuarios.length > 0 ? (
+                            filteredUsuarios.map((u) => (
+                                <tr
+                                    key={u.id}
+                                    className="bg-zinc-900 text-zinc-400 hover:bg-zinc-600"
+                                >
+                                    <td className="py-4 text-center font-light text-sm border border-zinc-800">{u.nome_completo}</td>
+                                    <td className="py-4 text-center font-light text-sm border border-zinc-800">{u.perfis![0].nome}</td>
+                                    <td className="py-4 text-center font-light text-sm border border-zinc-800">
+                                        {u.ativo ? "Sim" : "Não"}
+                                    </td>
+                                    <td className="py-4 text-center font-light text-sm border border-zinc-800">{u.horas_trabalho}</td>
+                                    <td className="py-4 text-center font-light text-sm border border-zinc-800">{u.dias_trabalho}</td>
+                                </tr>
+                            ))
+                        ) : (
                             <tr>
                                 <td
                                     colSpan={5}

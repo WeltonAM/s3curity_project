@@ -32,6 +32,8 @@ export class UsuarioPrisma implements RepositorioUsuario {
       telefone: usuario.telefone,
       ativo: usuario.ativo,
       url_imagem_perfil: usuario.url_imagem_perfil,
+      dias_trabalho: usuario.dias_trabalho,
+      horas_trabalho: usuario.horas_trabalho,
     }));
   }
 }

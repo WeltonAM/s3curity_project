@@ -25,6 +25,8 @@ model Usuario {
   dois_fatores_ativado Boolean   @default(false)
   telefone             String?
   url_imagem_perfil    String?
+  horas_trabalho       String?
+  dias_trabalho        String?
 
   usuarioPerfis UsuarioPerfil[]
   logins        Login[]
@@ -48,7 +50,7 @@ model Perfil {
 model Permissao {
   id        String   @id @default(uuid())
   slug      String   @unique
-  nome      String   
+  nome      String
   descricao String?
   criado_em DateTime @default(now())
   ativo     Boolean  @default(true)
