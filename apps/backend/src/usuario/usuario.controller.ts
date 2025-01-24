@@ -1,4 +1,5 @@
-import { Body, Controller, Ip, Post } from '@nestjs/common';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { Body, Controller, Get, Ip, Post } from '@nestjs/common';
 import { BcryptProvider } from './bcrypt.provider';
 import * as jwt from 'jsonwebtoken';
 import { UsuarioPrisma } from './usuario.prisma';
@@ -6,6 +7,7 @@ import { LoginUsuario, RegistrarUsuario, Usuario } from '@s3curity/core';
 import { LoginPrisma } from 'src/login/login.prisma';
 import { PerfilPrisma } from 'src/perfil/perfil.prisma';
 import { PermissaoPrisma } from 'src/permissao/permissao.prisma';
+import { UsuarioLogado } from 'src/shared/usuario.decorator';
 
 @Controller('usuario')
 export class UsuarioController {
@@ -87,6 +89,38 @@ export class UsuarioController {
       status: 201,
       message: 'Usuário cadastrado com sucesso!',
       usuario: usuario,
+    };
+  }
+
+  @Get('todos')
+  async todos(@UsuarioLogado() usuario: Usuario): Promise<{
+    status: number;
+    message: string;
+    usuarios: Partial<Usuario>[];
+  }> {
+    const usuarios = await this.repo.buscarTodos();
+
+    const usuariosComPerfis = await Promise.all(
+      usuarios.map(async (usuario) => {
+        const perfis = await this.perfilRepo.buscarPerfilPorUsuarioEmail(
+          usuario.email!,
+        );
+
+        return {
+          ...usuario,
+          perfis: perfis.map((perfil) => ({
+            id: perfil.id,
+            nome: perfil.nome,
+            ativo: perfil.ativo,
+          })),
+        };
+      }),
+    );
+
+    return {
+      status: 200,
+      message: 'Usuários recuperados com sucesso!',
+      usuarios: usuariosComPerfis,
     };
   }
 }

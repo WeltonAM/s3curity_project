@@ -14,4 +14,8 @@ import { PermissaoModule } from 'src/permissao/permissao.module';
   controllers: [UsuarioController],
   providers: [UsuarioMiddleware, UsuarioPrisma, BcryptProvider],
 })
-export class UsuarioModule {}
+export class UsuarioModule {
+  configure(consumer: any) {
+    consumer.apply(UsuarioMiddleware).forRoutes('usuario/todos');
+  }
+}

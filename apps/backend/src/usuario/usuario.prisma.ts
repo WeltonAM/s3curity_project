@@ -21,4 +21,17 @@ export class UsuarioPrisma implements RepositorioUsuario {
 
     return usuario ?? null;
   }
+
+  async buscarTodos(): Promise<Partial<Usuario>[]> {
+    const usuarios = await this.prisma.usuario.findMany();
+
+    return usuarios.map((usuario) => ({
+      id: usuario.id,
+      nome_completo: usuario.nome_completo,
+      email: usuario.email,
+      telefone: usuario.telefone,
+      ativo: usuario.ativo,
+      url_imagem_perfil: usuario.url_imagem_perfil,
+    }));
+  }
 }
