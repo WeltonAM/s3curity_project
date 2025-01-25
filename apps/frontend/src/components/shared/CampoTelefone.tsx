@@ -3,6 +3,7 @@ import { useState } from "react";
 export interface CampoTelefoneProps extends React.InputHTMLAttributes<HTMLInputElement> {
     onChangeText?: (s: string) => void
     outerClassName?: string
+    lable?: string
 }
 
 export default function CampoTelefone(props: CampoTelefoneProps) {
@@ -37,30 +38,46 @@ export default function CampoTelefone(props: CampoTelefoneProps) {
     };
 
     return (
-        <div className={`flex items-center bg-black rounded-md border border-white/10 text-white ${props.outerClassName}`}>
-            <div className="flex items-center px-2">
-                <select
-                    value={codigoPais}
-                    onChange={(e) => setCodigoPais(e.target.value)}
-                    className="bg-transparent text-md cursor-pointer"
-                >
-                    {paises.map((pais) => (
-                        <option key={pais.codigo} value={pais.codigo} className="text-black">
-                            {pais.bandeira}
-                        </option>
-                    ))}
-                </select>
-            </div>
+        <div className="flex flex-col gap-1">
+            {
+                props.lable && (
+                    <label htmlFor="telefone" className="text-xs text-zinc-300">
+                        {props.lable}
+                    </label>
+                )
+            }
 
-            <input
-                type="tel"
-                id="telefone"
-                name="telefone"
-                className="p-2 flex-1 bg-transparent text-white text-md"
-                value={props.value}
-                maxLength={15}
-                onChange={handleChange}
-            />
+            <div
+                className={`
+                    flex items-center bg-black 
+                    rounded-md border border-white/10 text-white 
+                    ${props.outerClassName}
+                `}
+            >
+                <div className="flex items-center px-2">
+                    <select
+                        value={codigoPais}
+                        onChange={(e) => setCodigoPais(e.target.value)}
+                        className="bg-transparent text-md cursor-pointer"
+                    >
+                        {paises.map((pais) => (
+                            <option key={pais.codigo} value={pais.codigo} className="text-black">
+                                {pais.bandeira}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <input
+                    type="tel"
+                    id="telefone"
+                    name="telefone"
+                    className="p-2 flex-1 bg-transparent text-white text-md"
+                    value={props.value}
+                    maxLength={15}
+                    onChange={handleChange}
+                />
+            </div>
         </div>
     );
 }

@@ -3,10 +3,12 @@ import { useState } from 'react'
 
 export interface CampoSenhaProps extends React.InputHTMLAttributes<HTMLInputElement> {
     id: string
-    texto: string
+    texto?: string
+    label: string
     onChangeText?: (s: string) => void
     mostrarIconeCadeado?: boolean
     mostrarIconeSenha?: boolean
+    somenteLeitura?: boolean
 }
 
 export default function CampoSenha(props: CampoSenhaProps) {
@@ -18,12 +20,19 @@ export default function CampoSenha(props: CampoSenhaProps) {
 
     return (
         <div className="flex flex-col gap-1 relative">
-            <label htmlFor={props.id} className="text-xs text-zinc-300">{props.texto}</label>
+            <label htmlFor={props.id} className="text-xs text-zinc-300">{props.label}</label>
             <input
-                type={mostrarSenha ? "text" : "password"}
+                type={mostrarSenha || props.somenteLeitura ? "text" : "password"}
                 id={props.id}
                 name={props.id}
-                className={`p-2 ${props.mostrarIconeCadeado ? 'pl-10' : ''} bg-black rounded-md border border-white/10 text-sm text-white`}
+                readOnly={props.somenteLeitura}
+                value={props.texto || ""}
+                className={`
+                    ${props.mostrarIconeCadeado ? 'pl-10' : ''} 
+                    p-2 bg-black rounded-md 
+                    border border-white/10 
+                    text-sm text-white
+                `}
                 onChange={(e) => {
                     props.onChange?.(e)
                     props.onChangeText?.(e.target.value)

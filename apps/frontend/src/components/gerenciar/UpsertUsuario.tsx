@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
 import useUsuario from "@/data/hooks/useUsuario";
@@ -5,6 +6,10 @@ import { Usuario } from "@s3curity/core";
 import { IconRotateClockwise } from "@tabler/icons-react";
 import { useState, useEffect, useRef } from "react";
 import usePerfil from "@/data/hooks/usePerfil";
+import CampoNome from "../shared/CampoNome";
+import CampoTelefone from "../shared/CampoTelefone";
+import CampoEmail from "../shared/CampoEmail";
+import CampoSenha from "../shared/CampoSenha";
 
 interface ModalUsuarioProps {
     isEditing: boolean;
@@ -17,6 +22,7 @@ export default function UpsertUsuario({ isEditing, perfil, onClose, onSave }: Mo
     const [nome, setNome] = useState<string>(perfil?.nome_completo || "");
     const [telefone, setTelefone] = useState<string>(perfil?.telefone || "");
     const [email, setEmail] = useState<string>(perfil?.email || "");
+    const [senha, setSenha] = useState<string>(perfil?.senha || "#Senha123");
     const [ativo, setAtivo] = useState<boolean>(perfil?.ativo || false);
     const [horasTrabalho, setHorasTrabalho] = useState<string>(perfil?.horas_trabalho || "08:00 - 18:00");
     const [diasTrabalho, setDiasTrabalho] = useState<string[]>(perfil?.dias_trabalho?.split(",") || []);
@@ -75,7 +81,9 @@ export default function UpsertUsuario({ isEditing, perfil, onClose, onSave }: Mo
         let formattedValue = numericValue;
 
         if (numericValue.length > 4) {
-            formattedValue = `${numericValue.slice(0, 2)}:${numericValue.slice(2, 4)} - ${numericValue.slice(4, 6)}:${numericValue.slice(6, 8)}`;
+            formattedValue = `
+                ${numericValue.slice(0, 2)}:${numericValue.slice(2, 4)} - ${numericValue.slice(4, 6)}:${numericValue.slice(6, 8)}
+            `;
         } else if (numericValue.length > 2) {
             formattedValue = `${numericValue.slice(0, 2)}:${numericValue.slice(2)}`;
         }
@@ -94,7 +102,6 @@ export default function UpsertUsuario({ isEditing, perfil, onClose, onSave }: Mo
         return false;
     }
 
-
     useEffect(() => {
         if (isEditing && perfil?.permissoes) {
             setPerfisSelecionados(perfil.permissoes.map((p) => p.id));
@@ -102,7 +109,13 @@ export default function UpsertUsuario({ isEditing, perfil, onClose, onSave }: Mo
     }, [isEditing, perfil]);
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm flex items-center justify-center select-none">
+        <div
+            className="
+                fixed inset-0 bg-black bg-opacity-70 
+                backdrop-blur-sm flex items-center 
+                justify-center select-none
+            "
+        >
             <div className="flex flex-col bg-zinc-800 p-6 rounded-md shadow-md">
                 <h2 className="text-lg font-bold mb-4">
                     {isEditing ? "Editar Usuário" : "Incluir Usuário"}
@@ -111,19 +124,8 @@ export default function UpsertUsuario({ isEditing, perfil, onClose, onSave }: Mo
                 <form className="grid grid-cols-1 sm:grid-cols-2 px-4 gap-4">
                     <div className="flex flex-col gap-4">
                         <div className="flex flex-col gap-2">
-                            <input
-                                type="text"
-                                name="nome"
-                                value={nome}
-                                onChange={(e) => {
-                                    setNome(e.target.value);
-                                    verificarNomeEmUso(e.target.value);
-                                }}
-                                onBlur={() => verificarNomeEmUso(nome)}
-                                placeholder="Nome"
-                                className="border border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-700 px-2 py-1 rounded-md bg-zinc-950"
-                                autoComplete="off"
-                            />
+                            <CampoNome ladoIcone="left" onChangeText={setNome} />
+
                             {emailEmUso && !isEditing && (
                                 <div className="text-red-500 text-sm">
                                     Este email já está em uso.
@@ -132,43 +134,22 @@ export default function UpsertUsuario({ isEditing, perfil, onClose, onSave }: Mo
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <input
-                                type="text"
-                                name="telefone"
-                                value={telefone}
-                                onChange={(e) => setTelefone(e.target.value)}
-                                placeholder="Telefone"
-                                className="border border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-700 px-2 py-1 rounded-md bg-zinc-950"
-                                autoComplete="off"
-                            />
+                            <CampoTelefone onChangeText={setTelefone} lable="Telefone" />
                         </div>
 
                         {!isEditing && (
                             <>
                                 <div className="flex flex-col gap-2">
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        placeholder="Email"
-                                        className="border border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-700 px-2 py-1 rounded-md bg-zinc-950"
-                                        autoComplete="off"
-                                    />
+                                    <CampoEmail ladoIcone="left" onChangeText={setEmail} />
                                 </div>
 
                                 <div className="flex flex-col gap-2">
-                                    <label htmlFor="senha" className="text-sm text-zinc-400 ml-1">
-                                        Senha Padrão:
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="senha"
-                                        value="#Senha123"
-                                        readOnly
-                                        placeholder="Senha"
-                                        className="border border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-700 px-2 py-1 rounded-md bg-zinc-950 -mt-2"
-                                        autoComplete="off"
+                                    <CampoSenha 
+                                        id="senha" 
+                                        texto={senha} 
+                                        label="Senha Padrão" 
+                                        onChangeText={setSenha} 
+                                        somenteLeitura={true} 
                                     />
                                 </div>
                             </>
@@ -176,7 +157,10 @@ export default function UpsertUsuario({ isEditing, perfil, onClose, onSave }: Mo
 
                         <div className="flex flex-col gap-2">
                             <div className="flex flex-col gap-2">
-                                <label htmlFor="horas_trabalho" className="text-sm text-zinc-400 ml-1">Horas de Trabalho:</label>
+                                <label htmlFor="horas_trabalho" className="text-xs text-zinc-300">
+                                    Horas de Trabalho
+                                </label>
+
                                 <input
                                     type="text"
                                     name="horas_trabalho"
@@ -193,14 +177,18 @@ export default function UpsertUsuario({ isEditing, perfil, onClose, onSave }: Mo
                                         }
                                     }}
                                     placeholder="Ex: 08:00 - 18:00"
-                                    className="border border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-700 px-2 py-1 rounded-md bg-zinc-950 -mt-2"
+                                    className="
+                                        p-2 bg-black rounded-md 
+                                        border border-white/10 
+                                        text-sm text-white -mt-1
+                                    "
                                     autoComplete="off"
                                 />
                             </div>
                         </div>
                     </div>
 
-                    <div className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-4 mt-2">
                         <div className="flex gap-2 items-center">
                             <label className="text-sm text-zinc-400">Ativo:</label>
                             <input
