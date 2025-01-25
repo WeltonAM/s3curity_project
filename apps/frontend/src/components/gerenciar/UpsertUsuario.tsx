@@ -18,7 +18,7 @@ export default function UpsertUsuario({ isEditing, perfil, onClose, onSave }: Mo
     const [telefone, setTelefone] = useState<string>(perfil?.telefone || "");
     const [email, setEmail] = useState<string>(perfil?.email || "");
     const [ativo, setAtivo] = useState<boolean>(perfil?.ativo || false);
-    const [horasTrabalho, setHorasTrabalho] = useState<string>(perfil?.horas_trabalho || "09:00 - 18:00");
+    const [horasTrabalho, setHorasTrabalho] = useState<string>(perfil?.horas_trabalho || "08:00 - 18:00");
     const [diasTrabalho, setDiasTrabalho] = useState<string[]>(perfil?.dias_trabalho?.split(",") || []);
     const [emailEmUso, setEmailEmUso] = useState<boolean>(false);
     const [perfisSelecionados, setPerfisSelecionados] = useState<string[]>(perfil?.permissoes?.map((p) => p.id) || []);
@@ -69,6 +69,31 @@ export default function UpsertUsuario({ isEditing, perfil, onClose, onSave }: Mo
 
         await onSave(perfilData, perfisSelecionados);
     };
+
+    const formatHorasTrabalho = (value: string): string => {
+        const numericValue = value.replace(/[^0-9]/g, "");
+        let formattedValue = numericValue;
+
+        if (numericValue.length > 4) {
+            formattedValue = `${numericValue.slice(0, 2)}:${numericValue.slice(2, 4)} - ${numericValue.slice(4, 6)}:${numericValue.slice(6, 8)}`;
+        } else if (numericValue.length > 2) {
+            formattedValue = `${numericValue.slice(0, 2)}:${numericValue.slice(2)}`;
+        }
+
+        return formattedValue;
+    }
+
+    const validateHorasTrabalho = (horasTrabalho: string): boolean => {
+        const parts = horasTrabalho.split(" - ");
+        if (parts.length === 2) {
+            const start = parts[0];
+            const end = parts[1];
+            const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+            return timeRegex.test(start) && timeRegex.test(end);
+        }
+        return false;
+    }
+
 
     useEffect(() => {
         if (isEditing && perfil?.permissoes) {
@@ -150,16 +175,28 @@ export default function UpsertUsuario({ isEditing, perfil, onClose, onSave }: Mo
                         )}
 
                         <div className="flex flex-col gap-2">
-                            <label htmlFor="horas_trabalho" className="text-sm text-zinc-400 ml-1">Horas de Trabalho:</label>
-                            <input
-                                type="text"
-                                name="horas_trabalho"
-                                value={horasTrabalho}
-                                onChange={(e) => setHorasTrabalho(e.target.value)}
-                                placeholder="Ex: 09:00 - 18:00"
-                                className="border border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-700 px-2 py-1 rounded-md bg-zinc-950 -mt-2"
-                                autoComplete="off"
-                            />
+                            <div className="flex flex-col gap-2">
+                                <label htmlFor="horas_trabalho" className="text-sm text-zinc-400 ml-1">Horas de Trabalho:</label>
+                                <input
+                                    type="text"
+                                    name="horas_trabalho"
+                                    value={horasTrabalho}
+                                    onChange={(e) => {
+                                        const formattedValue = formatHorasTrabalho(e.target.value);
+                                        if (formattedValue.length <= 17) {
+                                            setHorasTrabalho(formattedValue);
+                                        }
+                                    }}
+                                    onBlur={() => {
+                                        if (!validateHorasTrabalho(horasTrabalho)) {
+                                            setHorasTrabalho("08:00 - 18:00");
+                                        }
+                                    }}
+                                    placeholder="Ex: 08:00 - 18:00"
+                                    className="border border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-700 px-2 py-1 rounded-md bg-zinc-950 -mt-2"
+                                    autoComplete="off"
+                                />
+                            </div>
                         </div>
                     </div>
 
