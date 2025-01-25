@@ -100,4 +100,22 @@ describe("SalvarPerfil", () => {
     const perfisSalvos = await repositorioPerfilMock.buscarTodosPerfis();
     expect(perfisSalvos[0]!.criado_em).toBeDefined();
   });
+
+  it("deve lançar erro ao tentar salvar perfil com nome duplicado", async () => {
+    const perfil = {
+      nome: "Perfil com Nome Duplicado",
+      descricao: "Perfil com nome duplicado",
+    };
+
+    await salvarPerfil.executar(perfil);
+
+    const perfilComNomeDuplicado = {
+      nome: "Perfil com Nome Duplicado",
+      descricao: "Perfil com nome duplicado",
+    };
+
+    await expect(salvarPerfil.executar(perfilComNomeDuplicado)).rejects.toThrow(
+      "Já existe um perfil com este nome."
+    );
+  });
 });
