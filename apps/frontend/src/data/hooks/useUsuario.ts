@@ -8,13 +8,14 @@ interface UseUsuarioResponse {
   usuarios: Partial<Usuario>[];
   buscarTodosUsuarios: () => Promise<void>;
   buscarUsuarioPorEmail: (email: string) => Promise<Partial<Usuario> | null>;
+  salvarUsuario: (usuario: Partial<Usuario>) => Promise<void>;
 }
 
 export default function useUsuario(): UseUsuarioResponse {
   const [isLoading, startTransition] = useTransition();
   const [usuarios, setUsuarios] = useState<Partial<Usuario>[]>([]);
-  const { httpGet } = useAPI();
-  const { adicionarErro } = useMensagem();
+  const { httpGet, httpPost } = useAPI();
+  const { adicionarErro, adicionarSucesso } = useMensagem();
 
   const buscarUsuarioPorEmail = useCallback(
     async (email: string): Promise<Partial<Usuario> | null> => {
@@ -51,6 +52,23 @@ export default function useUsuario(): UseUsuarioResponse {
     });
   }, [httpGet, adicionarErro]);
 
+  const salvarUsuario = useCallback(async (usuario: Partial<Usuario>) => {
+    try {
+      const response = await httpPost("/usuario/registrar", usuario);
+      const { status, message } = response;
+
+      if (status === 201) {
+        adicionarSucesso(message);
+        buscarTodosUsuarios(); 
+      } else {
+        adicionarErro(message || "Erro ao salvar usuário.");
+      }
+    } catch (error) {
+      console.error("Erro ao salvar usuário:", error);
+      adicionarErro("Falha ao salvar usuário.");
+    }
+  }, [httpPost, adicionarErro, adicionarSucesso, buscarTodosUsuarios]);
+
   useEffect(() => {
     buscarTodosUsuarios();
   }, [buscarTodosUsuarios]);
@@ -60,5 +78,6 @@ export default function useUsuario(): UseUsuarioResponse {
     usuarios,
     buscarTodosUsuarios,
     buscarUsuarioPorEmail,
+    salvarUsuario,
   };
 }

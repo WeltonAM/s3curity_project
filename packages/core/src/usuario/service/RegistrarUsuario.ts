@@ -23,8 +23,12 @@ export default class RegistrarUsuario {
             email: usuario.email,
             senha: senhaCriptografada,
             ativo: true,
-            criado_em: new Date(),
+            telefone: usuario.telefone || "",
+            url_imagem_perfil: usuario.url_imagem_perfil || "",
+            horas_trabalho: usuario.horas_trabalho || "",
+            dias_trabalho: usuario.dias_trabalho || "",
             dois_fatores_ativado: false,
+            criado_em: new Date(),
         };
 
         await this.repositorioUsuario.salvar(novoUsuario);

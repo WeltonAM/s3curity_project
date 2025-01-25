@@ -2,7 +2,7 @@
 
 import useUsuario from "@/data/hooks/useUsuario";
 import { Usuario } from "@s3curity/core";
-import { IconRotateClockwise } from "@tabler/icons-react";
+import { IconClockCog, IconRotateClockwise } from "@tabler/icons-react";
 import { useState, useEffect, useRef } from "react";
 import CampoNome from "../shared/CampoNome";
 import CampoTelefone from "../shared/CampoTelefone";
@@ -68,39 +68,34 @@ export default function UpsertUsuario({ isEditing, usuario, onClose, onSave }: M
     const handleSubmit = async () => {
         const usuarioData = {
             ...usuario,
-            nome,
+            nome_completo: nome,
             telefone,
+            email,
+            senha,
             ativo,
+            horas_trabalho: horasTrabalho,
+            dias_trabalho: diasTrabalho.join(","),
         };
 
         await onSave(usuarioData, perfisSelecionados);
+        onClose();
     };
 
     const formatHorasTrabalho = (value: string): string => {
         const numericValue = value.replace(/[^0-9]/g, "");
+
         let formattedValue = numericValue;
 
-        if (numericValue.length > 4) {
-            formattedValue = `
-                ${numericValue.slice(0, 2)}:${numericValue.slice(2, 4)} - ${numericValue.slice(4, 6)}:${numericValue.slice(6, 8)}
-            `;
-        } else if (numericValue.length > 2) {
+        if (numericValue.length >= 2) {
             formattedValue = `${numericValue.slice(0, 2)}:${numericValue.slice(2)}`;
         }
 
-        return formattedValue;
-    }
-
-    const validateHorasTrabalho = (horasTrabalho: string): boolean => {
-        const parts = horasTrabalho.split(" - ");
-        if (parts.length === 2) {
-            const start = parts[0];
-            const end = parts[1];
-            const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
-            return timeRegex.test(start) && timeRegex.test(end);
+        if (numericValue.length > 4) {
+            formattedValue = `${numericValue.slice(0, 2)}:${numericValue.slice(2, 4)} - ${numericValue.slice(4, 6)}:${numericValue.slice(6, 8)}`;
         }
-        return false;
-    }
+
+        return formattedValue;
+    };
 
     useEffect(() => {
         if (isEditing && usuario?.permissoes) {
@@ -166,6 +161,7 @@ export default function UpsertUsuario({ isEditing, usuario, onClose, onSave }: M
                                         id="senha"
                                         texto={senha}
                                         label="Senha Padrão"
+                                        mostrarIconeCadeado
                                         onChangeText={setSenha}
                                         somenteLeitura={true}
                                     />
@@ -174,7 +170,7 @@ export default function UpsertUsuario({ isEditing, usuario, onClose, onSave }: M
                         )}
 
                         <div className="flex flex-col gap-2">
-                            <div className="flex flex-col gap-2">
+                            <div className="flex flex-col gap-2 relative">
                                 <label htmlFor="horas_trabalho" className="text-xs text-zinc-300">
                                     Horas de Trabalho
                                 </label>
@@ -185,24 +181,20 @@ export default function UpsertUsuario({ isEditing, usuario, onClose, onSave }: M
                                     value={horasTrabalho}
                                     onChange={(e) => {
                                         const formattedValue = formatHorasTrabalho(e.target.value);
-                                        if (formattedValue.length <= 17) {
-                                            setHorasTrabalho(formattedValue);
-                                        }
-                                    }}
-                                    onBlur={() => {
-                                        if (!validateHorasTrabalho(horasTrabalho)) {
-                                            setHorasTrabalho("08:00 - 18:00");
-                                        }
+                                        setHorasTrabalho(formattedValue);
                                     }}
                                     placeholder="Ex: 08:00 - 18:00"
                                     className="
-                                        p-2 bg-black rounded-md 
+                                        p-2 pl-10 bg-black rounded-md 
                                         border border-white/10 
                                         text-sm text-white -mt-1
                                     "
                                     autoComplete="off"
                                 />
+
+                                <IconClockCog className="absolute left-3 top-10 transform -translate-y-1/2 text-zinc-400" size={20} />
                             </div>
+
                         </div>
                     </div>
 

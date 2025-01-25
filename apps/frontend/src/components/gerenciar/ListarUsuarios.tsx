@@ -8,7 +8,7 @@ import UpsertUsuario from "./UpsertUsuario";
 import useUsuario from "@/data/hooks/useUsuario";
 
 export default function ListarUsuarios() {
-    const { usuarios, isLoading } = useUsuario();
+    const { usuarios, isLoading, salvarUsuario } = useUsuario();
     const [isModalUpsertOpen, setIsModalUpsertOpen] = useState(false);
     const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
@@ -31,14 +31,15 @@ export default function ListarUsuarios() {
         setCurrentUsuario(null);
     };
 
-    // const handleSaveUsuario = async (usuario: Partial<Usuario>, permissoesIds: string[]) => {
-    //     if (u.id) {
-    //         await salvarUsuario(usuario);
-    //         await relacionarUsuarioComPermissao(u.id, permissoesIds);
-    //     }
+    const handleSaveUsuario = async (usuario: Partial<Usuario>, perfisIds: string[]) => {
+        if (usuario.id) {
+            await salvarUsuario(usuario);
+            console.log(perfisIds);
+            // await relacionarUsuarioComPermissao(usuario.id, perfisIds);
+        }
 
-    //     handleCloseModal();
-    // };
+        handleCloseModal();
+    };
 
     const hadleOpenModalDelete = async (usuario: Partial<Usuario>) => {
         setIsModalDeleteOpen(true);
@@ -50,10 +51,10 @@ export default function ListarUsuarios() {
         setCurrentUsuario(null);
     };
 
-    // const handleDeleteUsuarioConfirm = async (id: string) => {
-    //     await deletarUsuario(id);
-    //     handleCloseModalDelete();
-    // };
+    const handleDeleteUsuarioConfirm = async (id: string) => {
+        await deletarUsuario(id);
+        handleCloseModalDelete();
+    };
 
     if (isLoading) {
         return <Carregando />;
@@ -125,7 +126,7 @@ export default function ListarUsuarios() {
                     isEditing={isEditing}
                     usuario={currentUsuario}
                     onClose={handleCloseModal}
-                // onSave={handleSaveUsuario}
+                    onSave={handleSaveUsuario}
                 />
             )}
 
