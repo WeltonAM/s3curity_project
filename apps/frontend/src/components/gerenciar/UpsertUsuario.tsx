@@ -1,47 +1,47 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
 import useUsuario from "@/data/hooks/useUsuario";
 import { Usuario } from "@s3curity/core";
 import { IconRotateClockwise } from "@tabler/icons-react";
 import { useState, useEffect, useRef } from "react";
-import usePerfil from "@/data/hooks/usePerfil";
 import CampoNome from "../shared/CampoNome";
 import CampoTelefone from "../shared/CampoTelefone";
 import CampoEmail from "../shared/CampoEmail";
 import CampoSenha from "../shared/CampoSenha";
+import usePerfil from "@/data/hooks/usePerfil";
 
 interface ModalUsuarioProps {
     isEditing: boolean;
-    perfil: Partial<Usuario> | null;
+    usuario: Partial<Usuario> | null;
     onClose: () => void;
-    onSave: (perfil: Partial<Usuario>, permissoesIds: string[]) => Promise<void>;
+    onSave: (usuario: Partial<Usuario>, permissoesIds: string[]) => Promise<void>;
 }
 
-export default function UpsertUsuario({ isEditing, perfil, onClose, onSave }: ModalUsuarioProps) {
-    const [nome, setNome] = useState<string>(perfil?.nome_completo || "");
-    const [telefone, setTelefone] = useState<string>(perfil?.telefone || "");
-    const [email, setEmail] = useState<string>(perfil?.email || "");
-    const [senha, setSenha] = useState<string>(perfil?.senha || "#Senha123");
-    const [ativo, setAtivo] = useState<boolean>(perfil?.ativo || false);
-    const [horasTrabalho, setHorasTrabalho] = useState<string>(perfil?.horas_trabalho || "08:00 - 18:00");
-    const [diasTrabalho, setDiasTrabalho] = useState<string[]>(perfil?.dias_trabalho?.split(",") || []);
-    const [emailEmUso, setEmailEmUso] = useState<boolean>(false);
-    const [perfisSelecionados, setPerfisSelecionados] = useState<string[]>(perfil?.permissoes?.map((p) => p.id) || []);
-
-    const { isLoading } = useUsuario();
+export default function UpsertUsuario({ isEditing, usuario, onClose, onSave }: ModalUsuarioProps) {
+    const { isLoading, buscarUsuarioPorEmail } = useUsuario();
     const { perfis, isLoading: perfisCarregando } = usePerfil();
+
+    const [nome, setNome] = useState<string>(usuario?.nome_completo || "");
+    const [telefone, setTelefone] = useState<string>(usuario?.telefone || "");
+    const [email, setEmail] = useState<string>(usuario?.email || "");
+    const [senha, setSenha] = useState<string>(usuario?.senha || "#Senha123");
+    const [ativo, setAtivo] = useState<boolean>(usuario?.ativo || false);
+    const [horasTrabalho, setHorasTrabalho] = useState<string>(usuario?.horas_trabalho || "08:00 - 18:00");
+    const [diasTrabalho, setDiasTrabalho] = useState<string[]>(usuario?.dias_trabalho?.split(",") || []);
+    const [emailEmUso, setEmailEmUso] = useState<boolean>(false);
+    const [perfisSelecionados, setPefisSelecionados] = useState<string[]>(usuario?.perfis?.map((p) => p.id) || []);
 
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    const verificarNomeEmUso = async (nome: string) => {
+    const verificarEmailEmUso = async (email: string) => {
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
         }
 
         timeoutRef.current = setTimeout(async () => {
-            if (!isEditing && nome) {
-                const res = await buscarUsuarioPorEmail(nome);
+            if (!isEditing && email) {
+                const res = await buscarUsuarioPorEmail(email);
+                console.log(res);
                 setEmailEmUso(!!res);
             }
         }, 500);
@@ -59,21 +59,21 @@ export default function UpsertUsuario({ isEditing, perfil, onClose, onSave }: Mo
 
     const handlePerfisToggle = (id: string) => {
         if (perfisSelecionados.includes(id)) {
-            setPerfisSelecionados((prev) => prev.filter((pid) => pid !== id));
+            setPefisSelecionados((prev) => prev.filter((pid) => pid !== id));
         } else {
-            setPerfisSelecionados((prev) => [...prev, id]);
+            setPefisSelecionados((prev) => [...prev, id]);
         }
     };
 
     const handleSubmit = async () => {
-        const perfilData = {
-            ...perfil,
+        const usuarioData = {
+            ...usuario,
             nome,
             telefone,
             ativo,
         };
 
-        await onSave(perfilData, perfisSelecionados);
+        await onSave(usuarioData, perfisSelecionados);
     };
 
     const formatHorasTrabalho = (value: string): string => {
@@ -103,10 +103,10 @@ export default function UpsertUsuario({ isEditing, perfil, onClose, onSave }: Mo
     }
 
     useEffect(() => {
-        if (isEditing && perfil?.permissoes) {
-            setPerfisSelecionados(perfil.permissoes.map((p) => p.id));
+        if (isEditing && usuario?.permissoes) {
+            setPefisSelecionados(usuario.permissoes.map((p) => p.id));
         }
-    }, [isEditing, perfil]);
+    }, [isEditing, usuario]);
 
     return (
         <div
@@ -124,32 +124,50 @@ export default function UpsertUsuario({ isEditing, perfil, onClose, onSave }: Mo
                 <form className="grid grid-cols-1 sm:grid-cols-2 px-4 gap-4">
                     <div className="flex flex-col gap-4">
                         <div className="flex flex-col gap-2">
-                            <CampoNome ladoIcone="left" onChangeText={setNome} />
-
-                            {emailEmUso && !isEditing && (
-                                <div className="text-red-500 text-sm">
-                                    Este email já está em uso.
-                                </div>
-                            )}
+                            <CampoNome
+                                value={nome}
+                                ladoIcone="left"
+                                onChangeText={setNome}
+                            />
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <CampoTelefone onChangeText={setTelefone} lable="Telefone" />
+                            <CampoTelefone
+                                telefoneValue={telefone}
+                                onChangeText={setTelefone}
+                                lable="Telefone"
+                            />
                         </div>
 
                         {!isEditing && (
                             <>
                                 <div className="flex flex-col gap-2">
-                                    <CampoEmail ladoIcone="left" onChangeText={setEmail} />
+                                    <CampoEmail
+                                        value={email}
+                                        ladoIcone="left"
+                                        iverterIcone
+                                        onChangeText={
+                                            (email) => {
+                                                setEmail(email);
+                                                verificarEmailEmUso(email);
+                                            }
+                                        }
+                                    />
+
+                                    {emailEmUso && !isEditing && (
+                                        <div className="text-red-500 text-sm">
+                                            Este email já está em uso.
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="flex flex-col gap-2">
-                                    <CampoSenha 
-                                        id="senha" 
-                                        texto={senha} 
-                                        label="Senha Padrão" 
-                                        onChangeText={setSenha} 
-                                        somenteLeitura={true} 
+                                    <CampoSenha
+                                        id="senha"
+                                        texto={senha}
+                                        label="Senha Padrão"
+                                        onChangeText={setSenha}
+                                        somenteLeitura={true}
                                     />
                                 </div>
                             </>
@@ -233,6 +251,7 @@ export default function UpsertUsuario({ isEditing, perfil, onClose, onSave }: Mo
                                                 checked={perfisSelecionados.includes(p.id!)}
                                                 onChange={() => handlePerfisToggle(p.id!)}
                                             />
+
                                             {p.nome}
                                         </label>
                                     ))

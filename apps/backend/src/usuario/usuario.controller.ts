@@ -124,7 +124,7 @@ export class UsuarioController {
     };
   }
 
-  @Get('usuario/:email')
+  @Get('email/:email')
   async buscarPorEmail(
     @UsuarioLogado() usuario: Usuario,
     @Param('email') email: string,

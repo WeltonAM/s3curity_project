@@ -1,5 +1,7 @@
 ### Variáveis
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImI4ZGYxMjM4LThiMzgtNGNlMi05MWVjLTM2ZWE2MzAzYzg5NyIsIm5vbWVfY29tcGxldG8iOiJBZG1pbmlzdHJhZG9yIFNpc3RlbWEiLCJlbWFpbCI6ImFkbWluQHNpc3RlbWEuY29tIiwidXJsX2ltYWdlbV9wZXJmaWwiOm51bGwsInBlcmZpcyI6W3sibm9tZSI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNzb2VzIjpbIlZpc3VhbGl6YXIgUmVsYXTDs3Jpb3MiXX1dLCJpYXQiOjE3Mzc3MjMxOTUsImV4cCI6MTczOTAxOTE5NX0.qywGTfFvBFAhOTjS7CDJripQ4oodJ7UEMLkdcyf7FoQ
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImRlOTc3NDhlLWQ0MjgtNDExYi1iMjYwLTU3OWVmMTllZGU2ZiIsIm5vbWVfY29tcGxldG8iOiJBZG1pbmlzdHJhZG9yIFNpc3RlbWEiLCJlbWFpbCI6ImFkbWluQHNpc3RlbWEuY29tIiwidXJsX2ltYWdlbV9wZXJmaWwiOm51bGwsInBlcmZpcyI6W3sibm9tZSI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNzb2VzIjpbIlZpc3VhbGl6YXIgUmVsYXTDs3Jpb3MiLCJDcmlhciBVc3XDoXJpb3MiLCJFZGl0YXIgVXN1w6FyaW9zIiwiRXhjbHVpciBDb21lbnTDoXJpb3MiXX1dLCJpYXQiOjE3Mzc4MjQyMzAsImV4cCI6MTczOTEyMDIzMH0.VwJmAK4dfjKJCjZXN1M4Z-DJeXdWbunrqTTZsJoaN8I
+
+@email = admin@sistema.com
 
 ### Registrar usuário
 POST http://localhost:4000/usuario/registrar
@@ -25,5 +27,5 @@ GET http://localhost:4000/usuario/todos
 Authorization: Bearer {{token}}
 
 ### Buscar usuário por email
-GET http://localhost:4000/usuario/usuario/admin@sistema.com
+GET http://localhost:4000/usuario/email/{{email}}   
 Authorization: Bearer {{token}}

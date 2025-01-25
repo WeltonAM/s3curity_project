@@ -7,6 +7,7 @@ interface UseUsuarioResponse {
   isLoading: boolean;
   usuarios: Partial<Usuario>[];
   buscarTodosUsuarios: () => Promise<void>;
+  buscarUsuarioPorEmail: (email: string) => Promise<Partial<Usuario> | null>;
 }
 
 export default function useUsuario(): UseUsuarioResponse {
@@ -14,6 +15,25 @@ export default function useUsuario(): UseUsuarioResponse {
   const [usuarios, setUsuarios] = useState<Partial<Usuario>[]>([]);
   const { httpGet } = useAPI();
   const { adicionarErro } = useMensagem();
+
+  const buscarUsuarioPorEmail = useCallback(
+    async (email: string): Promise<Partial<Usuario> | null> => {
+      try {
+        const response = await httpGet(`/usuario/email/${email}`);
+        const { status, usuario } = response;
+
+        if (status !== 200) {
+          return null;
+        }
+
+        return usuario;
+      } catch (error) {
+        console.error("Erro ao buscar usuário por email:", error);
+        return null;
+      }
+    },
+    [httpGet]
+  );
 
   const buscarTodosUsuarios = useCallback(async () => {
     startTransition(async () => {
@@ -39,5 +59,6 @@ export default function useUsuario(): UseUsuarioResponse {
     isLoading,
     usuarios,
     buscarTodosUsuarios,
+    buscarUsuarioPorEmail,
   };
 }

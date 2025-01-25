@@ -6,7 +6,7 @@ import useMensagem from "./useMensagem";
 interface UsePerfilResponse {
   isLoading: boolean;
   perfis: Partial<Perfil>[];
-  buscarPerfilPorNome: (slug: string) => Promise<Partial<Perfil> | null>;
+  buscarPerfilPorNome: (nome: string) => Promise<Partial<Perfil> | null>;
   salvarPerfil: (perfil: Partial<Perfil>) => Promise<void>;
   deletarPerfil: (id: string) => Promise<void>;
   relacionarPerfilComPermissao: (

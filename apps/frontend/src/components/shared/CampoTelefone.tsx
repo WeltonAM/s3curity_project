@@ -4,6 +4,7 @@ export interface CampoTelefoneProps extends React.InputHTMLAttributes<HTMLInputE
     onChangeText?: (s: string) => void
     outerClassName?: string
     lable?: string
+    telefoneValue?: string
 }
 
 export default function CampoTelefone(props: CampoTelefoneProps) {
@@ -73,7 +74,7 @@ export default function CampoTelefone(props: CampoTelefoneProps) {
                     id="telefone"
                     name="telefone"
                     className="p-2 flex-1 bg-transparent text-white text-md"
-                    value={props.value}
+                    value={formatarTelefone(props.telefoneValue || "")}
                     maxLength={15}
                     onChange={handleChange}
                 />

@@ -5,6 +5,7 @@ export interface CampoEmailProps extends React.InputHTMLAttributes<HTMLInputElem
     onChangeText?: (s: string) => void
     ladoIcone: string
     iverterIcone?: boolean
+    value?: string
 }
 
 export default function CampoEmail(props: CampoEmailProps) {
@@ -16,6 +17,7 @@ export default function CampoEmail(props: CampoEmailProps) {
                 type="email"
                 id="email"
                 name="email"
+                value={props.value}
                 className={`
                     ${props.iverterIcone ? 'pl-10' : ''} 
                     p-2 bg-black rounded-md 
