@@ -8,7 +8,11 @@ interface UseUsuarioResponse {
   usuarios: Partial<Usuario>[];
   buscarTodosUsuarios: () => Promise<void>;
   buscarUsuarioPorEmail: (email: string) => Promise<Partial<Usuario> | null>;
-  salvarUsuario: (usuario: Partial<Usuario>) => Promise<void>;
+  salvarUsuario: (usuario: Partial<Usuario>) => Promise<Partial<Usuario> | null>;
+  relacionarUsuarioComPerfis: (
+    usuarioId: string,
+    perfisIds: string[]
+  ) => Promise<void>;
 }
 
 export default function useUsuario(): UseUsuarioResponse {
@@ -52,22 +56,52 @@ export default function useUsuario(): UseUsuarioResponse {
     });
   }, [httpGet, adicionarErro]);
 
-  const salvarUsuario = useCallback(async (usuario: Partial<Usuario>) => {
-    try {
-      const response = await httpPost("/usuario/registrar", usuario);
-      const { status, message } = response;
+  const relacionarUsuarioComPerfis = useCallback(
+    async (usuarioId: string, perfisIds: string[]) => {
+      try {
+        const response = await httpPost(`/usuario/relacionar-perfis`, {
+          usuarioId,
+          perfisIds,
+        });
 
-      if (status === 201) {
-        adicionarSucesso(message);
-        buscarTodosUsuarios(); 
-      } else {
-        adicionarErro(message || "Erro ao salvar usuário.");
+        const { status, message } = response;
+
+        if (status !== 200) {
+          adicionarErro("Erro ao relacionar perfis.");
+        }
+
+        return message;
+      } catch (error) {
+        console.error("Erro ao relacionar perfis:", error);
+        adicionarErro("Falha ao relacionar perfis.");
       }
-    } catch (error) {
-      console.error("Erro ao salvar usuário:", error);
-      adicionarErro("Falha ao salvar usuário.");
-    }
-  }, [httpPost, adicionarErro, adicionarSucesso, buscarTodosUsuarios]);
+    },
+    [httpPost, adicionarErro]
+  );
+
+  const salvarUsuario = useCallback(
+    async (usuario: Partial<Usuario>): Promise<Partial<Usuario> | null> => {
+      try {
+        const response = await httpPost("/usuario/registrar", usuario);
+        const { status, message, novoUsuario } = response;
+
+        if (status === 201) {
+          buscarTodosUsuarios();
+          adicionarSucesso("Usuário salvo com sucesso.");
+
+          return novoUsuario;
+        } else {
+          adicionarErro(message || "Erro ao salvar usuário.");
+        }
+      } catch (error) {
+        console.error("Erro ao salvar usuário:", error);
+        adicionarErro("Falha ao salvar usuário.");
+      }
+
+      return null;
+    },
+    [httpPost, adicionarErro, adicionarSucesso, buscarTodosUsuarios]
+  );
 
   useEffect(() => {
     buscarTodosUsuarios();
@@ -79,5 +113,6 @@ export default function useUsuario(): UseUsuarioResponse {
     buscarTodosUsuarios,
     buscarUsuarioPorEmail,
     salvarUsuario,
+    relacionarUsuarioComPerfis,
   };
 }

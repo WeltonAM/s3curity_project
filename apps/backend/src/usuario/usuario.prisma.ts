@@ -36,4 +36,17 @@ export class UsuarioPrisma implements RepositorioUsuario {
       horas_trabalho: usuario.horas_trabalho,
     }));
   }
+
+  async relacionarUsuarioComPerfil(
+    usuarioId: string,
+    perfilId: string,
+  ): Promise<void> {
+    await this.prisma.usuarioPerfil.upsert({
+      where: {
+        usuario_id_perfil_id: { usuario_id: usuarioId, perfil_id: perfilId },
+      },
+      create: { usuario_id: usuarioId, perfil_id: perfilId },
+      update: {},
+    });
+  }
 }

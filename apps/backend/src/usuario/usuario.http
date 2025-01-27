@@ -3,6 +3,10 @@
 
 @email = admin@sistema.com
 
+@usuarioId = a3bd0d50-5292-4408-8ce8-b86ad347659a
+
+@perfisIds = ["925ed89e-fa3a-421c-a430-ced087d4b29f"]
+
 ### Registrar usuário
 POST http://localhost:4000/usuario/registrar
 Content-Type: application/json
@@ -29,3 +33,13 @@ Authorization: Bearer {{token}}
 ### Buscar usuário por email
 GET http://localhost:4000/usuario/email/{{email}}   
 Authorization: Bearer {{token}}
+
+### Relacionar usuário com Perfil
+POST http://localhost:4000/usuario/relacionar-perfis
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "usuarioId": "{{usuarioId}}",
+    "perfisIds": {{perfisIds}}
+}

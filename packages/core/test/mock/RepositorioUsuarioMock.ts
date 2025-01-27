@@ -1,3 +1,4 @@
+import { Perfil } from "../../dist";
 import { Usuario, RepositorioUsuario, Id } from "../../src";
 
 export default class RepositorioUsuarioMock implements RepositorioUsuario {
@@ -27,5 +28,16 @@ export default class RepositorioUsuarioMock implements RepositorioUsuario {
 
   async buscarTodos(): Promise<Partial<Usuario>[]> {
     return this.usuarios;
+  }
+
+  async relacionarUsuarioComPerfil(
+    usuarioId: string,
+    perfilId: string
+  ): Promise<void> {
+    const usuario = this.usuarios.find((u) => u.id === usuarioId);
+
+    if (usuario) {
+      usuario.perfis!.push({ id: perfilId } as Perfil);
+    }
   }
 }

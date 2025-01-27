@@ -78,7 +78,6 @@ export default function UpsertUsuario({ isEditing, usuario, onClose, onSave }: M
         };
 
         await onSave(usuarioData, perfisSelecionados);
-        onClose();
     };
 
     const formatHorasTrabalho = (value: string): string => {

@@ -6,4 +6,6 @@ export default interface RepositorioUsuario {
     buscarPorEmail(email: string): Promise<Usuario | null>;
 
     buscarTodos(): Promise<Partial<Usuario>[]>;
+
+    relacionarUsuarioComPerfil(usuarioId: string, perfilId: string): Promise<void>;
 }

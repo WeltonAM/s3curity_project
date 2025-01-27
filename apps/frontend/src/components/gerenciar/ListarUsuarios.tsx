@@ -8,7 +8,7 @@ import UpsertUsuario from "./UpsertUsuario";
 import useUsuario from "@/data/hooks/useUsuario";
 
 export default function ListarUsuarios() {
-    const { usuarios, isLoading, salvarUsuario } = useUsuario();
+    const { usuarios, isLoading, salvarUsuario, relacionarUsuarioComPerfis } = useUsuario();
     const [isModalUpsertOpen, setIsModalUpsertOpen] = useState(false);
     const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
@@ -32,16 +32,15 @@ export default function ListarUsuarios() {
     };
 
     const handleSaveUsuario = async (usuario: Partial<Usuario>, perfisIds: string[]) => {
-        if (usuario.id) {
-            await salvarUsuario(usuario);
-            console.log("USUARIO", usuario);
-            console.log("PERFIS", perfisIds);
-            // await relacionarUsuarioComPermissao(usuario.id, perfisIds);
+        const novoUsuario = await salvarUsuario(usuario);
+    
+        if (novoUsuario?.id) {
+            await relacionarUsuarioComPerfis(novoUsuario.id!, perfisIds);
         }
-
+    
         handleCloseModal();
     };
-
+    
     const hadleOpenModalDelete = async (usuario: Partial<Usuario>) => {
         setIsModalDeleteOpen(true);
         setCurrentUsuario(usuario);

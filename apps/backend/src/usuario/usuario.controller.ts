@@ -78,17 +78,20 @@ export class UsuarioController {
   }
 
   @Post('registrar')
-  async registrar(
-    @Body() usuario: Usuario,
-  ): Promise<{ status: number; message: string; usuario?: Usuario }> {
+  async registrar(@Body() usuario: Usuario): Promise<{
+    status: number;
+    message: string;
+    novoUsuario?: Partial<Usuario> | void;
+  }> {
     const casoDeUso = new RegistrarUsuario(this.repo, this.cripto);
+    const novoUsuario = await casoDeUso.executar(usuario);
 
-    await casoDeUso.executar(usuario);
+    console.log('CONTROLLER: ', novoUsuario);
 
     return {
       status: 201,
       message: 'Usuário cadastrado com sucesso!',
-      usuario: usuario,
+      novoUsuario: novoUsuario,
     };
   }
 
@@ -144,5 +147,16 @@ export class UsuarioController {
         horas_trabalho: usuarioEncontrado.horas_trabalho,
       },
     };
+  }
+
+  @Post('relacionar-perfis')
+  async relacionarPerfis(
+    @Body() body: { usuarioId: string; perfisIds: string[] },
+  ): Promise<{ status: number; message: string }> {
+    for (const perfilId of body.perfisIds) {
+      await this.repo.relacionarUsuarioComPerfil(body.usuarioId, perfilId);
+    }
+
+    return { status: 200, message: 'Perfis relacionados com sucesso!' };
   }
 }
