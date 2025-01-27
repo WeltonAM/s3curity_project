@@ -36,11 +36,12 @@ export default function LoginForm() {
 
       <div className="flex flex-col w-full gap-2 mt-4">
         <CampoEmail value={email} onChangeText={setEmail} ladoIcone="right" />
+        
         <CampoSenha
+          label="Senha"
           id="password"
-          texto="Senha"
+          texto={password}
           mostrarIconeSenha
-          value={password}
           onChangeText={setPassword}
         />
 

@@ -34,7 +34,8 @@ export default function ListarUsuarios() {
     const handleSaveUsuario = async (usuario: Partial<Usuario>, perfisIds: string[]) => {
         if (usuario.id) {
             await salvarUsuario(usuario);
-            console.log(perfisIds);
+            console.log("USUARIO", usuario);
+            console.log("PERFIS", perfisIds);
             // await relacionarUsuarioComPermissao(usuario.id, perfisIds);
         }
 

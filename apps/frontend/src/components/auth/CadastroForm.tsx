@@ -118,9 +118,27 @@ export default function CadastroForm() {
             <span className="font-bold">Cadastrar</span>
             <div className="flex flex-col w-full gap-4 mt-4">
                 <CampoNome ladoIcone="left" onChangeText={setNome} value={nome} onChange={(e) => setNome(e.target.value)} />
+
                 <CampoEmail value={email} onChangeText={setEmail} ladoIcone="left" iverterIcone />
-                <CampoSenha id="password" texto="Senha" mostrarIconeSenha mostrarIconeCadeado value={password} onChangeText={setPassword} />
-                <CampoSenha id="confirmPassword" texto="Confirme a senha" mostrarIconeCadeado value={confirmPassword} onChangeText={setConfirmPassword} />
+
+                <CampoSenha
+                    label="Senha"
+                    id="password"
+                    texto={password}
+                    mostrarIconeSenha
+                    mostrarIconeCadeado
+                    onChangeText={setPassword}
+                />
+
+                <CampoSenha
+                    label="Confirmar senha"
+                    id="confirmPassword"
+                    texto={confirmPassword}
+                    mostrarIconeSenha
+                    mostrarIconeCadeado
+                    onChangeText={setConfirmPassword}
+                />
+
                 <CampoTelefone value={telefone} onChangeText={setTelefone} outerClassName="mt-4" />
 
                 <button
