@@ -172,13 +172,33 @@ export class UsuarioController {
 
   @Post('relacionar-perfis')
   async relacionarPerfis(
-    @Body() body: { usuarioId: string; perfisIds: string[] },
+    @UsuarioLogado() usuarioLogado: Usuario,
+    @Body() body: { usuario: Partial<Usuario>; perfisIds: string[] },
   ): Promise<{ status: number; message: string }> {
-    for (const perfilId of body.perfisIds) {
-      await this.repo.relacionarUsuarioComPerfil(body.usuarioId, perfilId);
+    const { usuario, perfisIds } = body;
+
+    const perfisAtuais = await this.perfilRepo.buscarPerfilPorUsuarioEmail(
+      usuario.email!,
+    );
+    const perfisAtuaisIds = perfisAtuais.map((perfil) => perfil.id);
+
+    const perfisParaAdicionar = perfisIds.filter(
+      (id) => !perfisAtuaisIds.includes(id),
+    );
+
+    const perfisParaRemover = perfisAtuaisIds.filter(
+      (id) => !perfisIds.includes(id),
+    );
+
+    for (const perfilId of perfisParaAdicionar) {
+      await this.repo.relacionarUsuarioComPerfil(usuario, perfilId);
     }
 
-    return { status: 200, message: 'Perfis relacionados com sucesso!' };
+    for (const perfilId of perfisParaRemover) {
+      await this.repo.removerRelacaoUsuarioPerfil(usuario.id, perfilId);
+    }
+
+    return { status: 200, message: 'Perfis atualizados com sucesso!' };
   }
 
   @Put('atualizar/:email')
@@ -192,31 +212,22 @@ export class UsuarioController {
     usuarioAtualizado?: Partial<Usuario>;
   }> {
     const casoDeUso = new AtualizarUsuario(this.repo, this.cripto);
+    const usuarioAtualizado = await casoDeUso.executar(email, dadosAtualizados);
 
-    try {
-      const usuarioAtualizado = await casoDeUso.executar(
-        email,
-        dadosAtualizados,
-      );
-
-      return {
-        status: 200,
-        message: 'Usuário atualizado com sucesso!',
-        usuarioAtualizado,
-      };
-    } catch (error) {
-      return {
-        status: 404,
-        message: error.message,
-      };
-    }
+    return {
+      status: 200,
+      message: 'Usuário atualizado com sucesso!',
+      usuarioAtualizado: usuarioAtualizado,
+    };
   }
 
-  @Delete('deletar/:id')
+  @Delete('deletar/:email')
   async deletar(
-    @Param('id') id: string,
+    @UsuarioLogado() usuarioLogado: Usuario,
+    @Param('email') email: string,
   ): Promise<{ status: number; message: string }> {
-    await this.repo.deletar(id);
+    const usuario = await this.repo.buscarPorEmail(email);
+    await this.repo.deletar(usuario);
 
     return { status: 200, message: 'Usuário deletado com sucesso!' };
   }

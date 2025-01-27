@@ -14,16 +14,21 @@ export default class AtualizarUsuario {
   ): Promise<Partial<Usuario>> {
     const usuarioExistente =
       await this.repositorioUsuario.buscarPorEmail(email);
+
     if (!usuarioExistente) {
       throw new Error("Usuário não encontrado.");
     }
+
+    const senhaCriptografada = await this.provedorCriptografia.criptografar(
+      dadosAtualizados.senha!
+    );
 
     const usuarioAtualizado: Partial<Usuario> = {
       ...usuarioExistente,
       nome_completo:
         dadosAtualizados.nome_completo || usuarioExistente.nome_completo,
       senha: dadosAtualizados.senha
-        ? await this.provedorCriptografia.criptografar(dadosAtualizados.senha)
+        ? senhaCriptografada
         : usuarioExistente.senha,
       telefone: dadosAtualizados.telefone || usuarioExistente.telefone,
       url_imagem_perfil:
@@ -36,6 +41,7 @@ export default class AtualizarUsuario {
       dois_fatores_ativado:
         dadosAtualizados.dois_fatores_ativado ??
         usuarioExistente.dois_fatores_ativado,
+      ativo: dadosAtualizados.ativo ?? usuarioExistente.ativo,
     };
 
     await this.repositorioUsuario.salvar(usuarioAtualizado);

@@ -8,7 +8,7 @@ import UpsertUsuario from "./UpsertUsuario";
 import useUsuario from "@/data/hooks/useUsuario";
 
 export default function ListarUsuarios() {
-    const { usuarios, isLoading, salvarUsuario, relacionarUsuarioComPerfis, deletarUsuario } = useUsuario();
+    const { usuarios, isLoading, salvarUsuario, relacionarUsuarioComPerfis, deletarUsuario, atualizarUsuario } = useUsuario();
     const [isModalUpsertOpen, setIsModalUpsertOpen] = useState(false);
     const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
@@ -32,15 +32,23 @@ export default function ListarUsuarios() {
     };
 
     const handleSaveUsuario = async (usuario: Partial<Usuario>, perfisIds: string[]) => {
-        const novoUsuario = await salvarUsuario(usuario);
-    
-        if (novoUsuario?.id) {
-            await relacionarUsuarioComPerfis(novoUsuario.id!, perfisIds);
+        if (isEditing && currentUsuario?.email) {
+            const usuarioAtualizado = await atualizarUsuario(usuario);
+            
+            if (usuarioAtualizado?.id) {
+                await relacionarUsuarioComPerfis(usuarioAtualizado, perfisIds);
+            }
+        } else {
+            const novoUsuario = await salvarUsuario(usuario);
+
+            if (novoUsuario?.id) {
+                await relacionarUsuarioComPerfis(novoUsuario, perfisIds);
+            }
         }
-    
+
         handleCloseModal();
     };
-    
+
     const hadleOpenModalDelete = async (usuario: Partial<Usuario>) => {
         setIsModalDeleteOpen(true);
         setCurrentUsuario(usuario);
@@ -51,8 +59,8 @@ export default function ListarUsuarios() {
         setCurrentUsuario(null);
     };
 
-    const handleDeleteUsuarioConfirm = async (id: string) => {
-        await deletarUsuario(id);
+    const handleDeleteUsuarioConfirm = async (usuarioEmail: string) => {
+        await deletarUsuario(usuarioEmail);
         handleCloseModalDelete();
     };
 
@@ -61,7 +69,7 @@ export default function ListarUsuarios() {
     }
 
     if (!usuarios || usuarios.length === 0) {
-        return <div>Nenhum usuario encontrado.</div>;
+        return <div>Nenhum usuário encontrado.</div>;
     }
 
     return (
@@ -143,12 +151,13 @@ export default function ListarUsuarios() {
                         </p>
 
                         <button
-                            onClick={() => handleDeleteUsuarioConfirm(currentUsuario!.id as string)}
+                            onClick={() => handleDeleteUsuarioConfirm(currentUsuario?.email as string)}
                             className="
                                 bg-red-600 hover:bg-red-500 text-white
                                 font-bold py-2 px-4 rounded
                                 focus:outline-none focus:ring-2 focus:ring-offset-2
-                                focus:ring-offset-gray-800 focus:ring-white"
+                                focus:ring-offset-gray-800 focus:ring-white
+                            "
                         >
                             Deletar
                         </button>
@@ -159,7 +168,8 @@ export default function ListarUsuarios() {
                                 bg-zinc-700 hover:bg-zinc-600 text-zinc-200
                                 font-bold py-2 px-4 rounded
                                 focus:outline-none focus:ring-2 focus:ring-offset-2
-                                focus:ring-offset-gray-800focus:ring-white"
+                                focus:ring-offset-gray-800focus:ring-white
+                            "
                         >
                             Cancelar
                         </button>

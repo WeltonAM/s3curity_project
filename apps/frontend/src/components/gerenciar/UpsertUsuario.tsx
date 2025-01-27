@@ -27,7 +27,7 @@ export default function UpsertUsuario({ isEditing, usuario, onClose, onSave }: M
     const [senha, setSenha] = useState<string>(usuario?.senha || "#Senha123");
     const [ativo, setAtivo] = useState<boolean>(usuario?.ativo || false);
     const [horasTrabalho, setHorasTrabalho] = useState<string>(usuario?.horas_trabalho || "08:00 - 18:00");
-    const [diasTrabalho, setDiasTrabalho] = useState<string[]>(usuario?.dias_trabalho?.split(",") || []);
+    const [diasTrabalho, setDiasTrabalho] = useState<string>(usuario?.dias_trabalho || "");
     const [emailEmUso, setEmailEmUso] = useState<boolean>(false);
     const [perfisSelecionados, setPefisSelecionados] = useState<string[]>(usuario?.perfis?.map((p) => p.id) || []);
 
@@ -50,9 +50,9 @@ export default function UpsertUsuario({ isEditing, usuario, onClose, onSave }: M
     const handleDiasTrabalhoChange = (dia: string) => {
         setDiasTrabalho((prev) => {
             if (prev.includes(dia)) {
-                return prev.filter((d) => d !== dia);
+                return prev.split(",").filter(d => d !== dia).join(",");
             } else {
-                return [...prev, dia];
+                return prev ? `${prev},${dia}` : dia;
             }
         });
     };
@@ -74,7 +74,7 @@ export default function UpsertUsuario({ isEditing, usuario, onClose, onSave }: M
             senha,
             ativo,
             horas_trabalho: horasTrabalho,
-            dias_trabalho: diasTrabalho.join(","),
+            dias_trabalho: diasTrabalho,
         };
 
         await onSave(usuarioData, perfisSelecionados);

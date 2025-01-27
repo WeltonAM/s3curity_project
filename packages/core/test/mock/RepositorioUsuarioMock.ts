@@ -31,17 +31,30 @@ export default class RepositorioUsuarioMock implements RepositorioUsuario {
   }
 
   async relacionarUsuarioComPerfil(
-    usuarioId: string,
+    usuario: Partial<Usuario>,
     perfilId: string
   ): Promise<void> {
-    const usuario = this.usuarios.find((u) => u.id === usuarioId);
+    const usuarioEncontrado = await this.buscarPorEmail(usuario.email!);
 
-    if (usuario) {
-      usuario.perfis!.push({ id: perfilId } as Perfil);
+    if (!usuarioEncontrado) {
+      throw new Error(`Usuário com e-mail ${usuario.email} não encontrado.`);
+    }
+
+    if (usuarioEncontrado) {
+      const perfilExistente = usuarioEncontrado.perfis?.find(
+        (perfil) => perfil.id === perfilId
+      );
+
+      if (!perfilExistente) {
+        usuarioEncontrado.perfis = [
+          ...(usuarioEncontrado.perfis || []),
+          { id: perfilId } as Perfil,
+        ];
+      }
     }
   }
 
-  async deletar(usuarioId: string): Promise<void> {
-    this.usuarios = this.usuarios.filter((u) => u.id !== usuarioId);
+  async deletar(usuario: Partial<Usuario>): Promise<void> {
+    this.usuarios = this.usuarios.filter((u) => u.id !== usuario.id);
   }
 }

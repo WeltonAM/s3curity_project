@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback, useTransition } from "react";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { useState, useEffect, useCallback } from "react";
 import { Usuario } from "@s3curity/core";
 import useAPI from "./useApi";
 import useMensagem from "./useMensagem";
@@ -12,20 +13,24 @@ interface UseUsuarioResponse {
     usuario: Partial<Usuario>
   ) => Promise<Partial<Usuario> | null>;
   relacionarUsuarioComPerfis: (
-    usuarioId: string,
+    usuario: Partial<Usuario>,
     perfisIds: string[]
   ) => Promise<void>;
-  deletarUsuario: (usuarioId: string) => void;
+  deletarUsuario: (usuarioEmail: string) => void;
+  atualizarUsuario: (
+    usuario: Partial<Usuario>
+  ) => Promise<Partial<Usuario> | null>;
 }
 
 export default function useUsuario(): UseUsuarioResponse {
-  const [isLoading, startTransition] = useTransition();
+  const [isLoading, setIsLoading] = useState(false);
   const [usuarios, setUsuarios] = useState<Partial<Usuario>[]>([]);
-  const { httpGet, httpPost, httpDelete } = useAPI();
+  const { httpGet, httpPost, httpDelete, httpPut } = useAPI();
   const { adicionarErro, adicionarSucesso } = useMensagem();
 
   const buscarUsuarioPorEmail = useCallback(
     async (email: string): Promise<Partial<Usuario> | null> => {
+      setIsLoading(true);
       try {
         const response = await httpGet(`/usuario/email/${email}`);
         const { status, usuario } = response;
@@ -38,32 +43,36 @@ export default function useUsuario(): UseUsuarioResponse {
       } catch (error) {
         console.error("Erro ao buscar usuário por email:", error);
         return null;
+      } finally {
+        setIsLoading(false);
       }
     },
     [httpGet]
   );
 
   const buscarTodosUsuarios = useCallback(async () => {
-    startTransition(async () => {
-      try {
-        const response = await httpGet("/usuario/todos");
-        const { status, usuarios } = response;
+    setIsLoading(true);
+    try {
+      const response = await httpGet("/usuario/todos");
+      const { status, usuarios } = response;
 
-        if (status === 200) {
-          setUsuarios(usuarios);
-        }
-      } catch (error) {
-        console.error("Erro ao buscar todos os usuários:", error);
-        adicionarErro("Falha ao buscar usuários.");
+      if (status === 200) {
+        setUsuarios(usuarios);
       }
-    });
+    } catch (error) {
+      console.error("Erro ao buscar todos os usuários:", error);
+      adicionarErro("Falha ao buscar usuários.");
+    } finally {
+      setIsLoading(false);
+    }
   }, [httpGet, adicionarErro]);
 
   const relacionarUsuarioComPerfis = useCallback(
-    async (usuarioId: string, perfisIds: string[]) => {
+    async (usuario: Partial<Usuario>, perfisIds: string[]) => {
+      setIsLoading(true);
       try {
         const response = await httpPost(`/usuario/relacionar-perfis`, {
-          usuarioId,
+          usuario,
           perfisIds,
         });
 
@@ -77,35 +86,69 @@ export default function useUsuario(): UseUsuarioResponse {
       } catch (error) {
         console.error("Erro ao relacionar perfis:", error);
         adicionarErro("Falha ao relacionar perfis.");
+      } finally {
+        setIsLoading(false);
       }
     },
     [httpPost, adicionarErro]
   );
 
-  const deletarUsuario = useCallback(
-    (usuarioId: string) => {
-      startTransition(async () => {
-        try {
-          const response = await httpDelete(`/usuario/deletar/${usuarioId}`);
-          const { status, message } = response;
+  const atualizarUsuario = useCallback(
+    async (usuario: Partial<Usuario>): Promise<Partial<Usuario> | null> => {
+      setIsLoading(true);
+      try {
+        const response = await httpPut(
+          `/usuario/atualizar/${usuario.email}`,
+          usuario
+        );
 
-          if (status === 200) {
-            buscarTodosUsuarios();
-            adicionarSucesso("Usuário deletado com sucesso.");
-          } else {
-            adicionarErro(message || "Erro ao deletar usuário.");
-          }
-        } catch (error) {
-          console.error("Erro ao deletar usuário:", error);
-          adicionarErro("Falha ao deletar usuário.");
+        const { status, message, usuarioAtualizado } = response;
+
+        if (status === 200) {
+          buscarTodosUsuarios();
+          adicionarSucesso("Usuário atualizado com sucesso.");
+          return usuarioAtualizado;
+        } else {
+          adicionarErro("Erro ao atualizar usuário.");
         }
-      });
+      } catch (error) {
+        console.error("Erro ao atualizar usuário:", error);
+        adicionarErro("Falha ao atualizar usuário.");
+      } finally {
+        setIsLoading(false);
+      }
+
+      return null;
+    },
+    [httpPut, adicionarErro, adicionarSucesso, buscarTodosUsuarios]
+  );
+
+  const deletarUsuario = useCallback(
+    async (usuarioEmail: string) => {
+      setIsLoading(true);
+      try {
+        const response = await httpDelete(`/usuario/deletar/${usuarioEmail}`);
+        const { status, message } = response;
+
+        if (status === 200) {
+          buscarTodosUsuarios();
+          adicionarSucesso("Usuário deletado com sucesso.");
+        } else {
+          adicionarErro("Erro ao deletar usuário.");
+        }
+      } catch (error) {
+        console.error("Erro ao deletar usuário:", error);
+        adicionarErro("Falha ao deletar usuário.");
+      } finally {
+        setIsLoading(false);
+      }
     },
     [httpDelete, adicionarErro, adicionarSucesso, buscarTodosUsuarios]
   );
 
   const salvarUsuario = useCallback(
     async (usuario: Partial<Usuario>): Promise<Partial<Usuario> | null> => {
+      setIsLoading(true);
       try {
         const response = await httpPost("/usuario/registrar", usuario);
         const { status, message, novoUsuario } = response;
@@ -113,14 +156,15 @@ export default function useUsuario(): UseUsuarioResponse {
         if (status === 201) {
           buscarTodosUsuarios();
           adicionarSucesso("Usuário salvo com sucesso.");
-
           return novoUsuario;
         } else {
-          adicionarErro(message || "Erro ao salvar usuário.");
+          adicionarErro("Erro ao salvar usuário.");
         }
       } catch (error) {
         console.error("Erro ao salvar usuário:", error);
         adicionarErro("Falha ao salvar usuário.");
+      } finally {
+        setIsLoading(false);
       }
 
       return null;
@@ -140,5 +184,6 @@ export default function useUsuario(): UseUsuarioResponse {
     salvarUsuario,
     relacionarUsuarioComPerfis,
     deletarUsuario,
+    atualizarUsuario,
   };
 }

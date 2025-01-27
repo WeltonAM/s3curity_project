@@ -43,6 +43,25 @@ export default function useAPI() {
     [token]
   );
 
+  const httpPut = useCallback(
+    async function (caminho: string, body: any) {
+      const uri = caminho.startsWith("/") ? caminho : `/${caminho}`;
+      const urlCompleta = `${URL_BASE}${uri}`;
+
+      const resposta = await fetch(urlCompleta, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      });
+
+      return extrairDados(resposta);
+    },
+    [token]
+  );
+
   const httpDelete = useCallback(
     async function (caminho: string) {
       const uri = caminho.startsWith("/") ? caminho : `/${caminho}`;
@@ -60,8 +79,6 @@ export default function useAPI() {
     [token]
   );
 
-  return { httpGet, httpPost, httpDelete };
-
   async function extrairDados(resposta: Response) {
     let conteudo = "";
 
@@ -74,5 +91,5 @@ export default function useAPI() {
     }
   }
 
-  return { httpGet, httpPost, httpDelete };
+  return { httpGet, httpPost, httpDelete, httpPut };
 }

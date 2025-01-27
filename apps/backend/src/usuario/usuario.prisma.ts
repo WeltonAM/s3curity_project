@@ -38,25 +38,41 @@ export class UsuarioPrisma implements RepositorioUsuario {
   }
 
   async relacionarUsuarioComPerfil(
-    usuarioId: string,
+    usuario: Partial<Usuario>,
     perfilId: string,
   ): Promise<void> {
     await this.prisma.usuarioPerfil.upsert({
       where: {
-        usuario_id_perfil_id: { usuario_id: usuarioId, perfil_id: perfilId },
+        usuario_id_perfil_id: { usuario_id: usuario.id, perfil_id: perfilId },
       },
-      create: { usuario_id: usuarioId, perfil_id: perfilId },
+      create: { usuario_id: usuario.id, perfil_id: perfilId },
       update: {},
     });
   }
 
-  async deletar(usuarioId: string): Promise<void> {
+  async removerRelacaoUsuarioPerfil(
+    usuarioId: string,
+    perfilId: string,
+  ): Promise<void> {
     await this.prisma.usuarioPerfil.deleteMany({
-      where: { usuario_id: usuarioId },
+      where: {
+        usuario_id: usuarioId,
+        perfil_id: perfilId,
+      },
+    });
+  }
+
+  async deletar(usuario: Partial<Usuario>): Promise<void> {
+    await this.prisma.login.deleteMany({
+      where: { usuario_email: usuario.email },
+    });
+
+    await this.prisma.usuarioPerfil.deleteMany({
+      where: { usuario_id: usuario.id },
     });
 
     await this.prisma.usuario.delete({
-      where: { id: usuarioId },
+      where: { id: usuario.id },
     });
   }
 }
