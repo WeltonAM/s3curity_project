@@ -46,3 +46,18 @@ Authorization: Bearer {{token}}
 
 ### Remover usuário
 DELETE http://localhost:4000/usuario/deletar/{{usuarioId}}
+
+### Atualizar usuário
+PUT http://localhost:4000/usuario/atualizar/{{email}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "nome_completo": "João da S.",
+    "email": "joao@email.com",
+    "senha": "!Senha123",
+    "url_imagem_perfil": "https://www.google.com.br",
+    "horas_trabalho": "08:00 - 18:00",
+    "dias_trabalho": "Seg,Ter,Qua,",
+    "telefone": "(11) 99999-9999"
+}

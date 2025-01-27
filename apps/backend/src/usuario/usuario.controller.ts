@@ -1,9 +1,23 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Body, Controller, Delete, Get, Ip, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Ip,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { BcryptProvider } from './bcrypt.provider';
 import * as jwt from 'jsonwebtoken';
 import { UsuarioPrisma } from './usuario.prisma';
-import { LoginUsuario, RegistrarUsuario, Usuario } from '@s3curity/core';
+import {
+  AtualizarUsuario,
+  LoginUsuario,
+  RegistrarUsuario,
+  Usuario,
+} from '@s3curity/core';
 import { LoginPrisma } from 'src/login/login.prisma';
 import { PerfilPrisma } from 'src/perfil/perfil.prisma';
 import { PermissaoPrisma } from 'src/permissao/permissao.prisma';
@@ -165,6 +179,37 @@ export class UsuarioController {
     }
 
     return { status: 200, message: 'Perfis relacionados com sucesso!' };
+  }
+
+  @Put('atualizar/:email')
+  async atualizar(
+    @UsuarioLogado() usuario: Usuario,
+    @Param('email') email: string,
+    @Body() dadosAtualizados: Partial<Usuario>,
+  ): Promise<{
+    status: number;
+    message: string;
+    usuarioAtualizado?: Partial<Usuario>;
+  }> {
+    const casoDeUso = new AtualizarUsuario(this.repo, this.cripto);
+
+    try {
+      const usuarioAtualizado = await casoDeUso.executar(
+        email,
+        dadosAtualizados,
+      );
+
+      return {
+        status: 200,
+        message: 'Usuário atualizado com sucesso!',
+        usuarioAtualizado,
+      };
+    } catch (error) {
+      return {
+        status: 404,
+        message: error.message,
+      };
+    }
   }
 
   @Delete('deletar/:id')
