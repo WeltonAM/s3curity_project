@@ -49,4 +49,14 @@ export class UsuarioPrisma implements RepositorioUsuario {
       update: {},
     });
   }
+
+  async deletar(usuarioId: string): Promise<void> {
+    await this.prisma.usuarioPerfil.deleteMany({
+      where: { usuario_id: usuarioId },
+    });
+
+    await this.prisma.usuario.delete({
+      where: { id: usuarioId },
+    });
+  }
 }

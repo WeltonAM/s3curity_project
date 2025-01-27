@@ -8,17 +8,20 @@ interface UseUsuarioResponse {
   usuarios: Partial<Usuario>[];
   buscarTodosUsuarios: () => Promise<void>;
   buscarUsuarioPorEmail: (email: string) => Promise<Partial<Usuario> | null>;
-  salvarUsuario: (usuario: Partial<Usuario>) => Promise<Partial<Usuario> | null>;
+  salvarUsuario: (
+    usuario: Partial<Usuario>
+  ) => Promise<Partial<Usuario> | null>;
   relacionarUsuarioComPerfis: (
     usuarioId: string,
     perfisIds: string[]
   ) => Promise<void>;
+  deletarUsuario: (usuarioId: string) => void;
 }
 
 export default function useUsuario(): UseUsuarioResponse {
   const [isLoading, startTransition] = useTransition();
   const [usuarios, setUsuarios] = useState<Partial<Usuario>[]>([]);
-  const { httpGet, httpPost } = useAPI();
+  const { httpGet, httpPost, httpDelete } = useAPI();
   const { adicionarErro, adicionarSucesso } = useMensagem();
 
   const buscarUsuarioPorEmail = useCallback(
@@ -79,6 +82,28 @@ export default function useUsuario(): UseUsuarioResponse {
     [httpPost, adicionarErro]
   );
 
+  const deletarUsuario = useCallback(
+    (usuarioId: string) => {
+      startTransition(async () => {
+        try {
+          const response = await httpDelete(`/usuario/deletar/${usuarioId}`);
+          const { status, message } = response;
+
+          if (status === 200) {
+            buscarTodosUsuarios();
+            adicionarSucesso("Usuário deletado com sucesso.");
+          } else {
+            adicionarErro(message || "Erro ao deletar usuário.");
+          }
+        } catch (error) {
+          console.error("Erro ao deletar usuário:", error);
+          adicionarErro("Falha ao deletar usuário.");
+        }
+      });
+    },
+    [httpDelete, adicionarErro, adicionarSucesso, buscarTodosUsuarios]
+  );
+
   const salvarUsuario = useCallback(
     async (usuario: Partial<Usuario>): Promise<Partial<Usuario> | null> => {
       try {
@@ -114,5 +139,6 @@ export default function useUsuario(): UseUsuarioResponse {
     buscarUsuarioPorEmail,
     salvarUsuario,
     relacionarUsuarioComPerfis,
+    deletarUsuario,
   };
 }

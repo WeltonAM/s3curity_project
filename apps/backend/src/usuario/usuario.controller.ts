@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Body, Controller, Get, Ip, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Ip, Param, Post } from '@nestjs/common';
 import { BcryptProvider } from './bcrypt.provider';
 import * as jwt from 'jsonwebtoken';
 import { UsuarioPrisma } from './usuario.prisma';
@@ -86,8 +86,6 @@ export class UsuarioController {
     const casoDeUso = new RegistrarUsuario(this.repo, this.cripto);
     const novoUsuario = await casoDeUso.executar(usuario);
 
-    console.log('CONTROLLER: ', novoUsuario);
-
     return {
       status: 201,
       message: 'Usuário cadastrado com sucesso!',
@@ -131,8 +129,16 @@ export class UsuarioController {
   async buscarPorEmail(
     @UsuarioLogado() usuario: Usuario,
     @Param('email') email: string,
-  ): Promise<{ status: number; usuario?: Usuario }> {
+  ): Promise<{ status: number; message: string; usuario?: Usuario }> {
     const usuarioEncontrado = await this.repo.buscarPorEmail(email);
+
+    if (!usuarioEncontrado) {
+      return {
+        status: 404,
+        message: 'Usuário não encontrado!',
+        usuario: undefined,
+      };
+    }
 
     return {
       status: 200,
@@ -146,6 +152,7 @@ export class UsuarioController {
         dias_trabalho: usuarioEncontrado.dias_trabalho,
         horas_trabalho: usuarioEncontrado.horas_trabalho,
       },
+      message: 'Usuário recuperado com sucesso!',
     };
   }
 
@@ -158,5 +165,14 @@ export class UsuarioController {
     }
 
     return { status: 200, message: 'Perfis relacionados com sucesso!' };
+  }
+
+  @Delete('deletar/:id')
+  async deletar(
+    @Param('id') id: string,
+  ): Promise<{ status: number; message: string }> {
+    await this.repo.deletar(id);
+
+    return { status: 200, message: 'Usuário deletado com sucesso!' };
   }
 }

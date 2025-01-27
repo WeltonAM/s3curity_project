@@ -8,4 +8,6 @@ export default interface RepositorioUsuario {
     buscarTodos(): Promise<Partial<Usuario>[]>;
 
     relacionarUsuarioComPerfil(usuarioId: string, perfilId: string): Promise<void>;
+
+    deletar(usuarioId: string): Promise<void>;
 }

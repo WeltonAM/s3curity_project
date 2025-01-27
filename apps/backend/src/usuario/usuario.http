@@ -1,9 +1,9 @@
 ### Variáveis
 @token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImRlOTc3NDhlLWQ0MjgtNDExYi1iMjYwLTU3OWVmMTllZGU2ZiIsIm5vbWVfY29tcGxldG8iOiJBZG1pbmlzdHJhZG9yIFNpc3RlbWEiLCJlbWFpbCI6ImFkbWluQHNpc3RlbWEuY29tIiwidXJsX2ltYWdlbV9wZXJmaWwiOm51bGwsInBlcmZpcyI6W3sibm9tZSI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNzb2VzIjpbIlZpc3VhbGl6YXIgUmVsYXTDs3Jpb3MiLCJDcmlhciBVc3XDoXJpb3MiLCJFZGl0YXIgVXN1w6FyaW9zIiwiRXhjbHVpciBDb21lbnTDoXJpb3MiXX1dLCJpYXQiOjE3Mzc4MjQyMzAsImV4cCI6MTczOTEyMDIzMH0.VwJmAK4dfjKJCjZXN1M4Z-DJeXdWbunrqTTZsJoaN8I
 
-@email = admin@sistema.com
+@email = joao@email.com
 
-@usuarioId = a3bd0d50-5292-4408-8ce8-b86ad347659a
+@usuarioId = aa99632c-2748-49bd-99f8-58cbd99efce9
 
 @perfisIds = ["925ed89e-fa3a-421c-a430-ced087d4b29f"]
 
@@ -43,3 +43,6 @@ Authorization: Bearer {{token}}
     "usuarioId": "{{usuarioId}}",
     "perfisIds": {{perfisIds}}
 }
+
+### Remover usuário
+DELETE http://localhost:4000/usuario/deletar/{{usuarioId}}

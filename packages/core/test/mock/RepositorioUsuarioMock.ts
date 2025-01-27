@@ -40,4 +40,8 @@ export default class RepositorioUsuarioMock implements RepositorioUsuario {
       usuario.perfis!.push({ id: perfilId } as Perfil);
     }
   }
+
+  async deletar(usuarioId: string): Promise<void> {
+    this.usuarios = this.usuarios.filter((u) => u.id !== usuarioId);
+  }
 }

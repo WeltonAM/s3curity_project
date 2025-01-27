@@ -8,7 +8,7 @@ import UpsertUsuario from "./UpsertUsuario";
 import useUsuario from "@/data/hooks/useUsuario";
 
 export default function ListarUsuarios() {
-    const { usuarios, isLoading, salvarUsuario, relacionarUsuarioComPerfis } = useUsuario();
+    const { usuarios, isLoading, salvarUsuario, relacionarUsuarioComPerfis, deletarUsuario } = useUsuario();
     const [isModalUpsertOpen, setIsModalUpsertOpen] = useState(false);
     const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
