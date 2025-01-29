@@ -21,6 +21,8 @@ export default function UpsertUsuario({ isEditing, usuario, onClose, onSave }: M
     const { isLoading, buscarUsuarioPorEmail } = useUsuario();
     const { perfis, isLoading: perfisCarregando } = usePerfil();
 
+    const DIAS_ORDEM = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
+
     const [nome, setNome] = useState<string>(usuario?.nome_completo || "");
     const [telefone, setTelefone] = useState<string>(usuario?.telefone || "");
     const [email, setEmail] = useState<string>(usuario?.email || "");
@@ -49,11 +51,17 @@ export default function UpsertUsuario({ isEditing, usuario, onClose, onSave }: M
 
     const handleDiasTrabalhoChange = (dia: string) => {
         setDiasTrabalho((prev) => {
-            if (prev.includes(dia)) {
-                return prev.split(",").filter(d => d !== dia).join(",");
+            let diasArray = prev ? prev.split(",") : [];
+
+            if (diasArray.includes(dia)) {
+                diasArray = diasArray.filter(d => d !== dia);
             } else {
-                return prev ? `${prev},${dia}` : dia;
+                diasArray.push(dia);
             }
+
+            diasArray.sort((a, b) => DIAS_ORDEM.indexOf(a) - DIAS_ORDEM.indexOf(b));
+
+            return diasArray.join(",");
         });
     };
 
@@ -63,21 +71,6 @@ export default function UpsertUsuario({ isEditing, usuario, onClose, onSave }: M
         } else {
             setPefisSelecionados((prev) => [...prev, id]);
         }
-    };
-
-    const handleSubmit = async () => {
-        const usuarioData = {
-            ...usuario,
-            nome_completo: nome,
-            telefone,
-            email,
-            senha,
-            ativo,
-            horas_trabalho: horasTrabalho,
-            dias_trabalho: diasTrabalho,
-        };
-
-        await onSave(usuarioData, perfisSelecionados);
     };
 
     const formatHorasTrabalho = (value: string): string => {
@@ -94,6 +87,21 @@ export default function UpsertUsuario({ isEditing, usuario, onClose, onSave }: M
         }
 
         return formattedValue;
+    };
+
+    const handleSubmit = async () => {
+        const usuarioData = {
+            ...usuario,
+            nome_completo: nome,
+            telefone,
+            email,
+            senha,
+            ativo,
+            horas_trabalho: horasTrabalho,
+            dias_trabalho: diasTrabalho,
+        };
+
+        await onSave(usuarioData, perfisSelecionados);
     };
 
     useEffect(() => {
