@@ -17,6 +17,7 @@ interface ContextoSessaoProps {
     usuario: Partial<Usuario> | null
     iniciarSessao: (token: string) => void
     encerrarSessao: () => void
+    atualizarUsuarioSessao: (novosDados: Partial<Usuario>) => void
 }
 
 const ContextoSessao = createContext<ContextoSessaoProps>({} as ContextoSessaoProps)
@@ -74,6 +75,7 @@ export function ProvedorSessao(props: { children: React.ReactNode }) {
                     id: payload.id,
                     nome_completo: payload.nome_completo,
                     email: payload.email,
+                    telefone: payload.telefone,
                     url_imagem_perfil: payload.url_imagem_perfil,
                     perfis: payload.perfis,
                     permissoes: payload.permissoes,
@@ -84,6 +86,16 @@ export function ProvedorSessao(props: { children: React.ReactNode }) {
         }
     }
 
+    function atualizarUsuarioSessao(novosDados: Partial<Usuario>) {
+        setSessao((sessaoAtual) => ({
+            ...sessaoAtual,
+            usuario: {
+                ...sessaoAtual.usuario,
+                ...novosDados,
+            },
+        }));
+    }    
+
     return (
         <ContextoSessao.Provider
             value={{
@@ -92,6 +104,7 @@ export function ProvedorSessao(props: { children: React.ReactNode }) {
                 usuario: sessao.usuario,
                 iniciarSessao,
                 encerrarSessao,
+                atualizarUsuarioSessao,
             }}
         >
             {props.children}

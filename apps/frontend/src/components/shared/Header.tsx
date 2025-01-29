@@ -17,10 +17,10 @@ export default function Header() {
     const toggleMenu = (e: React.MouseEvent) => {
         const { clientX, clientY } = e;
 
-        setIsMenuOpen(false); 
+        setIsMenuOpen(false);
         setTimeout(() => {
             setMenuPosition({ top: clientY, left: clientX });
-            setIsMenuOpen(true); 
+            setIsMenuOpen(true);
         }, 0);
     };
 
@@ -90,7 +90,7 @@ export default function Header() {
                         transform: "translate(-50%, 10px)",
                     }}
                 >
-                    <MenuUsuario />
+                    <MenuUsuario closeMenu={() => setIsMenuOpen(false)} />
                 </div>
             )}
         </div>

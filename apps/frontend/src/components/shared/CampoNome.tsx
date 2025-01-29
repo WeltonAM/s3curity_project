@@ -23,7 +23,7 @@ export default function CampoNome(props: CampoNomeProps) {
                     props.onChangeText?.(e.target.value)
                 }}
             />
-            <IconSignature className={`absolute ${props.ladoIcone}-3 top-7 text-zinc-400`} size={20} />
+            <IconSignature className={`absolute ${props.ladoIcone}-3 left-3 top-7 text-zinc-400`} size={20} />
         </div>
     );
 }

@@ -19,17 +19,15 @@ export default class AtualizarUsuario {
       throw new Error("Usuário não encontrado.");
     }
 
-    const senhaCriptografada = await this.provedorCriptografia.criptografar(
-      dadosAtualizados.senha!
-    );
+    const senhaCriptografada = dadosAtualizados.senha
+      ? await this.provedorCriptografia.criptografar(dadosAtualizados.senha)
+      : usuarioExistente.senha;
 
     const usuarioAtualizado: Partial<Usuario> = {
       ...usuarioExistente,
       nome_completo:
         dadosAtualizados.nome_completo || usuarioExistente.nome_completo,
-      senha: dadosAtualizados.senha
-        ? senhaCriptografada
-        : usuarioExistente.senha,
+      senha: senhaCriptografada,
       telefone: dadosAtualizados.telefone || usuarioExistente.telefone,
       url_imagem_perfil:
         dadosAtualizados.url_imagem_perfil ||

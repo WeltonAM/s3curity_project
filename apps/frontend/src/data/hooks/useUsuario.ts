@@ -101,8 +101,9 @@ export default function useUsuario(): UseUsuarioResponse {
           `/usuario/atualizar/${usuario.email}`,
           usuario
         );
-
+        
         const { status, message, usuarioAtualizado } = response;
+        console.log("RESPONSE: ", response);
 
         if (status === 200) {
           buscarTodosUsuarios();

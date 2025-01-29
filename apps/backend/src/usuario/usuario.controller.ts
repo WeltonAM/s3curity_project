@@ -211,8 +211,18 @@ export class UsuarioController {
     message: string;
     usuarioAtualizado?: Partial<Usuario>;
   }> {
+    console.log(dadosAtualizados);
+
     const casoDeUso = new AtualizarUsuario(this.repo, this.cripto);
     const usuarioAtualizado = await casoDeUso.executar(email, dadosAtualizados);
+
+    if (dadosAtualizados.senha) {
+      dadosAtualizados.senha = await this.cripto.criptografar(
+        dadosAtualizados.senha,
+      );
+    } else {
+      delete dadosAtualizados.senha;
+    }
 
     return {
       status: 200,
