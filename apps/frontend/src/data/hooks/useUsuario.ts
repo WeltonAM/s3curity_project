@@ -20,6 +20,8 @@ interface UseUsuarioResponse {
   atualizarUsuario: (
     usuario: Partial<Usuario>
   ) => Promise<Partial<Usuario> | null>;
+  solicitarRecuperacao: (email: string) => Promise<void>;
+  recuperarSenha: (token: string, novaSenha: string, confirmarSenha: string) => Promise<{ status: number; message: string }>;
 }
 
 export default function useUsuario(): UseUsuarioResponse {
@@ -101,7 +103,7 @@ export default function useUsuario(): UseUsuarioResponse {
           `/usuario/atualizar/${usuario.email}`,
           usuario
         );
-        
+
         const { status, message, usuarioAtualizado } = response;
         console.log("RESPONSE: ", response);
 
@@ -147,6 +149,60 @@ export default function useUsuario(): UseUsuarioResponse {
     [httpDelete, adicionarErro, adicionarSucesso, buscarTodosUsuarios]
   );
 
+  const solicitarRecuperacao = async (email: string) => {
+    try {
+      const response = await httpPut("/usuario/solicitar-recuperacao", {
+        email,
+      });
+
+      if (response.status === 200) {
+        adicionarSucesso(response.message);
+      } else {
+        adicionarErro(response.message);
+      }
+
+      return response;
+    } catch (error) {
+      console.error("Erro ao solicitar recuperação de senha:", error);
+      adicionarErro("Erro ao solicitar recuperação de senha.");
+      return {
+        status: 400,
+        message: "Erro ao solicitar recuperação de senha.",
+      };
+    }
+  };
+
+  const recuperarSenha = async (token: string, novaSenha: string, confirmarSenha: string): Promise<{ status: number; message: string }> => {
+    setIsLoading(true);
+    try {
+      const response = await httpPut("/usuario/recuperar-senha", {
+        token,
+        novaSenha,
+        confirmarSenha,
+      });
+
+      if (response.status === 200) {
+        adicionarSucesso("Senha alterada com sucesso!");
+      } else {
+        adicionarErro(response.message);
+      }
+
+      return {
+        status: 200,
+        message: "Senha alterada com sucesso!",
+      };
+    } catch (error) {
+      console.error("Erro ao recuperar senha:", error);
+      adicionarErro("Erro ao recuperar senha.");
+      return {
+        status: 400,
+        message: "Erro ao recuperar senha.",
+      };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const salvarUsuario = useCallback(
     async (usuario: Partial<Usuario>): Promise<Partial<Usuario> | null> => {
       setIsLoading(true);
@@ -186,5 +242,7 @@ export default function useUsuario(): UseUsuarioResponse {
     relacionarUsuarioComPerfis,
     deletarUsuario,
     atualizarUsuario,
+    solicitarRecuperacao,
+    recuperarSenha
   };
 }
