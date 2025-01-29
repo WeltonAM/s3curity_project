@@ -22,6 +22,7 @@ import { LoginPrisma } from 'src/login/login.prisma';
 import { PerfilPrisma } from 'src/perfil/perfil.prisma';
 import { PermissaoPrisma } from 'src/permissao/permissao.prisma';
 import { UsuarioLogado } from 'src/shared/usuario.decorator';
+import * as nodemailer from 'nodemailer';
 
 @Controller('usuario')
 export class UsuarioController {
@@ -240,5 +241,98 @@ export class UsuarioController {
     await this.repo.deletar(usuario);
 
     return { status: 200, message: 'Usuário deletado com sucesso!' };
+  }
+
+  @Put('solicitar-recuperacao')
+  async solicitarRecuperacao(
+    @Body() dados: { email: string },
+  ): Promise<{ status: number; message: string }> {
+    const usuario = await this.repo.buscarPorEmail(dados.email);
+
+    const token = jwt.sign({ email: usuario.email }, process.env.JWT_SECRET!, {
+      expiresIn: '5m',
+    });
+
+    await this.repo.salvar({
+      ...usuario,
+      token_recuperacao: token,
+      data_expiracao_token: new Date(Date.now() + 5 * 60 * 1000),
+    });
+
+    const transporter = nodemailer.createTransport({
+      host: process.env.MAILTRAP_HOST,
+      port: parseInt(process.env.MAILTRAP_PORT || '587', 10),
+      auth: {
+        user: process.env.MAILTRAP_USER,
+        pass: process.env.MAILTRAP_PASS,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.MAILTRAP_EMAIL,
+      to: usuario.email,
+      subject: 'Recuperação de senha',
+      html: `<p>Para recuperar sua senha, clique no seguinte link:</p><p><a href="http://localhost:3000/recuperar-senha?token=${token}">Recuperar Senha</a></p>`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    return {
+      status: 200,
+      message: 'E-mail de recuperação enviado com sucesso!',
+    };
+  }
+
+  @Put('recuperar-senha')
+  async recuperarSenha(
+    @Body() dados: { token: string; novaSenha: string; confirmarSenha: string },
+  ): Promise<{ status: number; message: string }> {
+    const { token, novaSenha, confirmarSenha } = dados;
+
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+        email: string;
+      };
+
+      const usuario = await this.repo.buscarPorEmail(decoded.email);
+
+      if (
+        !usuario ||
+        usuario.token_recuperacao.trim() !== token.trim() ||
+        new Date() > usuario.data_expiracao_token
+      ) {
+        return {
+          status: 400,
+          message: 'Token inválido ou expirado!',
+        };
+      }
+
+      if (novaSenha !== confirmarSenha) {
+        return {
+          status: 400,
+          message: 'As senhas não coincidem!',
+        };
+      }
+
+      const senhaCriptografada = await this.cripto.criptografar(novaSenha);
+
+      await this.repo.salvar({
+        id: usuario.id,
+        senha: senhaCriptografada,
+        token_recuperacao: null,
+        data_expiracao_token: null,
+        email: usuario.email,
+      });
+
+      return {
+        status: 200,
+        message: 'Senha alterada com sucesso!',
+      };
+    } catch (error) {
+      return {
+        status: 400,
+        message: 'Token inválido ou expirado!',
+      };
+    }
   }
 }

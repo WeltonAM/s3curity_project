@@ -15,14 +15,14 @@ datasource db {
 
 model Usuario {
   id                   String    @id @default(uuid())
-  nome_completo        String
+  nome_completo        String?
   email                String    @unique
   senha                String?
-  criado_em            DateTime  @default(now())
-  ativo                Boolean   @default(true)
+  criado_em            DateTime? @default(now())
+  ativo                Boolean?  @default(true)
   token_recuperacao    String?
   data_expiracao_token DateTime?
-  dois_fatores_ativado Boolean   @default(false)
+  dois_fatores_ativado Boolean?  @default(false)
   telefone             String?
   url_imagem_perfil    String?
   horas_trabalho       String? // Exemplo: "09:00 - 18:00"

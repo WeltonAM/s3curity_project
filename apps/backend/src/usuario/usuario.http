@@ -1,9 +1,9 @@
 ### Variáveis
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImRlOTc3NDhlLWQ0MjgtNDExYi1iMjYwLTU3OWVmMTllZGU2ZiIsIm5vbWVfY29tcGxldG8iOiJBZG1pbmlzdHJhZG9yIFNpc3RlbWEiLCJlbWFpbCI6ImFkbWluQHNpc3RlbWEuY29tIiwidXJsX2ltYWdlbV9wZXJmaWwiOm51bGwsInBlcmZpcyI6W3sibm9tZSI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNzb2VzIjpbIlZpc3VhbGl6YXIgUmVsYXTDs3Jpb3MiLCJDcmlhciBVc3XDoXJpb3MiLCJFZGl0YXIgVXN1w6FyaW9zIiwiRXhjbHVpciBDb21lbnTDoXJpb3MiXX1dLCJpYXQiOjE3Mzc4MjQyMzAsImV4cCI6MTczOTEyMDIzMH0.VwJmAK4dfjKJCjZXN1M4Z-DJeXdWbunrqTTZsJoaN8I
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImEzYjQ3ZTdjLTQxZTctNDM1My1iMWQ5LTkyM2ExMzg0MGRmZSIsIm5vbWVfY29tcGxldG8iOiJKb8OjbyBkYSBTaWx2YSIsImVtYWlsIjoiakBtYWlsLmNvbSIsInRlbGVmb25lIjoiIiwidXJsX2ltYWdlbV9wZXJmaWwiOiIiLCJwZXJmaXMiOltdLCJpYXQiOjE3MzgxODEwNjksImV4cCI6MTczOTQ3NzA2OX0.8_7jtG5Z7fQoKfHIYG43Cy4JpX_ceOW3nwJpD43eBho
 
-@email = joao@email.com
+@email = j@mail.com
 
-@usuarioId = aeaad11c-af54-4709-b77c-4fe16bb5fb8a
+@usuarioId = a3b47e7c-41e7-4353-b1d9-923a13840dfe
 
 @perfisIds = ["925ed89e-fa3a-421c-a430-ced087d4b29f"]
 
@@ -13,8 +13,8 @@ Content-Type: application/json
 
 {
     "nome_completo": "João da Silva",
-    "email": "joao@email.com",
-    "senha": "123456"
+    "email": "j@mail.com",
+    "senha": "!Senha123"
 }
 
 ### Login
@@ -22,7 +22,7 @@ POST http://localhost:4000/usuario/login
 Content-Type: application/json
 
 {
-    "email": "admin@sistema.com",
+    "email": "j@mail.com",
     "senha": "#Senha123"
 }
 
@@ -61,4 +61,22 @@ Authorization: Bearer {{token}}
     "horas_trabalho": "08:00 - 18:00",
     "dias_trabalho": "Seg,Ter,Qua,",
     "telefone": "(11) 99999-9999"
+}
+
+### Solicitar alteração de senha
+PUT http://localhost:4000/usuario/solicitar-recuperacao
+Content-Type: application/json
+
+{
+    "email": "{{email}}"
+}
+
+### Recuperar senha
+PUT http://localhost:4000/usuario/recuperar-senha
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpAbWFpbC5jb20iLCJpYXQiOjE3MzgxODMwMTksImV4cCI6MTczODE4MzMxOX0.W0Ff1bxOAL3H9kzakSn3XYSO94Hd27EcwNlp10ahGUs",
+    "novaSenha": "#Senha123",
+    "confirmarSenha": "#Senha123"
 }
