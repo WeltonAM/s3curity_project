@@ -3,11 +3,16 @@
 import { useState } from "react";
 import CampoEmail from "../shared/CampoEmail";
 import Link from "next/link";
-import useUsuario from "@/data/hooks/useUsuario";
+import useAuth from "@/data/hooks/useAuth";
 
 export default function NovaSenhaForm() {
     const [email, setEmail] = useState('');
-    const { solicitarRecuperacao } = useUsuario();
+    const { solicitarRecuperacao } = useAuth();
+
+    const handleSolicitarRecuperacao = () => {
+        solicitarRecuperacao(email);
+        setEmail('');
+    };
 
     return (
         <div className="flex flex-col items-center justify-center p-10 rounded-md bg-zinc-900 select-none w-[420px] gap-3">
@@ -17,18 +22,27 @@ export default function NovaSenhaForm() {
             <div className="flex flex-col w-full gap-4">
                 <CampoEmail value={email} onChangeText={setEmail} ladoIcone="right" />
 
-                <button 
+                <button
                     className="
                         bg-green-600 rounded-md text-sm py-2 
                         font-bold hover:bg-green-500 
                         hover:text-white
-                    " 
-                    onClick={() => solicitarRecuperacao(email)}
+                    "
+                    onClick={handleSolicitarRecuperacao}
                 >
                     Solicitar
                 </button>
-                
-                <Link href='login' className="flex justify-center bg-red-600 rounded-md text-sm py-2 font-bold hover:bg-red-500 hover:text-white">Cancelar</Link>
+
+                <Link
+                    href='login'
+                    className="
+                        flex justify-center bg-red-600 
+                        rounded-md text-sm py-2 font-bold 
+                        hover:bg-red-500 hover:text-white
+                    "
+                >
+                    Cancelar
+                </Link>
             </div>
         </div>
     );

@@ -9,6 +9,7 @@ import useUsuario from "@/data/hooks/useUsuario";
 import { IconPhoto } from "@tabler/icons-react";
 import Image from "next/image";
 import useMensagem from "@/data/hooks/useMensagem";
+import Link from "next/link";
 
 export default function UsuarioPage() {
     const { usuario, atualizarUsuarioSessao } = useSessao();
@@ -79,6 +80,16 @@ export default function UsuarioPage() {
                 />
 
                 <div className="flex flex-col gap-1 relative">
+                    <label htmlFor="nome" className="text-xs text-zinc-300">Solicitar Nova Senha</label>
+                    <Link
+                        href="/novaSenha"
+                        className="bg-black rounded-md border border-white/10 text-sm text-white px-4 py-2"
+                    >
+                        Solicitar
+                    </Link>
+                </div>
+
+                <div className="flex flex-col gap-1 relative">
                     <label htmlFor="urlImagemPerfil" className="text-xs text-zinc-300">
                         Imagem de Perfil
                     </label>
@@ -97,7 +108,7 @@ export default function UsuarioPage() {
                     </div>
                 </div>
                 <div className="flex justify-center">
-                    <Avatar src={urlImagemPerfil || "/default-avatar.png"} />
+                    <Avatar src={urlImagemPerfil || "/user-icon.png"} />
                 </div>
             </div>
 

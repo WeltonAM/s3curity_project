@@ -212,8 +212,6 @@ export class UsuarioController {
     message: string;
     usuarioAtualizado?: Partial<Usuario>;
   }> {
-    console.log(dadosAtualizados);
-
     const casoDeUso = new AtualizarUsuario(this.repo, this.cripto);
     const usuarioAtualizado = await casoDeUso.executar(email, dadosAtualizados);
 
@@ -248,8 +246,9 @@ export class UsuarioController {
     @Body() dados: { email: string },
   ): Promise<{ status: number; message: string }> {
     const usuario = await this.repo.buscarPorEmail(dados.email);
+    const segredo = process.env.JWT_SECRET!;
 
-    const token = jwt.sign({ email: usuario.email }, process.env.JWT_SECRET!, {
+    const token = jwt.sign({ email: usuario.email }, segredo, {
       expiresIn: '5m',
     });
 
@@ -272,7 +271,7 @@ export class UsuarioController {
       from: process.env.MAILTRAP_EMAIL,
       to: usuario.email,
       subject: 'Recuperação de senha',
-      html: `<p>Para recuperar sua senha, clique no seguinte link:</p><p><a href="http://localhost:3000/recuperar-senha?token=${token}">Recuperar Senha</a></p>`,
+      html: `<p>Para recuperar sua senha, clique no seguinte link:</p><p><a href="${process.env.FRONTEND_URL}/recuperarSenha?token=${token}">Recuperar Senha</a></p>`,
     };
 
     await transporter.sendMail(mailOptions);
@@ -281,6 +280,40 @@ export class UsuarioController {
       status: 200,
       message: 'E-mail de recuperação enviado com sucesso!',
     };
+  }
+
+  @Get('verificar-token/:token')
+  async verificarTokenRecuperacao(
+    @Param('token') token: string,
+  ): Promise<{ status: number; message: string; email?: string }> {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+        email: string;
+      };
+
+      const usuario = await this.repo.buscarPorEmail(decoded.email);
+
+      if (!usuario || usuario.token_recuperacao?.trim() !== token.trim()) {
+        return {
+          status: 400,
+          message: 'Token inválido!',
+          email: undefined,
+        };
+      }
+
+      return {
+        status: 200,
+        message: 'Token válido!',
+        email: usuario.email,
+      };
+    } catch (error) {
+      console.error(error);
+      return {
+        status: 400,
+        message: 'Token inválido!',
+        email: undefined,
+      };
+    }
   }
 
   @Put('recuperar-senha')
@@ -329,6 +362,7 @@ export class UsuarioController {
         message: 'Senha alterada com sucesso!',
       };
     } catch (error) {
+      console.error(error);
       return {
         status: 400,
         message: 'Token inválido ou expirado!',

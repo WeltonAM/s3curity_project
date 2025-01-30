@@ -70,7 +70,7 @@ export default function Header() {
                     onClick={toggleMenu}
                 >
                     <div className="border border-zinc-600 rounded-full w-10 h-10 flex items-center justify-center overflow-hidden">
-                        <Image src={usuario?.url_imagem_perfil ?? "/user-icon.png"} alt="Perfil" width={100} height={100} />
+                        <Image src={usuario?.url_imagem_perfil ? usuario.url_imagem_perfil : "/user-icon.png"} alt="Perfil" width={50} height={50} />
                     </div>
 
                     <div className="flex flex-col">

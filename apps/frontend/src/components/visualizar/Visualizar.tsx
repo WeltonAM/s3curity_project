@@ -75,11 +75,17 @@ export default function Visualizar() {
                                     className="bg-zinc-900 text-zinc-400 hover:bg-zinc-600"
                                 >
                                     <td className="py-4 text-center font-light text-sm border border-zinc-800">{u.nome_completo}</td>
-                                    <td className="py-4 text-center font-light text-sm border border-zinc-800">{u.perfis![0].nome}</td>
+                                    
+                                    <td className="py-4 text-center font-light text-sm border border-zinc-800">
+                                        {u.perfis && u.perfis.length > 0 ? u.perfis[0].nome : 'Sem perfil'}
+                                    </td>
+
                                     <td className="py-4 text-center font-light text-sm border border-zinc-800">
                                         {u.ativo ? "Sim" : "Não"}
                                     </td>
+                                    
                                     <td className="py-4 text-center font-light text-sm border border-zinc-800">{u.horas_trabalho}</td>
+                                    
                                     <td className="py-4 text-center font-light text-sm border border-zinc-800">{u.dias_trabalho}</td>
                                 </tr>
                             ))

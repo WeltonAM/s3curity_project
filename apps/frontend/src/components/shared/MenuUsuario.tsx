@@ -18,17 +18,31 @@ export default function MenuUsuario({ closeMenu }: MenuUsuarioProps) {
                 min-w-40 gap-2 bg-zinc-900 rounded-md
             "
         >
-            <Link href="/usuario" onClick={closeMenu} className="flex items-center cursor-pointer gap-2 hover:bg-zinc-800 hover:text-zinc-100 py-1 px-4 w-full">
-                <IconUserEdit />
-                <span className="text-sm text-zinc-500">Minha Conta</span>
+            <Link
+                href="/usuario"
+                onClick={closeMenu}
+                className="
+                    flex items-center cursor-pointer gap-2 
+                    py-1 px-4 w-full text-zinc-400
+                    hover:bg-zinc-800 hover:text-zinc-100 
+                "
+            >
+                <IconUserEdit color='white' />
+
+                <span className="text-sm">Minha Conta</span>
             </Link>
 
             <button
-                className="flex items-center cursor-pointer gap-2 hover:bg-zinc-800 hover:text-zinc-100 py-1 px-4 w-full"
+                className="
+                    flex items-center cursor-pointer gap-2 
+                    py-1 px-4 w-full text-zinc-400
+                    hover:bg-zinc-800 hover:text-zinc-100 
+                "
                 onClick={logout}
             >
-                <IconLogout />
-                <span className="text-sm text-zinc-500">Sair</span>
+                <IconLogout color='white' />
+
+                <span className="text-sm">Sair</span>
             </button>
         </div>
     );
