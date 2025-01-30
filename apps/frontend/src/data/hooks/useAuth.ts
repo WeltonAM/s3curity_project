@@ -30,7 +30,7 @@ export default function useAuth(): UseAuthResponse {
 
   const login = (email: string, password: string) => {
     startTransition(() => {
-      httpPost("/usuario/login", { email, senha: password })
+      httpPost("/auth/login", { email, senha: password })
         .then((response) => {
           const { token, message, status } = response;
 
@@ -48,7 +48,7 @@ export default function useAuth(): UseAuthResponse {
 
   const registrar = (usuario: Partial<Usuario>) => {
     startTransition(() => {
-      httpPost("/usuario/registrar", usuario)
+      httpPost("/auth/registrar", usuario)
         .then((response) => {
           const { status, message } = response;
 
@@ -66,7 +66,7 @@ export default function useAuth(): UseAuthResponse {
 
   const solicitarRecuperacao = async (email: string) => {
     try {
-      const response = await httpPut("/usuario/solicitar-recuperacao", {
+      const response = await httpPut("/auth/solicitar-recuperacao", {
         email,
       });
 
@@ -93,7 +93,7 @@ export default function useAuth(): UseAuthResponse {
     return new Promise((resolve) => {
       startTransition(async () => {
         try {
-          const response = await httpGet(`/usuario/verificar-token/${token}`);
+          const response = await httpGet(`/auth/verificar-token/${token}`);
 
           if (response.status === 200) {
             resolve({
@@ -128,7 +128,7 @@ export default function useAuth(): UseAuthResponse {
     return new Promise((resolve) => {
       startTransition(async () => {
         try {
-          const response = await httpPut("/usuario/recuperar-senha", {
+          const response = await httpPut("/auth/recuperar-senha", {
             token,
             novaSenha,
             confirmarSenha,

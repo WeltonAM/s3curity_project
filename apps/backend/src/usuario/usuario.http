@@ -1,30 +1,11 @@
 ### Variáveis
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImEzYjQ3ZTdjLTQxZTctNDM1My1iMWQ5LTkyM2ExMzg0MGRmZSIsIm5vbWVfY29tcGxldG8iOiJKb8OjbyBkYSBTaWx2YSIsImVtYWlsIjoiakBtYWlsLmNvbSIsInRlbGVmb25lIjoiIiwidXJsX2ltYWdlbV9wZXJmaWwiOiIiLCJwZXJmaXMiOltdLCJpYXQiOjE3MzgxODEwNjksImV4cCI6MTczOTQ3NzA2OX0.8_7jtG5Z7fQoKfHIYG43Cy4JpX_ceOW3nwJpD43eBho
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhkYjRiZjdjLWE3NmUtNDM4OS05NTU2LThmMjgyZjY5ZDJmZiIsIm5vbWVfY29tcGxldG8iOiJKb8OjbyBkYSBTaWx2YSIsImVtYWlsIjoiakBtYWlsLmNvbSIsInRlbGVmb25lIjoiIiwidXJsX2ltYWdlbV9wZXJmaWwiOiIiLCJwZXJmaXMiOltdLCJwZXJtaXNzb2VzIjpbXSwiaWF0IjoxNzM4MjYwNDY5LCJleHAiOjE3Mzk1NTY0Njl9.73hIXQGilK_uGcA1uiUbf2CMMEmzxSBE-VtCrwqdaLw
 
 @email = j@mail.com
 
 @usuarioId = a3b47e7c-41e7-4353-b1d9-923a13840dfe
 
 @perfisIds = ["925ed89e-fa3a-421c-a430-ced087d4b29f"]
-
-### Registrar usuário
-POST http://localhost:4000/usuario/registrar
-Content-Type: application/json
-
-{
-    "nome_completo": "João da Silva",
-    "email": "j@mail.com",
-    "senha": "!Senha123"
-}
-
-### Login
-POST http://localhost:4000/usuario/login
-Content-Type: application/json
-
-{
-    "email": "j@mail.com",
-    "senha": "#Senha123"
-}
 
 ### Listar todos os usuários
 GET http://localhost:4000/usuario/todos
@@ -56,27 +37,8 @@ Authorization: Bearer {{token}}
 {
     "nome_completo": "João da S.",
     "email": "joao@email.com",
-    "senha": "!Senha123",
     "url_imagem_perfil": "https://www.google.com.br",
     "horas_trabalho": "08:00 - 18:00",
     "dias_trabalho": "Seg,Ter,Qua,",
     "telefone": "(11) 99999-9999"
-}
-
-### Solicitar alteração de senha
-PUT http://localhost:4000/usuario/solicitar-recuperacao
-Content-Type: application/json
-
-{
-    "email": "{{email}}"
-}
-
-### Recuperar senha
-PUT http://localhost:4000/usuario/recuperar-senha
-Content-Type: application/json
-
-{
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpAbWFpbC5jb20iLCJpYXQiOjE3MzgxODMwMTksImV4cCI6MTczODE4MzMxOX0.W0Ff1bxOAL3H9kzakSn3XYSO94Hd27EcwNlp10ahGUs",
-    "novaSenha": "#Senha123",
-    "confirmarSenha": "#Senha123"
 }
