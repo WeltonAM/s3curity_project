@@ -1,7 +1,8 @@
 import { Body, Controller, Post, Put, Get, Param, Ip } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
-import { LoginPrisma } from 'src/login/login.prisma';
 import * as nodemailer from 'nodemailer';
+import * as QRCode from 'qrcode';
+import { LoginPrisma } from 'src/login/login.prisma';
 import { LoginUsuario, RegistrarUsuario, Usuario } from '@s3curity/core';
 import { UsuarioPrisma } from 'src/usuario/usuario.prisma';
 import { BcryptProvider } from 'src/usuario/bcrypt.provider';
@@ -231,6 +232,90 @@ export class AuthController {
         status: 400,
         message: 'Token inválido ou expirado!',
       };
+    }
+  }
+
+  @Post('gerar-qr-code')
+  async gerarQrCode(
+    @Body() dados: { email: string },
+  ): Promise<{ status: number; qrCodeUrl: string | null }> {
+    const usuario = await this.usuarioRepo.buscarPorEmail(dados.email);
+    if (!usuario || !usuario.ativo) {
+      throw new Error('Usuário não encontrado ou inativo.');
+    }
+
+    const segredo = process.env.JWT_SECRET!;
+    const tokenLogin = jwt.sign({ email: dados.email }, segredo, {
+      expiresIn: '15m',
+    });
+
+    const loginUrl = `${process.env.FRONTEND_URL}/loginQRCode?token=${tokenLogin}`;
+
+    try {
+      const qrCodeUrl = await QRCode.toDataURL(loginUrl);
+      return {
+        status: 200,
+        qrCodeUrl,
+      };
+    } catch (error) {
+      console.error('Erro ao gerar QR Code', error);
+      return {
+        status: 404,
+        qrCodeUrl: null,
+      };
+    }
+  }
+
+  @Post('login-qr')
+  async loginQr(
+    @Body() dados: { token: string },
+  ): Promise<{ token: string; status: number; message: string }> {
+    try {
+      const decoded = jwt.verify(dados.token, process.env.JWT_SECRET!) as {
+        email: string;
+      };
+
+      const usuario = await this.usuarioRepo.buscarPorEmail(decoded.email);
+      if (!usuario || !usuario.ativo) {
+        throw new Error('Usuário não encontrado ou inativo.');
+      }
+
+      const perfis = await this.perfilRepo.buscarPerfilPorUsuarioEmail(
+        usuario.email,
+      );
+      const perfisAtivos = perfis
+        .filter((perfil) => perfil.ativo)
+        .map((perfil) => ({ nome: perfil.nome, id: perfil.id }));
+
+      const permissoes = await Promise.all(
+        perfisAtivos.map(async (perfil) => {
+          const permissoesPorPerfil =
+            await this.permissaoRepo.buscarPermissoesPorPerfilId(perfil.id);
+          return permissoesPorPerfil
+            .filter((p) => p.ativo)
+            .map((p) => ({ nome: p.nome, id: p.id }));
+        }),
+      );
+
+      const permissoesUnicas = Array.from(
+        new Set([].concat(...permissoes).map((p) => p.id)),
+      ).map((id) => permissoes.flat().find((p) => p.id === id));
+
+      const usuarioComPerfisEPermissoes = {
+        ...usuario,
+        perfis: perfisAtivos,
+        permissoes: permissoesUnicas,
+      };
+
+      const segredo = process.env.JWT_SECRET!;
+      const token = jwt.sign(usuarioComPerfisEPermissoes, segredo, {
+        expiresIn: '15d',
+      }) as string;
+
+      return { token, status: 200, message: 'Login efetuado com sucesso!' };
+    } catch (error) {
+      console.error(error);
+      return { status: 400, message: 'Token inválido ou expirado.', token: '' };
     }
   }
 }

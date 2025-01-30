@@ -6,16 +6,19 @@ import CampoNome from "@/components/shared/CampoNome";
 import CampoTelefone from "@/components/shared/CampoTelefone";
 import useSessao from "@/data/hooks/useSessao";
 import useUsuario from "@/data/hooks/useUsuario";
-import { IconPhoto } from "@tabler/icons-react";
+import { IconLock, IconPhoto, IconQrcode, IconRotateClockwise } from "@tabler/icons-react";
 import Image from "next/image";
 import useMensagem from "@/data/hooks/useMensagem";
 import Link from "next/link";
+import useAuth from "@/data/hooks/useAuth";
 
 export default function UsuarioPage() {
     const { usuario, atualizarUsuarioSessao } = useSessao();
     const { atualizarUsuario } = useUsuario();
     const router = useRouter();
     const { adicionarErro } = useMensagem();
+    const { gerarQrCode, qrCodeUrl, isLoading } = useAuth();
+    const isBase64 = qrCodeUrl?.startsWith("data:image");
 
     const [nome_completo, setNome] = useState(usuario?.nome_completo || "");
     const [telefone, setTelefone] = useState(usuario?.telefone || "");
@@ -79,14 +82,51 @@ export default function UsuarioPage() {
                     onChange={(e) => setTelefone(e.target.value)}
                 />
 
-                <div className="flex flex-col gap-1 relative">
+                <div className="flex flex-col gap-1">
                     <label htmlFor="nome" className="text-xs text-zinc-300">Solicitar Nova Senha</label>
                     <Link
                         href="/novaSenha"
-                        className="bg-black rounded-md border border-white/10 text-sm text-white px-4 py-2"
+                        className="
+                            flex items-center justify-start gap-2
+                            bg-black rounded-md border border-white/10 
+                            text-sm text-white p-2 
+                        "
                     >
-                        Solicitar
+                        <IconLock className="text-zinc-400" size={20} />
+                        <span>Solicitar Senha</span>
                     </Link>
+                </div>
+
+                <div className="flex flex-col gap-1">
+                    <label htmlFor="nome" className="text-xs text-zinc-300">Solicitar QRCode para Login</label>
+                    <button
+                        onClick={() => gerarQrCode(usuario?.email as string)}
+                        className="
+                            flex items-center justify-start gap-2
+                            bg-black rounded-md border border-white/10 
+                            text-sm text-white p-2
+                        "
+                    >
+                        <span>
+                            {isLoading ? (
+                                <IconRotateClockwise className="animate-spin h-5 w-5 mr-2" />
+                            ) : (
+                                <IconQrcode className="text-zinc-400" size={20} />
+                            )}
+                        </span>
+                        <span>Solicitar QRCode</span>
+                    </button>
+
+                    {qrCodeUrl &&
+                        <div className="flex justify-center mt-2">
+                            <Image
+                                src={qrCodeUrl || ""}
+                                alt="QRCode"
+                                width={isBase64 ? 200 : 300}
+                                height={isBase64 ? 200 : 300}
+                            />
+                        </div>
+                    }
                 </div>
 
                 <div className="flex flex-col gap-1 relative">
@@ -95,7 +135,7 @@ export default function UsuarioPage() {
                     </label>
 
                     <div className="flex items-center bg-black rounded-md border border-white/10 text-white">
-                        <IconPhoto size={20} className="absolute left-3" />
+                        <IconPhoto size={20} className="absolute left-3 text-zinc-400" />
                         <input
                             type="text"
                             id="urlImagemPerfil"

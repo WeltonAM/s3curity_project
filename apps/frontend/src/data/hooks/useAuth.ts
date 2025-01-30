@@ -1,4 +1,4 @@
-import { useContext, useTransition } from "react";
+import { useContext, useTransition, useState } from "react";
 import useAPI from "./useApi";
 import ContextoSessao from "@/data/contexts/ContextoSessao";
 import { useRouter } from "next/navigation";
@@ -19,6 +19,9 @@ interface UseAuthResponse {
     novaSenha: string,
     confirmarSenha: string
   ) => Promise<{ status: number; message: string }>;
+  gerarQrCode: (email: string) => Promise<void>;
+  qrCodeUrl: string | null;
+  loginQr: (token: string) => Promise<void>;
 }
 
 export default function useAuth(): UseAuthResponse {
@@ -27,6 +30,7 @@ export default function useAuth(): UseAuthResponse {
   const { iniciarSessao, encerrarSessao } = useContext(ContextoSessao);
   const router = useRouter();
   const { adicionarErro, adicionarSucesso } = useMensagem();
+  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
 
   const login = (email: string, password: string) => {
     startTransition(() => {
@@ -57,7 +61,6 @@ export default function useAuth(): UseAuthResponse {
           }
 
           adicionarSucesso("Cadastro realizado com sucesso!");
-
           router.push("/login");
         })
         .catch(() => {});
@@ -159,6 +162,43 @@ export default function useAuth(): UseAuthResponse {
     });
   };
 
+  const gerarQrCode = async (email: string) => {
+    startTransition(async () => {
+      try {
+        const response = await httpPost("/auth/gerar-qr-code", { email });
+
+        setQrCodeUrl(response.qrCodeUrl);
+        if (response.status === 200) {
+          setQrCodeUrl(response.qrCodeUrl);
+          console.log(qrCodeUrl);
+        }
+      } catch (error) {
+        console.log("Erro ao gerar QR Code", error);
+        adicionarErro("Erro ao gerar QR Code");
+      }
+    });
+  };
+
+  const loginQr = async (token: string) => {
+    try {
+      const response = await httpPost("/auth/login-qr", { token });
+
+      if (response.status === 200) {
+        const { token: userToken } = response;
+        iniciarSessao(userToken);
+        adicionarSucesso("Login realizado com sucesso!");
+        router.push("/");
+      } else {
+        adicionarErro(response.message);
+        router.push("/login");
+      }
+    } catch (error) {
+      console.error("Erro ao realizar login via QR Code", error);
+      adicionarErro("Erro ao realizar login via QR Code.");
+      router.push("/login");
+    }
+  };
+
   const logout = () => {
     encerrarSessao();
   };
@@ -171,5 +211,8 @@ export default function useAuth(): UseAuthResponse {
     solicitarRecuperacao,
     recuperarSenha,
     verificarTokenRecuperacao,
+    gerarQrCode,
+    qrCodeUrl,
+    loginQr,
   };
 }
