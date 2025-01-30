@@ -6,6 +6,7 @@ import { IconInfoTriangle, IconPlus } from "@tabler/icons-react";
 import { useState } from "react";
 import { Perfil } from "@s3curity/core";
 import UpsertPerfil from "./UpsertPerfil";
+import usePermissao from "@/data/hooks/usePermissao";
 
 export default function ListarPerfis() {
     const { perfis, isLoading, salvarPerfil, deletarPerfil, relacionarPerfilComPermissao } = usePerfil();
@@ -13,6 +14,11 @@ export default function ListarPerfis() {
     const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [currentPerfil, setCurrentPerfil] = useState<Partial<Perfil> | null>(null);
+
+    const { possuiPermissao } = usePermissao();
+
+    const podeCriarPerfil = possuiPermissao('Criar Perfis');
+    const podeEditarPerfil = possuiPermissao('Editar Perfis');
 
     const handleNewPerfil = () => {
         setCurrentPerfil(null);
@@ -66,13 +72,15 @@ export default function ListarPerfis() {
     return (
         <div className="flex flex-col justify-between items-center gap-4 w-full">
             <div className="flex justify-end w-full">
-                <button
-                    onClick={handleNewPerfil}
-                    className="flex items-center gap-1 bg-green-600 px-2 py-1 rounded-md hover:bg-green-500"
-                >
-                    <IconPlus size={16} stroke={3} />
-                    <span>Novo</span>
-                </button>
+                {podeCriarPerfil && (
+                    <button
+                        onClick={handleNewPerfil}
+                        className="flex items-center gap-1 bg-green-600 px-2 py-1 rounded-md hover:bg-green-500"
+                    >
+                        <IconPlus size={16} stroke={3} />
+                        <span>Novo</span>
+                    </button>
+                )}
             </div>
 
             <table className="min-w-full table-auto text-sm bg-zinc-800 rounded-md overflow-hidden border border-zinc-500">
@@ -81,7 +89,10 @@ export default function ListarPerfis() {
                         <th className="px-4 py-2 text-left text-xs border border-zinc-600">Nome</th>
                         <th className="px-4 py-2 text-left text-xs border border-zinc-600">Descrição</th>
                         <th className="px-4 py-2 text-center text-xs border border-zinc-600">Ativo</th>
-                        <th className="text-center text-xs border border-zinc-600">Ações</th>
+
+                        {podeEditarPerfil && (
+                            <th className="text-center text-xs border border-zinc-600">Ações</th>
+                        )}
                     </tr>
                 </thead>
                 <tbody>
@@ -95,21 +106,23 @@ export default function ListarPerfis() {
                                 {perfil.ativo ? "Sim" : "Não"}
                             </td>
 
-                            <td className="px-4 py-2 text-center border border-zinc-600">
-                                <button
-                                    onClick={() => handleEditPerfil(perfil)}
-                                    className="bg-blue-500 hover:bg-blue-400 border border-blue-600 text-white px-2 py-1 rounded-md"
-                                >
-                                    Editar
-                                </button>
+                            {podeEditarPerfil && (
+                                <td className="px-4 py-2 text-center border border-zinc-600">
+                                    <button
+                                        onClick={() => handleEditPerfil(perfil)}
+                                        className="bg-blue-500 hover:bg-blue-400 border border-blue-600 text-white px-2 py-1 rounded-md"
+                                    >
+                                        Editar
+                                    </button>
 
-                                <button
-                                    onClick={() => hadleOpenModalDelete(perfil)}
-                                    className="bg-red-500 hover:bg-red-400 border border-red-600 text-white px-2 py-1 rounded-md ml-2"
-                                >
-                                    Excluir
-                                </button>
-                            </td>
+                                    <button
+                                        onClick={() => hadleOpenModalDelete(perfil)}
+                                        className="bg-red-500 hover:bg-red-400 border border-red-600 text-white px-2 py-1 rounded-md ml-2"
+                                    >
+                                        Excluir
+                                    </button>
+                                </td>
+                            )}
                         </tr>
                     ))}
                 </tbody>

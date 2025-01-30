@@ -12,6 +12,11 @@ export default function ListarPermissoes() {
     const [isEditing, setIsEditing] = useState(false);
     const [currentPermissao, setCurrentPermissao] = useState<Partial<Permissao> | null>(null);
 
+    const { possuiPermissao } = usePermissao();
+
+    const podeCriarPermissao = possuiPermissao('Criar Permissões');
+    const podeEditarPermissao = possuiPermissao('Editar Permissões');
+
     const handleNewPermissao = () => {
         setCurrentPermissao(null);
         setIsEditing(false);
@@ -60,13 +65,15 @@ export default function ListarPermissoes() {
     return (
         <div className="flex flex-col justify-between items-center gap-4 w-full">
             <div className="flex justify-end w-full">
-                <button
-                    onClick={handleNewPermissao}
-                    className="flex items-center gap-1 bg-green-600 px-2 py-1 rounded-md hover:bg-green-500"
-                >
-                    <IconPlus size={16} stroke={3} />
-                    <span>Nova</span>
-                </button>
+                {podeCriarPermissao && (
+                    <button
+                        onClick={handleNewPermissao}
+                        className="flex items-center gap-1 bg-green-600 px-2 py-1 rounded-md hover:bg-green-500"
+                    >
+                        <IconPlus size={16} stroke={3} />
+                        <span>Nova</span>
+                    </button>
+                )}
             </div>
 
             <table className="min-w-full table-auto text-sm bg-zinc-800 rounded-md overflow-hidden border border-zinc-500">
@@ -75,35 +82,40 @@ export default function ListarPermissoes() {
                         <th className="px-4 py-2 text-left text-xs border border-zinc-600">Nome</th>
                         <th className="px-4 py-2 text-left text-xs border border-zinc-600">Descrição</th>
                         <th className="px-4 py-2 text-center text-xs border border-zinc-600">Ativo</th>
-                        <th className="text-center text-xs border border-zinc-600">Ações</th>
+
+                        {podeEditarPermissao && (
+                            <th className="text-center text-xs border border-zinc-600">Ações</th>
+                        )}
                     </tr>
                 </thead>
                 <tbody>
                     {permissoes.map((permissao) => (
                         <tr key={permissao.id} className="hover:bg-zinc-500">
                             <td className="px-4 py-2 border border-zinc-600">{permissao.nome}</td>
+
                             <td className="px-4 py-2 border border-zinc-600">{permissao.descricao}</td>
+
                             <td className="px-4 py-2 text-center border border-zinc-600">
                                 {permissao.ativo ? "Sim" : "Não"}
                             </td>
-                            <td className="px-4 py-2 text-center border border-zinc-600">
-                                <button
-                                    onClick={() => handleEditPermissao(permissao)}
-                                    className="bg-blue-500 hover:bg-blue-400 border border-blue-600 text-white px-2 py-1 rounded-md"
-                                >
-                                    Editar
-                                </button>
 
-                                <button
-                                    onClick={() => hadleOpenModalDelete(permissao)}
-                                    className="
-                                        bg-red-500 hover:bg-red-400 border border-red-600 
-                                        text-white px-2 py-1 rounded-md ml-2
-                                    "
-                                >
-                                    Excluir
-                                </button>
-                            </td>
+                            {podeEditarPermissao && (
+                                <td className="px-4 py-2 text-center border border-zinc-600">
+                                    <button
+                                        onClick={() => handleEditPermissao(permissao)}
+                                        className="bg-blue-500 hover:bg-blue-400 border border-blue-600 text-white px-2 py-1 rounded-md"
+                                    >
+                                        Editar
+                                    </button>
+
+                                    <button
+                                        onClick={() => hadleOpenModalDelete(permissao)}
+                                        className="bg-red-500 hover:bg-red-400 border border-red-600 text-white px-2 py-1 rounded-md ml-2"
+                                    >
+                                        Excluir
+                                    </button>
+                                </td>
+                            )}
                         </tr>
                     ))}
                 </tbody>

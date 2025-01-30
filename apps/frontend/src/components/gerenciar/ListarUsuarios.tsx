@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Usuario } from "@s3curity/core";
 import UpsertUsuario from "./UpsertUsuario";
 import useUsuario from "@/data/hooks/useUsuario";
+import usePermissao from "@/data/hooks/usePermissao";
 
 export default function ListarUsuarios() {
     const { usuarios, isLoading, salvarUsuario, relacionarUsuarioComPerfis, deletarUsuario, atualizarUsuario } = useUsuario();
@@ -13,6 +14,10 @@ export default function ListarUsuarios() {
     const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [currentUsuario, setCurrentUsuario] = useState<Partial<Usuario> | null>(null);
+    const { possuiPermissao } = usePermissao();
+
+    const podeCriarUsuario = possuiPermissao('Criar Usuários');
+    const podeEditarUsuario = possuiPermissao('Editar Usuários');
 
     const handleNewUsuario = () => {
         setCurrentUsuario(null);
@@ -34,7 +39,7 @@ export default function ListarUsuarios() {
     const handleSaveUsuario = async (usuario: Partial<Usuario>, perfisIds: string[]) => {
         if (isEditing && currentUsuario?.email) {
             const usuarioAtualizado = await atualizarUsuario(usuario);
-            
+
             if (usuarioAtualizado?.id) {
                 await relacionarUsuarioComPerfis(usuarioAtualizado, perfisIds);
             }
@@ -75,13 +80,15 @@ export default function ListarUsuarios() {
     return (
         <div className="flex flex-col justify-between items-center gap-4 w-full">
             <div className="flex justify-end w-full">
-                <button
-                    onClick={handleNewUsuario}
-                    className="flex items-center gap-1 bg-green-600 px-2 py-1 rounded-md hover:bg-green-500"
-                >
-                    <IconPlus size={16} stroke={3} />
-                    <span>Novo</span>
-                </button>
+                {podeCriarUsuario && (
+                    <button
+                        onClick={handleNewUsuario}
+                        className="flex items-center gap-1 bg-green-600 px-2 py-1 rounded-md hover:bg-green-500"
+                    >
+                        <IconPlus size={16} stroke={3} />
+                        <span>Novo</span>
+                    </button>
+                )}
             </div>
 
             <table className="min-w-full table-auto text-sm bg-zinc-800 rounded-md overflow-hidden border border-zinc-500">
@@ -91,7 +98,12 @@ export default function ListarUsuarios() {
                         <th className="px-4 py-2 text-left text-xs border border-zinc-600">Telefone</th>
                         <th className="px-4 py-2 text-left text-xs border border-zinc-600">Perfis</th>
                         <th className="px-4 py-2 text-center text-xs border border-zinc-600">Ativo</th>
-                        <th className="text-center text-xs border border-zinc-600">Ações</th>
+
+                        {
+                            podeEditarUsuario && (
+                                <th className="text-center text-xs border border-zinc-600">Ações</th>
+                            )
+                        }
                     </tr>
                 </thead>
                 <tbody>
@@ -109,21 +121,23 @@ export default function ListarUsuarios() {
                                 {u.ativo ? "Sim" : "Não"}
                             </td>
 
-                            <td className="px-4 py-2 text-center border border-zinc-600">
-                                <button
-                                    onClick={() => handleEditUsuario(u)}
-                                    className="bg-blue-500 hover:bg-blue-400 border border-blue-600 text-white px-2 py-1 rounded-md"
-                                >
-                                    Editar
-                                </button>
+                            {podeEditarUsuario && (
+                                <td className="px-4 py-2 text-center border border-zinc-600">
+                                    <button
+                                        onClick={() => handleEditUsuario(u)}
+                                        className="bg-blue-500 hover:bg-blue-400 border border-blue-600 text-white px-2 py-1 rounded-md"
+                                    >
+                                        Editar
+                                    </button>
 
-                                <button
-                                    onClick={() => hadleOpenModalDelete(u)}
-                                    className="bg-red-500 hover:bg-red-400 border border-red-600 text-white px-2 py-1 rounded-md ml-2"
-                                >
-                                    Excluir
-                                </button>
-                            </td>
+                                    <button
+                                        onClick={() => hadleOpenModalDelete(u)}
+                                        className="bg-red-500 hover:bg-red-400 border border-red-600 text-white px-2 py-1 rounded-md ml-2"
+                                    >
+                                        Excluir
+                                    </button>
+                                </td>
+                            )}
                         </tr>
                     ))}
                 </tbody>

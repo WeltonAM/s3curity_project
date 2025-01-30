@@ -46,25 +46,35 @@ export class UsuarioController {
       usuario.email,
     );
 
-    const perfisComPermissoes = await Promise.all(
-      perfis.map(async (perfil) => {
-        const permissoes = await this.permissaoRepo.buscarPermissoesPorPerfilId(
-          perfil.id,
-        );
-        return {
-          nome: perfil.nome,
-          permissoes: permissoes.map((p) => p.nome),
-        };
+    const perfisAtivos = perfis
+      .filter((perfil) => perfil.ativo)
+      .map((perfil) => ({ nome: perfil.nome, id: perfil.id }));
+
+    const permissoes = await Promise.all(
+      perfisAtivos.map(async (perfil) => {
+        const perfilData = perfis.find((p) => p.id === perfil.id);
+        if (perfilData) {
+          const permissoesPorPerfil =
+            await this.permissaoRepo.buscarPermissoesPorPerfilId(perfilData.id);
+          return permissoesPorPerfil
+            .filter((p) => p.ativo)
+            .map((p) => ({ nome: p.nome, id: p.id }));
+        }
+        return [];
       }),
     );
 
+    const permissoesUnicas = Array.from(
+      new Set([].concat(...permissoes).map((p) => p.id)),
+    ).map((id) => permissoes.flat().find((p) => p.id === id));
+
     const usuarioComPerfisEPermissoes = {
       ...usuario,
-      perfis: perfisComPermissoes,
+      perfis: perfisAtivos,
+      permissoes: permissoesUnicas,
     };
 
     const segredo = process.env.JWT_SECRET!;
-
     const token = jwt.sign(usuarioComPerfisEPermissoes, segredo, {
       expiresIn: '15d',
     }) as string;

@@ -104,7 +104,7 @@ export default function usePermissao(): UsePermissaoResponse {
         const { status, message } = response;
 
         if (status !== 200) {
-          return adicionarErro(message); 
+          return adicionarErro(message);
         }
 
         adicionarSucesso("Permissão deletada com sucesso!");

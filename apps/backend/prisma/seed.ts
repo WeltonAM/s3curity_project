@@ -26,9 +26,24 @@ async function main() {
         descricao: 'Permite editar informações de usuários existentes.',
       },
       {
-        slug: 'excluir-comentarios',
-        nome: 'Excluir Comentários',
-        descricao: 'Permite excluir comentários no sistema.',
+        slug: 'criar-perfis',
+        nome: 'Criar Perfis',
+        descricao: 'Permite criar novos perfis no sistema.',
+      },
+      {
+        slug: 'editar-perfis',
+        nome: 'Editar Perfis',
+        descricao: 'Permite editar perfis no sistema.',
+      },
+      {
+        slug: 'criar-permissoes',
+        nome: 'Criar Permissões',
+        descricao: 'Permite criar novas permissões no sistema.',
+      },
+      {
+        slug: 'editar-permissoes',
+        nome: 'Editar Permissões',
+        descricao: 'Permite editar permissões existentes no sistema.',
       },
     ],
     skipDuplicates: true,
@@ -41,27 +56,30 @@ async function main() {
         descricao: 'Perfil com acesso total ao sistema.',
       },
       {
-        nome: 'Usuário Padrão',
-        descricao: 'Perfil com permissões básicas de uso do sistema.',
+        nome: 'Manager',
+        descricao: 'Perfil com permissões intermediárias.',
       },
       {
-        nome: 'Editor',
-        descricao: 'Perfil com permissões para editar conteúdo.',
+        nome: 'Usuário Padrão',
+        descricao: 'Perfil com permissões básicas.',
       },
     ],
     skipDuplicates: true,
   });
 
-  const [adminPerfil, usuarioPadraoPerfil, editorPerfil] =
+  const [adminPerfil, managerPerfil, usuarioPadraoPerfil] =
     await prisma.perfil.findMany({
-      where: { nome: { in: ['Administrador', 'Usuário Padrão', 'Editor'] } },
+      where: { nome: { in: ['Administrador', 'Manager', 'Usuário Padrão'] } },
     });
 
   const [
     visualizarRelatorios,
     criarUsuarios,
     editarUsuarios,
-    excluirComentarios,
+    criarPerfis,
+    editarPerfis,
+    criarPermissoes,
+    editarPermissoes,
   ] = await prisma.permissao.findMany({
     where: {
       nome: {
@@ -69,7 +87,10 @@ async function main() {
           'Visualizar Relatórios',
           'Criar Usuários',
           'Editar Usuários',
-          'Excluir Comentários',
+          'Criar Perfis',
+          'Editar Perfis',
+          'Criar Permissões',
+          'Editar Permissões',
         ],
       },
     },
@@ -80,15 +101,22 @@ async function main() {
       { perfil_id: adminPerfil.id, permissao_id: visualizarRelatorios.id },
       { perfil_id: adminPerfil.id, permissao_id: criarUsuarios.id },
       { perfil_id: adminPerfil.id, permissao_id: editarUsuarios.id },
-      { perfil_id: adminPerfil.id, permissao_id: excluirComentarios.id },
+      { perfil_id: adminPerfil.id, permissao_id: criarPerfis.id },
+      { perfil_id: adminPerfil.id, permissao_id: editarPerfis.id },
+      { perfil_id: adminPerfil.id, permissao_id: criarPermissoes.id },
+      { perfil_id: adminPerfil.id, permissao_id: editarPermissoes.id },
+
+      { perfil_id: managerPerfil.id, permissao_id: visualizarRelatorios.id },
+      { perfil_id: managerPerfil.id, permissao_id: editarUsuarios.id },
+      { perfil_id: managerPerfil.id, permissao_id: criarPerfis.id },
+      { perfil_id: managerPerfil.id, permissao_id: editarPerfis.id },
+      { perfil_id: managerPerfil.id, permissao_id: criarPermissoes.id },
+      { perfil_id: managerPerfil.id, permissao_id: editarPermissoes.id },
 
       {
         perfil_id: usuarioPadraoPerfil.id,
         permissao_id: visualizarRelatorios.id,
       },
-
-      { perfil_id: editorPerfil.id, permissao_id: visualizarRelatorios.id },
-      { perfil_id: editorPerfil.id, permissao_id: editarUsuarios.id },
     ],
     skipDuplicates: true,
   });
@@ -105,31 +133,31 @@ async function main() {
         dias_trabalho: 'Seg,Ter,Qua,Qui,Sex',
       },
       {
+        email: 'manager@sistema.com',
+        senha: senhaHashed,
+        nome_completo: 'Manager Sistema',
+        horas_trabalho: '10:00 - 19:00',
+        dias_trabalho: 'Seg,Qua,Sex',
+      },
+      {
         email: 'usuario@sistema.com',
         senha: senhaHashed,
         nome_completo: 'Usuário Padrão',
-        horas_trabalho: '10:00 - 19:00',
-        dias_trabalho: 'Ter,Qua,Sex',
-      },
-      {
-        email: 'editor@sistema.com',
-        senha: senhaHashed,
-        nome_completo: 'Editor Sistema',
         horas_trabalho: '08:00 - 17:00',
-        dias_trabalho: 'Seg,Qua,Sex',
+        dias_trabalho: 'Ter,Qua,Sex',
       },
     ],
     skipDuplicates: true,
   });
 
-  const [adminUsuario, usuarioPadrao, editorUsuario] =
+  const [adminUsuario, managerUsuario, usuarioPadraoUsuario] =
     await prisma.usuario.findMany({
       where: {
         email: {
           in: [
             'admin@sistema.com',
+            'manager@sistema.com',
             'usuario@sistema.com',
-            'editor@sistema.com',
           ],
         },
       },
@@ -138,8 +166,11 @@ async function main() {
   await prisma.usuarioPerfil.createMany({
     data: [
       { usuario_id: adminUsuario.id, perfil_id: adminPerfil.id },
-      { usuario_id: usuarioPadrao.id, perfil_id: usuarioPadraoPerfil.id },
-      { usuario_id: editorUsuario.id, perfil_id: editorPerfil.id },
+      { usuario_id: managerUsuario.id, perfil_id: managerPerfil.id },
+      {
+        usuario_id: usuarioPadraoUsuario.id,
+        perfil_id: usuarioPadraoPerfil.id,
+      },
     ],
     skipDuplicates: true,
   });
