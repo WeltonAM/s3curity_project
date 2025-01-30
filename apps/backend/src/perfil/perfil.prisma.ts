@@ -6,8 +6,8 @@ import { PrismaProvider } from 'src/db/prisma.provider';
 export class PerfilPrisma implements RepositorioPerfil {
   constructor(private readonly prisma: PrismaProvider) {}
 
-  async salvar(perfil: Partial<Perfil>): Promise<void> {
-    await this.prisma.perfil.upsert({
+  async salvar(perfil: Partial<Perfil>): Promise<Partial<Perfil>> {
+    return await this.prisma.perfil.upsert({
       where: { id: perfil.id ?? '' },
       update: {
         nome: perfil.nome,

@@ -25,9 +25,9 @@ export class PerfilController {
   ) {
     const casoDeUso = new SalvarPerfil(this.perfilRepo);
 
-    await casoDeUso.executar(perfil);
+    const novoPerfil = await casoDeUso.executar(perfil);
 
-    return { status: 201, message: 'Perfil salvo com sucesso.', perfil };
+    return { status: 201, message: 'Perfil salvo com sucesso.', novoPerfil };
   }
 
   @Get('nome/:nome')

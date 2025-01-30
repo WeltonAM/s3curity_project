@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Perfil } from "@s3curity/core";
 import UpsertPerfil from "./UpsertPerfil";
 import usePermissao from "@/data/hooks/usePermissao";
+import useMensagem from "@/data/hooks/useMensagem";
 
 export default function ListarPerfis() {
     const { perfis, isLoading, salvarPerfil, deletarPerfil, relacionarPerfilComPermissao } = usePerfil();
@@ -14,6 +15,7 @@ export default function ListarPerfis() {
     const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [currentPerfil, setCurrentPerfil] = useState<Partial<Perfil> | null>(null);
+    const { adicionarSucesso } = useMensagem();
 
     const { possuiPermissao } = usePermissao();
 
@@ -38,13 +40,15 @@ export default function ListarPerfis() {
     };
 
     const handleSavePerfil = async (perfil: Partial<Perfil>, permissoesIds: string[]) => {
-        if (perfil.id) {
-            await salvarPerfil(perfil);
-            await relacionarPerfilComPermissao(perfil.id, permissoesIds);
+        const novoPerfil = await salvarPerfil(perfil);
+   
+        if (novoPerfil?.id) {
+            await relacionarPerfilComPermissao(novoPerfil.id, permissoesIds);
+            adicionarSucesso("Perfil salvo com sucesso!");
         }
-
+    
         handleCloseModal();
-    };
+    };    
 
     const hadleOpenModalDelete = async (perfil: Partial<Perfil>) => {
         setIsModalDeleteOpen(true);

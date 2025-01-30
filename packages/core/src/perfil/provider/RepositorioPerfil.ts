@@ -1,7 +1,7 @@
 import Perfil from "../model/Perfil";
 
 export default interface RepositorioPerfil {
-    salvar(perfil: Partial<Perfil>): Promise<void>;
+    salvar(perfil: Partial<Perfil>): Promise<Partial<Perfil>>;
 
     buscarPerfilPorUsuarioEmail(email: string): Promise<Partial<Perfil>[]>;
 

@@ -43,7 +43,6 @@ export default function UpsertUsuario({ isEditing, usuario, onClose, onSave }: M
         timeoutRef.current = setTimeout(async () => {
             if (!isEditing && email) {
                 const res = await buscarUsuarioPorEmail(email);
-                console.log(res);
                 setEmailEmUso(!!res);
             }
         }, 500);

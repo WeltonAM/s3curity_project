@@ -5,7 +5,7 @@ import RepositorioPerfil from "../provider/RepositorioPerfil";
 export default class SalvarPerfil {
   constructor(private repositorioPerfil: RepositorioPerfil) {}
 
-  async executar(perfil: Partial<Perfil>): Promise<void> {
+  async executar(perfil: Partial<Perfil>): Promise<Partial<Perfil | null>> {
     if (!perfil.nome || perfil.nome.trim() === "") {
       throw new Error("O campo 'nome' é obrigatório.");
     }
@@ -26,5 +26,7 @@ export default class SalvarPerfil {
     };
 
     await this.repositorioPerfil.salvar(novoPerfil);
+
+    return novoPerfil;
   }
 }

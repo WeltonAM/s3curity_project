@@ -7,7 +7,7 @@ interface UsePerfilResponse {
   isLoading: boolean;
   perfis: Partial<Perfil>[];
   buscarPerfilPorNome: (nome: string) => Promise<Partial<Perfil> | null>;
-  salvarPerfil: (perfil: Partial<Perfil>) => Promise<void>;
+  salvarPerfil: (perfil: Partial<Perfil>) => Promise<Partial<Perfil> | null>;
   deletarPerfil: (id: string) => Promise<void>;
   relacionarPerfilComPermissao: (
     perfilId: string,
@@ -45,7 +45,6 @@ export default function usePerfil(): UsePerfilResponse {
     permissoesIds: string[]
   ) => {
     try {
-      console.log(perfilId, permissoesIds);
       if (!perfilId || permissoesIds.length === 0) {
         return adicionarErro("O perfil precisa ter ao menos uma permissão.");
       }
@@ -60,30 +59,33 @@ export default function usePerfil(): UsePerfilResponse {
       if (status !== 200) {
         return adicionarErro(message || "Erro ao relacionar perfil.");
       }
-
+      
+      buscarTodosPerfis();
     } catch (error) {
       console.error("Erro ao relacionar perfil com permissões:", error);
       adicionarErro("Falha ao relacionar perfil com permissões.");
     }
   };
 
-  const salvarPerfil = async (perfil: Partial<Perfil>) => {
-    startTransition(async () => {
-      try {
-        const response = await httpPost("/perfil/salvar", perfil);
-        const { status, message } = response;
+  const salvarPerfil = async (
+    perfil: Partial<Perfil>
+  ): Promise<Partial<Perfil> | null> => {
+    try {
+      const response = await httpPost("/perfil/salvar", perfil);
+      const { status, message, novoPerfil } = response;
 
-        if (status !== 201) {
-          return adicionarErro(message);
-        }
-
-        adicionarSucesso("Perfil salvo com sucesso!");
-        buscarTodosPerfis();
-      } catch (error) {
-        console.error("Erro ao salvar perfil:", error);
-        adicionarErro("Falha ao salvar perfil.");
+      if (status !== 201) {
+        adicionarErro(message);
+        return null; 
       }
-    });
+
+      buscarTodosPerfis();
+      return novoPerfil;
+    } catch (error) {
+      console.error("Erro ao salvar perfil:", error);
+      adicionarErro("Falha ao salvar perfil.");
+      return null; 
+    }
   };
 
   const deletarPerfil = async (id: string) => {
