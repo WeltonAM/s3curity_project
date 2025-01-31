@@ -8,6 +8,7 @@ import { UsuarioPrisma } from 'src/usuario/usuario.prisma';
 import { BcryptProvider } from 'src/usuario/bcrypt.provider';
 import { PerfilPrisma } from 'src/perfil/perfil.prisma';
 import { PermissaoPrisma } from 'src/permissao/permissao.prisma';
+import ProvedorAutenticacaoGoogle from 'src/google/ProvedorAutenticacaoGoogle';
 
 @Controller('auth')
 export class AuthController {
@@ -17,6 +18,7 @@ export class AuthController {
     private readonly cripto: BcryptProvider,
     private readonly perfilRepo: PerfilPrisma,
     private readonly permissaoRepo: PermissaoPrisma,
+    private readonly provedorGoogle: ProvedorAutenticacaoGoogle,
   ) {}
 
   @Post('login')
@@ -136,7 +138,15 @@ export class AuthController {
       from: process.env.MAILTRAP_EMAIL,
       to: usuario.email,
       subject: 'Recuperação de senha',
-      html: `<p>Para recuperar sua senha, clique no seguinte link:</p><p><a href="${process.env.FRONTEND_URL}/recuperarSenha?token=${token}">Recuperar Senha</a></p>`,
+      html: `
+        <p>Para recuperar sua senha, clique no seguinte link:</p>
+        <p>
+          <a href="${process.env.FRONTEND_URL}/recuperarSenha?token=${token}">
+            Recuperar Senha
+          </a>
+        </p>
+        <p>Você terá 5min para realizar o processo de recuperação de senha.</p>
+      `,
     };
 
     await transporter.sendMail(mailOptions);
@@ -316,6 +326,68 @@ export class AuthController {
     } catch (error) {
       console.error(error);
       return { status: 400, message: 'Token inválido ou expirado.', token: '' };
+    }
+  }
+
+  @Post('login/provedor')
+  async loginComGoogle(
+    @Body() dados: { token: string; provedor: string },
+    @Ip() ip: string,
+  ) {
+    try {
+      const casoDeUso = new LoginUsuario(
+        this.usuarioRepo,
+        this.cripto,
+        this.provedorGoogle,
+      );
+
+      const usuario = await casoDeUso.comProvedor(dados.provedor, dados.token);
+
+      const perfis = await this.perfilRepo.buscarPerfilPorUsuarioEmail(
+        usuario.email,
+      );
+      const perfisAtivos = perfis
+        .filter((perfil) => perfil.ativo)
+        .map((perfil) => ({ nome: perfil.nome, id: perfil.id }));
+
+      const permissoes = await Promise.all(
+        perfisAtivos.map(async (perfil) => {
+          const permissoesPorPerfil =
+            await this.permissaoRepo.buscarPermissoesPorPerfilId(perfil.id);
+          return permissoesPorPerfil
+            .filter((p) => p.ativo)
+            .map((p) => ({ nome: p.nome, id: p.id }));
+        }),
+      );
+
+      const permissoesUnicas = Array.from(
+        new Set(permissoes.flat().map((p) => p.id)),
+      ).map((id) => permissoes.flat().find((p) => p.id === id));
+
+      const segredo = process.env.JWT_SECRET!;
+      const token = jwt.sign(
+        { ...usuario, perfis: perfisAtivos, permissoes: permissoesUnicas },
+        segredo,
+        { expiresIn: '15d' },
+      );
+
+      await this.loginRepo.registrar({
+        usuario_email: usuario.email,
+        sucesso: true,
+        ip: ip,
+        data_hora: new Date(),
+        provedor: dados.provedor,
+        token,
+      });
+
+      return {
+        token,
+        status: 200,
+        message: `Login efetuado com sucesso!`,
+      };
+    } catch (error) {
+      console.error(error);
+      return { status: 400, message: error.message, token: '' };
     }
   }
 }

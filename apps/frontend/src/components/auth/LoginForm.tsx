@@ -1,18 +1,20 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import useSessao from '@/data/hooks/useSessao';
-import { IconBrandGoogleFilled, IconLoader } from '@tabler/icons-react';
+import { IconLoader } from '@tabler/icons-react';
 import { useState } from 'react';
 import Logo from '../shared/Logo';
 import CampoEmail from '../shared/CampoEmail';
 import CampoSenha from '../shared/CampoSenha';
 import Link from 'next/link';
 import useAuth from '@/data/hooks/useAuth';
+import { GoogleLogin } from '@react-oauth/google';
 
 export default function LoginForm() {
-  const { login, isLoading } = useAuth();
+  const { login, isLoading, loginComProvedor } = useAuth();
   const { usuario } = useSessao();
   const router = useRouter();
 
@@ -29,6 +31,11 @@ export default function LoginForm() {
     await login(email, password);
   };
 
+  const handleGoogleLoginSuccess = async (response: any) => {
+    const { credential } = response;
+    await loginComProvedor(credential, 'google');
+  };
+
   return (
     <div className="flex flex-col items-center justify-center px-10 py-5 rounded-md bg-zinc-900 select-none">
       <Logo width={150} height={150} />
@@ -36,7 +43,7 @@ export default function LoginForm() {
 
       <div className="flex flex-col w-full gap-2 mt-4">
         <CampoEmail value={email} onChangeText={setEmail} ladoIcone="right" />
-        
+
         <CampoSenha
           label="Senha"
           id="password"
@@ -67,9 +74,9 @@ export default function LoginForm() {
         </div>
 
         <div className="flex flex-col gap-1 justify-center items-center">
-          <button className="bg-red-500 rounded-full w-10 h-10 flex items-center justify-center text-white">
-            <IconBrandGoogleFilled />
-          </button>
+          <GoogleLogin
+            onSuccess={handleGoogleLoginSuccess}
+          />
 
           <div className="flex gap-1 text-sm mt-2">
             <span className="text-zinc-300">Ainda não possui uma conta?</span>

@@ -121,9 +121,9 @@ Esses atributos fornecem informações essenciais para o controle detalhado das 
 ### Instalação
 
 - Clone o repositório
-- Execute `npm install`
 - Configure os .env do Backend e do Frontend com as informações sensíveis
+- Execute `npm install`
 - Entre na pasta `apps/backend` e execute `npx prisma migrate dev`
-- Retorne pasta raiz e execute `npm run dev`
-- Para testes entre na pasta `packages/core` e execute `npm run test`
 - Use os dados de app/backend/prisma/seed.ts para acessar o sistema
+- Para testes entre na pasta `packages/core` e execute `npm run test`
+- Retorne pasta raiz e execute `npm run dev`

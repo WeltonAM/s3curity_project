@@ -2,6 +2,7 @@ import Usuario from "../model/Usuario";
 import ProvedorCriptografia from "../provider/ProvedorCriptografia";
 import ProvedorAutenticacao from "../provider/ProvedorAutenticacao";
 import RepositorioUsuario from "../provider/RepositorioUsuario";
+import { Id } from "../../shared";
 
 export default class LoginUsuario {
   constructor(
@@ -46,21 +47,34 @@ export default class LoginUsuario {
     provedor: string,
     token: string
   ): Promise<Partial<Usuario>> {
-    const email = await this.provedorAutenticacao!.autenticarComProvedor(
-      provedor,
-      token
-    );
-
-    const usuario = await this.repositorioUsuario.buscarPorEmail(email);
-
-    if (!usuario || !usuario.ativo) {
-      throw new Error(
-        "Usuário não encontrado ou inativo para o provedor especificado."
-      );
+    if (!this.provedorAutenticacao) {
+      throw new Error("Nenhum provedor de autenticação configurado.");
     }
 
-    const { id, nome_completo, email: emailUsuario } = usuario;
+    const { email, nome, foto } =
+      await this.provedorAutenticacao.autenticarComProvedor(provedor, token);
 
-    return { id, nome_completo, email: emailUsuario };
+    let usuario = await this.repositorioUsuario.buscarPorEmail(email);
+
+    if (!usuario) {
+      const novoUsuario = await this.repositorioUsuario.salvar({
+        id: Id.novo.valor,
+        email,
+        nome_completo: nome,
+        url_imagem_perfil: foto,
+        ativo: true,
+      });
+
+      usuario = novoUsuario!;
+    } else if (!usuario.ativo) {
+      throw new Error("Usuário inativo.");
+    }
+
+    return {
+      id: usuario.id,
+      nome_completo: usuario.nome_completo,
+      email: usuario.email,
+      url_imagem_perfil: usuario.url_imagem_perfil,
+    };
   }
 }

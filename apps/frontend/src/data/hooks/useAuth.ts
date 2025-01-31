@@ -22,6 +22,7 @@ interface UseAuthResponse {
   gerarQrCode: (email: string) => Promise<void>;
   qrCodeUrl: string | null;
   loginQr: (token: string) => Promise<void>;
+  loginComProvedor: (token: string, provedor: string) => Promise<void>;
 }
 
 export default function useAuth(): UseAuthResponse {
@@ -199,6 +200,26 @@ export default function useAuth(): UseAuthResponse {
     }
   };
 
+  const loginComProvedor = async (token: string, provedor: string) => {
+    try {
+      const response = await httpPost("/auth/login/provedor", { token, provedor });
+  
+      if (response.status === 200) {
+        const { token: userToken } = response;
+        iniciarSessao(userToken);
+        adicionarSucesso("Login com provedor realizado com sucesso!");
+        router.push("/");
+      } else {
+        adicionarErro(response.message);
+        router.push("/login");
+      }
+    } catch (error) {
+      console.error("Erro ao realizar login com provedor", error);
+      adicionarErro("Erro ao realizar login com provedor.");
+      router.push("/login");
+    }
+  };  
+
   const logout = () => {
     encerrarSessao();
   };
@@ -214,5 +235,6 @@ export default function useAuth(): UseAuthResponse {
     gerarQrCode,
     qrCodeUrl,
     loginQr,
+    loginComProvedor,
   };
 }
