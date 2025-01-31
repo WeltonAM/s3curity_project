@@ -23,6 +23,7 @@ export default function UsuarioPage() {
     const [nome_completo, setNome] = useState(usuario?.nome_completo || "");
     const [telefone, setTelefone] = useState(usuario?.telefone || "");
     const [urlImagemPerfil, setUrlImagemPerfil] = useState(usuario?.url_imagem_perfil || "");
+    const [doisFatoresAtivado, setDoisFatoresAtivado] = useState(usuario?.dois_fatores_ativado || false);
 
     const validarUrlImagem = (url: string) => {
         try {
@@ -55,6 +56,7 @@ export default function UsuarioPage() {
             nome_completo: nome_completo || undefined,
             telefone: telefone || undefined,
             url_imagem_perfil: urlImagemPerfil || undefined,
+            dois_fatores_ativado: doisFatoresAtivado || undefined,
         };
 
         const novoUsuarioAtualizado = await atualizarUsuario(usuarioAtualizado);
@@ -81,6 +83,18 @@ export default function UsuarioPage() {
                     telefoneValue={telefone}
                     onChange={(e) => setTelefone(e.target.value)}
                 />
+
+                <div className="flex flex-col gap-1">
+                    <label className="text-xs text-zinc-300">Autenticação de Dois Fatores</label>
+                    <select
+                        className="p-2 bg-black rounded-md border border-white/10 text-white"
+                        value={doisFatoresAtivado ? "true" : "false"}
+                        onChange={(e) => setDoisFatoresAtivado(e.target.value === "true")}
+                    >
+                        <option value="true">Sim</option>
+                        <option value="false">Não</option>
+                    </select>
+                </div>
 
                 <div className="flex flex-col gap-1">
                     <label htmlFor="nome" className="text-xs text-zinc-300">Solicitar Nova Senha</label>
