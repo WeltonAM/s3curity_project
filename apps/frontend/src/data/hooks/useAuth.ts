@@ -21,7 +21,7 @@ interface UseAuthResponse {
   ) => Promise<{ status: number; message: string }>;
   gerarQrCode: (email: string) => Promise<void>;
   qrCodeUrl: string | null;
-  loginQr: (token: string) => Promise<void>;
+  verificarTokenLogin: (token: string) => Promise<void>;
   loginComProvedor: (token: string, provedor: string) => Promise<void>;
 }
 
@@ -43,9 +43,13 @@ export default function useAuth(): UseAuthResponse {
             return adicionarErro(message);
           }
 
-          iniciarSessao(token);
-          adicionarSucesso("Login realizado com sucesso!");
-          router.push("/");
+          if (message.includes("Verificação enviada por e-mail")) {
+            return adicionarSucesso(message);
+          } else {
+            iniciarSessao(token);
+            adicionarSucesso("Login realizado com sucesso!");
+            router.push("/");
+          }
         })
         .catch(() => {});
     });
@@ -180,9 +184,9 @@ export default function useAuth(): UseAuthResponse {
     });
   };
 
-  const loginQr = async (token: string) => {
+  const verificarTokenLogin = async (token: string) => {
     try {
-      const response = await httpPost("/auth/login-qr", { token });
+      const response = await httpPost("/auth/login-token", { token });
 
       if (response.status === 200) {
         const { token: userToken } = response;
@@ -194,16 +198,19 @@ export default function useAuth(): UseAuthResponse {
         router.push("/login");
       }
     } catch (error) {
-      console.error("Erro ao realizar login via QR Code", error);
-      adicionarErro("Erro ao realizar login via QR Code.");
+      console.error("Erro ao realizar login.", error);
+      adicionarErro("Erro ao realizar login.");
       router.push("/login");
     }
   };
 
   const loginComProvedor = async (token: string, provedor: string) => {
     try {
-      const response = await httpPost("/auth/login/provedor", { token, provedor });
-  
+      const response = await httpPost("/auth/login/provedor", {
+        token,
+        provedor,
+      });
+
       if (response.status === 200) {
         const { token: userToken } = response;
         iniciarSessao(userToken);
@@ -218,7 +225,7 @@ export default function useAuth(): UseAuthResponse {
       adicionarErro("Erro ao realizar login com provedor.");
       router.push("/login");
     }
-  };  
+  };
 
   const logout = () => {
     encerrarSessao();
@@ -234,7 +241,7 @@ export default function useAuth(): UseAuthResponse {
     verificarTokenRecuperacao,
     gerarQrCode,
     qrCodeUrl,
-    loginQr,
+    verificarTokenLogin,
     loginComProvedor,
   };
 }

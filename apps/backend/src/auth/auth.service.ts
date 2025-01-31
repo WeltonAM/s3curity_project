@@ -7,6 +7,8 @@ import { LoginPrisma } from 'src/login/login.prisma';
 import { BcryptProvider } from 'src/usuario/bcrypt.provider';
 import ProvedorAutenticacaoGoogle from 'src/google/ProvedorAutenticacaoGoogle';
 import { LoginUsuario, RegistrarUsuario } from '@s3curity/core';
+import { PerfilPrisma } from 'src/perfil/perfil.prisma';
+import { PermissaoPrisma } from 'src/permissao/permissao.prisma';
 
 @Injectable()
 export class AuthService {
@@ -14,6 +16,8 @@ export class AuthService {
     private readonly usuarioRepo: UsuarioPrisma,
     private readonly loginRepo: LoginPrisma,
     private readonly cripto: BcryptProvider,
+    private readonly perfilRepo: PerfilPrisma,
+    private readonly permissaoRepo: PermissaoPrisma,
     private readonly provedorGoogle: ProvedorAutenticacaoGoogle,
   ) {}
 
@@ -21,7 +25,46 @@ export class AuthService {
     const casoDeUso = new LoginUsuario(this.usuarioRepo, this.cripto);
     const usuario = await casoDeUso.comEmailSenha(email, senha);
 
-    const token = this.gerarToken(usuario);
+    if (usuario.dois_fatores_ativado) {
+      const tokenVerificacao = this.gerarToken({ email }, '5m');
+      await this.enviarEmailVerificacao(email, tokenVerificacao);
+
+      return {
+        status: 200,
+        message:
+          'Verificação enviada por e-mail. Clique no link para finalizar o login.',
+      };
+    }
+
+    const perfis = await this.perfilRepo.buscarPerfilPorUsuarioEmail(
+      usuario.email,
+    );
+    const perfisAtivos = perfis
+      .filter((perfil) => perfil.ativo)
+      .map((perfil) => ({ nome: perfil.nome, id: perfil.id }));
+
+    const permissoes = await Promise.all(
+      perfisAtivos.map(async (perfil) => {
+        const permissoesPorPerfil =
+          await this.permissaoRepo.buscarPermissoesPorPerfilId(perfil.id);
+        return permissoesPorPerfil
+          .filter((p) => p.ativo)
+          .map((p) => ({ nome: p.nome, id: p.id }));
+      }),
+    );
+
+    const permissoesUnicas = Array.from(
+      new Set([].concat(...permissoes).map((p) => p.id)),
+    ).map((id) => permissoes.flat().find((p) => p.id === id));
+
+    const usuarioComPerfisEPermissoes = {
+      ...usuario,
+      perfis: perfisAtivos,
+      permissoes: permissoesUnicas,
+    };
+
+    const token = this.gerarToken(usuarioComPerfisEPermissoes);
+
     await this.usuarioRepo.salvar({
       ...usuario,
       data_expiracao_token: this.definirExpiracaoToken(),
@@ -127,7 +170,7 @@ export class AuthService {
       throw new Error('Usuário não encontrado ou inativo.');
 
     const tokenLogin = this.gerarToken({ email }, '15m');
-    const loginUrl = `${process.env.FRONTEND_URL}/loginQRCode?token=${tokenLogin}`;
+    const loginUrl = `${process.env.FRONTEND_URL}/verificarTokenLogin?token=${tokenLogin}`;
 
     try {
       return { status: 200, qrCodeUrl: await QRCode.toDataURL(loginUrl) };
@@ -136,18 +179,50 @@ export class AuthService {
     }
   }
 
-  async loginQr(token: string) {
+  async verificarTokenLogin(token: string) {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
         email: string;
       };
+
       const usuario = await this.usuarioRepo.buscarPorEmail(decoded.email);
 
-      if (!usuario || !usuario.ativo)
+      if (!usuario || !usuario.ativo) {
         throw new Error('Usuário não encontrado ou inativo.');
+      }
+
+      const perfis = await this.perfilRepo.buscarPerfilPorUsuarioEmail(
+        usuario.email,
+      );
+
+      const perfisAtivos = perfis
+        .filter((perfil) => perfil.ativo)
+        .map((perfil) => ({ nome: perfil.nome, id: perfil.id }));
+
+      const permissoes = await Promise.all(
+        perfisAtivos.map(async (perfil) => {
+          const permissoesPorPerfil =
+            await this.permissaoRepo.buscarPermissoesPorPerfilId(perfil.id);
+          return permissoesPorPerfil
+            .filter((p) => p.ativo)
+            .map((p) => ({ nome: p.nome, id: p.id }));
+        }),
+      );
+
+      const permissoesUnicas = Array.from(
+        new Set([].concat(...permissoes).map((p) => p.id)),
+      ).map((id) => permissoes.flat().find((p) => p.id === id));
+
+      const usuarioComPerfisEPermissoes = {
+        ...usuario,
+        perfis: perfisAtivos,
+        permissoes: permissoesUnicas,
+      };
+
+      const tokenGerado = this.gerarToken(usuarioComPerfisEPermissoes);
 
       return {
-        token: this.gerarToken(usuario),
+        token: tokenGerado,
         status: 200,
         message: 'Login efetuado com sucesso!',
       };
@@ -198,11 +273,42 @@ export class AuthService {
         from: process.env.MAILTRAP_EMAIL,
         to: email,
         subject: 'Recuperação de senha',
-        html: `<a href="${process.env.FRONTEND_URL}/recuperarSenha?token=${token}">Recuperar Senha</a>`,
+        html: `
+            <p>Para recuperar sua senha, clique no seguinte link:</p>
+            <p><a href="${process.env.FRONTEND_URL}/recuperarSenha?token=${token}">Recuperar Senha</a></p>
+            <p>Você terá 5min para completar o processo de recuperação de senha.</p>
+        `,
       });
     } catch (error) {
       console.error('Erro ao enviar o e-mail de recuperação:', error);
       throw new Error('Erro ao enviar o e-mail de recuperação');
+    }
+  }
+
+  private async enviarEmailVerificacao(email: string, token: string) {
+    try {
+      const transporter = nodemailer.createTransport({
+        host: 'smtp.mailtrap.io',
+        port: 587,
+        auth: {
+          user: process.env.MAILTRAP_USER,
+          pass: process.env.MAILTRAP_PASS,
+        },
+      });
+
+      await transporter.sendMail({
+        from: process.env.MAILTRAP_EMAIL,
+        to: email,
+        subject: 'Verificação de Login',
+        html: `
+            <p>Para finalizar seu login, clique no seguinte link:</p>
+            <p><a href="${process.env.FRONTEND_URL}/verificarTokenLogin?token=${token}">Finalizar Login</a></p>
+            <p>O link expirará em 5 minutos.</p>
+        `,
+      });
+    } catch (error) {
+      console.error('Erro ao enviar o e-mail de verificação:', error);
+      throw new Error('Erro ao enviar o e-mail de verificação');
     }
   }
 }

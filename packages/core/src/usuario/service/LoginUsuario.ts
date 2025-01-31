@@ -32,6 +32,7 @@ export default class LoginUsuario {
       email: emailUsuario,
       url_imagem_perfil,
       telefone,
+      dois_fatores_ativado
     } = usuario;
 
     return {
@@ -40,6 +41,7 @@ export default class LoginUsuario {
       email: emailUsuario,
       telefone,
       url_imagem_perfil,
+      dois_fatores_ativado
     };
   }
 

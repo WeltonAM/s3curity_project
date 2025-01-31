@@ -5,10 +5,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import useAuth from "@/data/hooks/useAuth";
 import Carregando from "@/components/shared/Carregando";
 
-export default function LoginQRCode() {
+export default function VerificarTokenLogin() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { loginQr } = useAuth();
+  const { verificarTokenLogin } = useAuth();
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   useEffect(() => {
@@ -23,7 +23,7 @@ export default function LoginQRCode() {
       if (!isAuthenticating) {
         setIsAuthenticating(true);
         try {
-          await loginQr(token);  
+          await verificarTokenLogin(token);  
           router.push("/");
         } catch (error) {
           console.error("Erro ao autenticar:", error);
@@ -33,7 +33,7 @@ export default function LoginQRCode() {
     };
 
     autenticar();
-  }, [searchParams, router, loginQr, isAuthenticating]);
+  }, [searchParams, router, verificarTokenLogin, isAuthenticating]);
 
   return <Carregando />;
 }

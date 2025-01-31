@@ -28,7 +28,7 @@ export default function UsuarioPage() {
     const validarUrlImagem = (url: string) => {
         try {
             const parsedUrl = new URL(url);
-            const dominiosPermitidos = ["i.pravatar.cc", "example.com", "cdn.pixabay.com", "cdn.discordapp.com"];
+            const dominiosPermitidos = ["i.pravatar.cc", "example.com", "cdn.pixabay.com", "cdn.discordapp.com", "lh3.googleusercontent.com"];
             return dominiosPermitidos.includes(parsedUrl.hostname);
         } catch (error) {
             console.error("Erro ao validar URL da imagem:", error);
@@ -55,7 +55,7 @@ export default function UsuarioPage() {
             email: usuario?.email,
             nome_completo: nome_completo || undefined,
             telefone: telefone || undefined,
-            url_imagem_perfil: urlImagemPerfil || undefined,
+            url_imagem_perfil: urlImagemPerfil || "",
             dois_fatores_ativado: doisFatoresAtivado || undefined,
         };
 

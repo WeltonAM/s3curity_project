@@ -77,6 +77,7 @@ export function ProvedorSessao(props: { children: React.ReactNode }) {
                     email: payload.email,
                     telefone: payload.telefone,
                     url_imagem_perfil: payload.url_imagem_perfil,
+                    dois_fatores_ativado: payload.dois_fatores_ativado,
                     perfis: payload.perfis,
                     permissoes: payload.permissoes,
                 },

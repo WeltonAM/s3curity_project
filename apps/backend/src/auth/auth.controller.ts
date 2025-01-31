@@ -45,13 +45,18 @@ export class AuthController {
     return this.authService.gerarQrCode(dados.email);
   }
 
-  @Post('login-qr')
+  @Post('login-token')
   async loginQr(@Body() dados: { token: string }) {
-    return this.authService.loginQr(dados.token);
+    return this.authService.verificarTokenLogin(dados.token);
   }
 
   @Post('login/provedor')
   async loginComGoogle(@Body() dados: { token: string; provedor: string }) {
     return this.authService.loginComGoogle(dados.token, dados.provedor);
+  }
+
+  @Get('verificar-login/:token')
+  async verificarLogin(@Param('token') token: string) {
+    return this.authService.verificarTokenLogin(token);
   }
 }
