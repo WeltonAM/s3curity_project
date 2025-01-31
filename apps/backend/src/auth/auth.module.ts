@@ -6,10 +6,11 @@ import { UsuarioModule } from 'src/usuario/usuario.module';
 import { PerfilModule } from 'src/perfil/perfil.module';
 import { PermissaoModule } from 'src/permissao/permissao.module';
 import ProvedorAutenticacaoGoogle from 'src/google/ProvedorAutenticacaoGoogle';
+import { AuthService } from './auth.service';
 
 @Module({
   imports: [LoginModule, UsuarioModule, PerfilModule, PermissaoModule],
   controllers: [AuthController],
-  providers: [BcryptProvider, ProvedorAutenticacaoGoogle],
+  providers: [AuthService, BcryptProvider, ProvedorAutenticacaoGoogle],
 })
 export class AuthModule {}

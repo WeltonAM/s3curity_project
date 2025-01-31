@@ -117,9 +117,20 @@ export default function CadastroForm() {
         <div className="flex flex-col items-center justify-center p-10 rounded-md bg-zinc-900 select-none w-[420px]">
             <span className="font-bold">Cadastrar</span>
             <div className="flex flex-col w-full gap-4 mt-4">
-                <CampoNome ladoIcone="left" onChangeText={setNome} value={nome} onChange={(e) => setNome(e.target.value)} />
+                <CampoNome 
+                    ladoIcone="left" 
+                    onChangeText={setNome} 
+                    value={nome} 
+                    onChange={(e) => 
+                    setNome(e.target.value)}
+                />
 
-                <CampoEmail value={email} onChangeText={setEmail} ladoIcone="left" iverterIcone />
+                <CampoEmail 
+                    value={email} 
+                    onChangeText={setEmail} 
+                    ladoIcone="left" 
+                    iverterIcone
+                />
 
                 <CampoSenha
                     label="Senha"
@@ -139,7 +150,11 @@ export default function CadastroForm() {
                     onChangeText={setConfirmPassword}
                 />
 
-                <CampoTelefone value={telefone} onChangeText={setTelefone} outerClassName="mt-4" />
+                <CampoTelefone 
+                    lable="Telefone"
+                    telefoneValue={telefone} 
+                    onChangeText={setTelefone} 
+                />
 
                 <button
                     className="bg-green-600 rounded-md text-sm py-2 font-bold hover:bg-green-500 hover:text-white mt-4"

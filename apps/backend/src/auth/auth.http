@@ -23,7 +23,7 @@ Content-Type: application/json
 
 {
     "email": "j@mail.com",
-    "senha": "@Senha123"
+    "senha": "!Senha123"
 }
 
 ### Solicitar alteração de senha
@@ -39,7 +39,7 @@ PUT http://localhost:4000/auth/recuperar-senha
 Content-Type: application/json
 
 {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpAbWFpbC5jb20iLCJpYXQiOjE3MzgyNjA0MjUsImV4cCI6MTczODI2MDcyNX0.mGYJLN7Ow6heZxnB_8nrOVNuRt6nDDLTVMp4ytjYVbc",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpAbWFpbC5jb20iLCJpYXQiOjE3MzgzNDU3OTYsImV4cCI6MTczODM0NjA5Nn0.WSTd0RNyW4Wkk0oDMZ0k_9n8-9c-eVw0vP9pIDYtby0",
     "novaSenha": "@Senha123",
     "confirmarSenha": "@Senha123"
 }
